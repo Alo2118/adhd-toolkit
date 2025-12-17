@@ -1,0 +1,27 @@
+{
+  "name": "ADHD Toolkit - Mappa Strategie",
+  "short_name": "ADHD Toolkit",
+  "description": "La tua guida personale per gestire l'ADHD. 19 sfide, 76 strategie, tutto offline.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#4ecdc4",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "lifestyle", "productivity"],
+  "lang": "it",
+  "dir": "ltr"
+}

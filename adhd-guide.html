@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mappa ADHD - Problema → Strategia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --accent-coral: #ff6b6b;
+            --accent-mint: #4ecdc4;
+            --accent-yellow: #ffe66d;
+            --accent-purple: #a855f7;
+            --accent-blue: #60a5fa;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 107, 107, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-top: 2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent-mint);
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            margin-bottom: 1.5rem;
+            animation: fadeSlideDown 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-purple) 50%, var(--accent-coral) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeSlideDown 0.6s ease-out 0.1s both;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeSlideDown 0.6s ease-out 0.2s both;
+        }
+
+        /* Navigation */
+        .nav-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            animation: fadeSlideDown 0.6s ease-out 0.3s both;
+        }
+
+        .nav-pill {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            border: 1px solid var(--text-muted);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pill:hover {
+            border-color: var(--accent-mint);
+            color: var(--accent-mint);
+            transform: translateY(-2px);
+        }
+
+        .nav-pill.active {
+            background: var(--accent-mint);
+            border-color: var(--accent-mint);
+            color: var(--bg-dark);
+        }
+
+        /* Section styling */
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Problem Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--card-accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .problem-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .problem-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .problem-emoji {
+            font-size: 1.5rem;
+        }
+
+        .strategies-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--card-accent);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .strategies-label::before {
+            content: '';
+            width: 12px;
+            height: 2px;
+            background: var(--card-accent);
+        }
+
+        .strategy {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .strategy:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .strategy:hover {
+            padding-left: 0.5rem;
+        }
+
+        .strategy-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid var(--card-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .strategy-check:hover {
+            background: var(--card-accent);
+        }
+
+        .strategy-check.checked {
+            background: var(--card-accent);
+        }
+
+        .strategy-check.checked::after {
+            content: '✓';
+            font-size: 0.75rem;
+            color: var(--bg-dark);
+            font-weight: bold;
+        }
+
+        .strategy-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .strategy-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Color themes for sections */
+        .section[data-theme="focus"] {
+            --card-accent: var(--accent-coral);
+        }
+
+        .section[data-theme="organize"] {
+            --card-accent: var(--accent-mint);
+        }
+
+        .section[data-theme="time"] {
+            --card-accent: var(--accent-yellow);
+        }
+
+        .section[data-theme="emotion"] {
+            --card-accent: var(--accent-purple);
+        }
+
+        .section[data-theme="sleep"] {
+            --card-accent: var(--accent-blue);
+        }
+
+        .section-icon.focus { background: rgba(255, 107, 107, 0.15); color: var(--accent-coral); }
+        .section-icon.organize { background: rgba(78, 205, 196, 0.15); color: var(--accent-mint); }
+        .section-icon.time { background: rgba(255, 230, 109, 0.15); color: var(--accent-yellow); }
+        .section-icon.emotion { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+        .section-icon.sleep { background: rgba(96, 165, 250, 0.15); color: var(--accent-blue); }
+
+        /* Quick tips footer */
+        .quick-tips {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(78, 205, 196, 0.1));
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-tips h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .tip {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .tip::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-mint);
+        }
+
+        /* Animations */
+        @keyframes fadeSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Print styles */
+        @media print {
+            .bg-gradient, .noise { display: none; }
+            body { background: white; color: black; }
+            .card { break-inside: avoid; border: 1px solid #ddd; }
+            .nav-pills { display: none; }
+            .section { display: block !important; page-break-after: always; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="noise"></div>
+    
+    <div class="container">
+        <header>
+            <div class="badge">Guida pratica</div>
+            <h1>Mappa ADHD</h1>
+            <p class="subtitle">Strategie concrete per ogni sfida. Trova il problema, applica la soluzione.</p>
+        </header>
+
+        <nav class="nav-pills">
+            <button class="nav-pill active" data-section="focus">🎯 Attenzione</button>
+            <button class="nav-pill" data-section="organize">📦 Organizzazione</button>
+            <button class="nav-pill" data-section="time">⏰ Tempo</button>
+            <button class="nav-pill" data-section="emotion">💜 Emozioni</button>
+            <button class="nav-pill" data-section="sleep">🌙 Sonno</button>
+        </nav>
+
+        <!-- ATTENZIONE -->
+        <section class="section active" id="focus" data-theme="focus">
+            <div class="section-header">
+                <div class="section-icon focus">🎯</div>
+                <h2 class="section-title">Attenzione e Concentrazione</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" style="--card-accent: var(--accent-coral)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🚀</span> Difficoltà a iniziare</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Regola dei 2 minuti:</strong> prometti solo 2 minuti, poi decidi se continuare</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Preparazione serale:</strong> riduci l'attrito preparando tutto prima</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Rituale di avvio:</strong> associa l'inizio a un gesto fisso (caffè, musica)</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-coral)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🦋</span> Distraibilità costante</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Pomodoro:</strong> 25 min lavoro / 5 min pausa, blocchi gestibili</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Ambiente sterile:</strong> telefono altrove, blocca-siti attivi</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Foglio cattura-pensieri:</strong> annota le distrazioni senza seguirle</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-coral)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🔥</span> Iperfocus sbagliato</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Timer orario:</strong> allarme ogni ora per "check-in" con te stesso</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Una priorità sola:</strong> definisci in anticipo l'unica cosa importante</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Accountability:</strong> qualcuno che ti richiama alla realtà</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ORGANIZZAZIONE -->
+        <section class="section" id="organize" data-theme="organize">
+            <div class="section-header">
+                <div class="section-icon organize">📦</div>
+                <h2 class="section-title">Organizzazione e Memoria</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" style="--card-accent: var(--accent-mint)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">📅</span> Dimenticare appuntamenti</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Un solo calendario:</strong> digitale, sempre visibile, con notifiche multiple</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Notifiche triple:</strong> 1 giorno, 1 ora, 15 minuti prima</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Review serale:</strong> ogni sera controlla il giorno dopo</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-mint)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🔑</span> Perdere oggetti</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Luoghi fissi:</strong> ogni oggetto critico ha la sua "casa"</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Landing zone:</strong> un punto all'ingresso dove lasci tutto</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Tracker bluetooth:</strong> AirTag o Tile per chiavi e portafoglio</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-mint)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🏗️</span> Progetti a metà</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Micro-azioni:</strong> non "fare il progetto" ma "aprire il file"</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Checklist visive:</strong> barrare i task dà soddisfazione</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Body doubling:</strong> lavora in presenza di qualcuno</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEMPO -->
+        <section class="section" id="time" data-theme="time">
+            <div class="section-header">
+                <div class="section-icon time">⏰</div>
+                <h2 class="section-title">Gestione del Tempo</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" style="--card-accent: var(--accent-yellow)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">⏳</span> Sottostimare i tempi</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Regola del x3:</strong> moltiplica la tua stima per 2 o 3</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Time tracking:</strong> cronometra le attività per avere dati reali</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Buffer obbligatori:</strong> lascia spazi vuoti tra gli impegni</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-yellow)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🏃</span> Ritardi cronici</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Ora di partenza:</strong> imposta quando USCIRE, non quando arrivare</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>15 min prima:</strong> crea un "appuntamento con te stesso"</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Prepara la sera prima:</strong> vestiti, borsa, documenti pronti</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-yellow)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🐌</span> Procrastinazione</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Gamification:</strong> trasforma il compito in sfida o gioco</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Cambia ambiente:</strong> vai al bar, in biblioteca, ovunque ma non a casa</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Deadline condivise:</strong> dì a qualcuno quando consegnerai</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EMOZIONI -->
+        <section class="section" id="emotion" data-theme="emotion">
+            <div class="section-header">
+                <div class="section-icon emotion">💜</div>
+                <h2 class="section-title">Regolazione Emotiva</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" style="--card-accent: var(--accent-purple)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">💥</span> Frustrazione rapida</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Pause preventive:</strong> fermati PRIMA di esplodere</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Riconosci il pattern:</strong> "questo è il mio ADHD, non io"</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Task difficili a energia alta:</strong> non quando sei già stanco</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-purple)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🤯</span> Paralisi decisionale</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Max 3 opzioni:</strong> riduci le scelte al minimo</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Decisioni in anticipo:</strong> vestiti, pasti, routine fisse</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Good enough:</strong> datti il permesso di fare "abbastanza bene"</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-purple)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">😴</span> Noia intensa</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Alternanza:</strong> noioso → stimolante → noioso</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Novità costante:</strong> cambia posto, musica, strumenti</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Ricompense immediate:</strong> premio dopo ogni task noioso</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SONNO -->
+        <section class="section" id="sleep" data-theme="sleep">
+            <div class="section-header">
+                <div class="section-icon sleep">🌙</div>
+                <h2 class="section-title">Sonno e Routine</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card" style="--card-accent: var(--accent-blue)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🦉</span> Non riuscire a dormire</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Allarme serale:</strong> notifica per INIZIARE la routine, non solo per svegliarti</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Ora blu:</strong> luci basse e zero schermi 1 ora prima</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Consistenza weekend:</strong> stesso orario tutti i giorni</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-blue)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🌪️</span> Mattine caotiche</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Tutto pronto la sera:</strong> vestiti, borsa, chiavi, colazione</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Routine scritta:</strong> checklist visibile con i passaggi</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Sveglia lontana:</strong> mettila in un'altra stanza</p>
+                    </div>
+                </div>
+
+                <div class="card" style="--card-accent: var(--accent-blue)">
+                    <div class="problem-label">Problema</div>
+                    <h3 class="problem-title"><span class="problem-emoji">🔄</span> Routine che saltano</h3>
+                    <div class="strategies-label">Strategie</div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Habit stacking:</strong> aggancia nuove abitudini a quelle esistenti</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Versione minima:</strong> se non riesci, fai almeno il 10%</p>
+                    </div>
+                    <div class="strategy">
+                        <div class="strategy-check" onclick="this.classList.toggle('checked')"></div>
+                        <p class="strategy-text"><strong>Non spezzare la catena:</strong> traccia i giorni consecutivi</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="quick-tips">
+            <h3>💡 Ricorda sempre</h3>
+            <div class="tips-grid">
+                <p class="tip">L'ADHD non è pigrizia: il tuo cervello funziona diversamente</p>
+                <p class="tip">Sperimenta: non tutte le strategie funzionano per tutti</p>
+                <p class="tip">Sistemi esterni > forza di volontà</p>
+                <p class="tip">Compassione verso te stesso: i fallimenti sono dati, non giudizi</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                // Update active pill
+                document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = pill.dataset.section;
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Persist checkbox state in localStorage
+        document.querySelectorAll('.strategy-check').forEach((check, index) => {
+            const key = `adhd-check-${index}`;
+            if (localStorage.getItem(key) === 'true') {
+                check.classList.add('checked');
+            }
+            check.addEventListener('click', () => {
+                localStorage.setItem(key, check.classList.contains('checked'));
+            });
+        });
+    </script>
+</body>
+</html>
