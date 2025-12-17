@@ -1760,6 +1760,172 @@
         toast.classList.remove('show');
       }, 2500);
     }
+
+    // ==================== REPORT VIEW ====================
+    function renderReport() {
+      const weekCheckins = getCheckinsInRange(7);
+      
+      // Date range
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7);
+      document.getElementById('reportDateRange').textContent = 
+        formatDateShort(startDate) + ' - ' + formatDateShort(endDate);
+
+      // Stats
+      document.getElementById('reportCheckins').textContent = weekCheckins.length;
+      
+      const uniqueProblems = new Set();
+      const uniqueStrategies = new Set();
+      weekCheckins.forEach(c => {
+        c.problems.forEach(p => {
+          uniqueProblems.add(p.id);
+          p.strategies.forEach(s => uniqueStrategies.add(s));
+        });
+      });
+      document.getElementById('reportProblems').textContent = uniqueProblems.size;
+      document.getElementById('reportStrategies').textContent = uniqueStrategies.size;
+
+      // Top problems
+      const problemCounts = {};
+      weekCheckins.forEach(c => {
+        c.problems.forEach(p => {
+          problemCounts[p.id] = (problemCounts[p.id] || 0) + 1;
+        });
+      });
+
+      const topProblemsEl = document.getElementById('topProblems');
+      const sortedProblems = Object.entries(problemCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      if (sortedProblems.length === 0) {
+        topProblemsEl.innerHTML = '<p style="color:var(--text-muted)">Nessun dato questa settimana</p>';
+      } else {
+        topProblemsEl.innerHTML = sortedProblems.map(([pid, count], i) => {
+          const problem = problems.find(p => p.id === parseInt(pid));
+          return '<div class="top-problem"><span class="rank">#' + (i + 1) + '</span><span class="emoji">' + problem.emoji + '</span><span class="name">' + problem.title + '</span><span class="count">' + count + 'x</span></div>';
+        }).join('');
+      }
+
+      // Effective strategies
+      const effectiveEl = document.getElementById('effectiveStrategies');
+      const effectiveStrats = Object.entries(state.strategyUsage)
+        .filter(([id, data]) => data.used >= 2 && data.helped / data.used >= 0.5)
+        .sort((a, b) => (b[1].helped / b[1].used) - (a[1].helped / a[1].used))
+        .slice(0, 3);
+
+      if (effectiveStrats.length === 0) {
+        effectiveEl.innerHTML = '<p style="color:var(--text-muted)">Usa più strategie per vedere quali funzionano</p>';
+      } else {
+        effectiveEl.innerHTML = effectiveStrats.map(([sid, data]) => {
+          let stratText = '';
+          problems.forEach(p => {
+            const s = p.strategies.find(s => s.id === sid);
+            if (s) stratText = s.text;
+          });
+          const rate = Math.round((data.helped / data.used) * 100);
+          return '<div class="effective-strategy"><span class="icon">✅</span><span class="text">' + stratText + '</span><span class="success-rate">' + rate + '%</span></div>';
+        }).join('');
+      }
+
+      renderReportChart();
+    }
+
+    function renderReportChart() {
+      const container = document.getElementById('reportChart');
+      const days = getLast7Days();
+      
+      const dayData = days.map(day => {
+        const dayCheckins = state.checkins.filter(c => 
+          new Date(c.date).toDateString() === day.date.toDateString()
+        );
+        const avgIntensity = dayCheckins.length > 0 
+          ? dayCheckins.reduce((sum, c) => sum + (c.avgIntensity || 0), 0) / dayCheckins.length
+          : 0;
+        return { label: day.label, intensity: avgIntensity };
+      });
+
+      container.innerHTML = dayData.map(d => {
+        const height = d.intensity > 0 ? Math.max(10, (d.intensity / 5) * 100) : 4;
+        return '<div class="bar-group"><div class="bar-value">' + (d.intensity > 0 ? d.intensity.toFixed(1) : '-') + '</div><div class="bar" style="height:' + height + 'px"></div><div class="bar-label">' + d.label + '</div></div>';
+      }).join('');
+    }
+
+    // ==================== SETTINGS ====================
+    function renderSettings() {
+      const toggle = document.getElementById('reminderToggle');
+      if (state.reminderEnabled) {
+        toggle.classList.add('active');
+      } else {
+        toggle.classList.remove('active');
+      }
+    }
+
+    function toggleReminder() {
+      state.reminderEnabled = !state.reminderEnabled;
+      saveState();
+      renderSettings();
+      showToast(state.reminderEnabled ? '🔔 Promemoria attivato' : '🔕 Promemoria disattivato');
+    }
+
+    function exportData() {
+      const data = { ...state, exportDate: new Date().toISOString(), version: '2.0' };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'adhd-toolkit-backup-' + new Date().toISOString().split('T')[0] + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('📤 Backup esportato!');
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          state = { ...state, ...data };
+          saveState();
+          renderHome();
+          updateHeaderStats();
+          showToast('📥 Dati importati!', 'success');
+        } catch (err) {
+          showToast('❌ File non valido');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function confirmReset() {
+      if (confirm('Sei sicuro? Tutti i dati verranno eliminati permanentemente.')) {
+        state = { checkins: [], strategyUsage: {}, streak: 0, lastCheckinDate: null, reminderEnabled: false };
+        saveState();
+        renderHome();
+        updateHeaderStats();
+        showToast('🗑️ Dati eliminati');
+      }
+    }
+
+    function viewCheckinDetail(checkinId) {
+      const checkin = state.checkins.find(c => c.id === checkinId);
+      if (checkin) {
+        let msg = 'Check-in del ' + formatDate(new Date(checkin.date)) + '\n\n';
+        checkin.problems.forEach(p => {
+          const prob = problems.find(pr => pr.id === p.id);
+          msg += prob.emoji + ' ' + prob.title + ' - Intensità: ' + p.intensity + '/5\n';
+        });
+        alert(msg);
+      }
+    }
+
+    function formatDateShort(date) {
+      return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+    }
   </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adhd-toolkit-v1';
+const CACHE_NAME = 'adhd-toolkit-v2';
 const urlsToCache = [
   '/',
   '/index.html',
