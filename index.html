@@ -3,47 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#1a1a2e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ADHD Toolkit">
-  <meta name="description" content="La tua guida personale per gestire l'ADHD. 19 sfide, 76 strategie.">
+  <meta name="apple-mobile-web-app-title" content="Come Stai?">
+  <meta name="description" content="Il tuo supporto per i momenti difficili">
   
-  <title>ADHD Toolkit</title>
+  <title>Come Stai?</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" type="image/png" href="icon-192.png">
   
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-primary: #0a0a0f;
-      --bg-secondary: #12121a;
-      --bg-card: #1a1a24;
-      --bg-elevated: #22222e;
+      --bg-deep: #1a1a2e;
+      --bg-card: #25253d;
+      --bg-elevated: #2d2d4a;
+      --bg-input: #1f1f35;
       
-      --accent-mint: #4ecdc4;
-      --accent-coral: #ff6b6b;
-      --accent-yellow: #ffe66d;
-      --accent-purple: #a855f7;
-      --accent-pink: #f472b6;
-      --accent-blue: #60a5fa;
+      --accent-calm: #7eb8da;
+      --accent-warm: #e8a87c;
+      --accent-soft: #c3aed6;
+      --accent-green: #7dd3a8;
+      --accent-coral: #e07a7a;
       
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
+      --text-primary: #f0f0f5;
+      --text-secondary: #a0a0b8;
+      --text-muted: #6a6a82;
       
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 20px;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
       --radius-full: 100px;
       
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-      
-      --nav-height: 70px;
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
     }
 
     * {
@@ -60,816 +57,650 @@
 
     body {
       font-family: 'Nunito', -apple-system, sans-serif;
-      background: var(--bg-primary);
+      background: var(--bg-deep);
       color: var(--text-primary);
-      line-height: 1.5;
-      overscroll-behavior: none;
+      line-height: 1.6;
     }
 
-    /* App Container */
     .app {
       height: 100%;
       display: flex;
       flex-direction: column;
       padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
     }
 
-    /* Header */
-    .header {
-      padding: 16px 20px;
-      background: var(--bg-primary);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+    /* Screens */
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Home Screen */
+    .home-screen {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 30px;
+    }
+
+    .home-greeting {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .home-question {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 40px;
+      line-height: 1.2;
+    }
+
+    .home-main-btn {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--accent-calm), var(--accent-soft));
+      color: var(--bg-deep);
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 20px 60px rgba(126, 184, 218, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .home-main-btn:active {
+      transform: scale(0.95);
+    }
+
+    .home-main-btn .icon {
+      font-size: 2.5rem;
+    }
+
+    .home-secondary {
+      margin-top: 50px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .home-sec-btn {
+      padding: 14px 24px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--bg-elevated);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .home-sec-btn:active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    /* Flow Screen */
+    .flow-screen {
+      padding-bottom: 100px;
+    }
+
+    .flow-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 30px;
+      padding-top: 10px;
+    }
+
+    .back-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
 
-    .header-top {
+    .flow-progress {
+      flex: 1;
+      height: 4px;
+      background: var(--bg-elevated);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .flow-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-calm), var(--accent-soft));
+      transition: width 0.4s ease;
+    }
+
+    .flow-step {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .flow-question {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .flow-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+
+    /* Emotion/Trigger Selection */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .option-card {
+      background: var(--bg-card);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .option-card:active {
+      transform: scale(0.97);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent-calm);
+      background: rgba(126, 184, 218, 0.1);
+    }
+
+    .option-card .emoji {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .option-card .label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .option-card.selected .label {
+      color: var(--accent-calm);
+    }
+
+    /* Trigger list (single column) */
+    .triggers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .trigger-card {
+      background: var(--bg-card);
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
+      gap: 14px;
+    }
+
+    .trigger-card:active {
+      transform: scale(0.98);
+    }
+
+    .trigger-card.selected {
+      border-color: var(--accent-warm);
+      background: rgba(232, 168, 124, 0.1);
+    }
+
+    .trigger-card .emoji {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .trigger-card .label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .trigger-card.selected .label {
+      color: var(--accent-warm);
+    }
+
+    /* Intensity slider */
+    .intensity-section {
+      margin-top: 20px;
+    }
+
+    .intensity-label {
+      display: flex;
       justify-content: space-between;
       margin-bottom: 16px;
     }
 
-    .logo {
+    .intensity-label span {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .intensity-value {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .intensity-bar {
+      display: flex;
+      gap: 8px;
+    }
+
+    .intensity-dot {
+      flex: 1;
+      height: 50px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--bg-elevated);
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .intensity-dot:active {
+      transform: scale(0.95);
+    }
+
+    .intensity-dot.selected {
+      border-color: var(--dot-color);
+      background: var(--dot-bg);
+      color: var(--dot-color);
+    }
+
+    .intensity-dot:nth-child(1) { --dot-color: var(--accent-green); --dot-bg: rgba(125, 211, 168, 0.15); }
+    .intensity-dot:nth-child(2) { --dot-color: var(--accent-calm); --dot-bg: rgba(126, 184, 218, 0.15); }
+    .intensity-dot:nth-child(3) { --dot-color: var(--accent-warm); --dot-bg: rgba(232, 168, 124, 0.15); }
+    .intensity-dot:nth-child(4) { --dot-color: var(--accent-coral); --dot-bg: rgba(224, 122, 122, 0.15); }
+    .intensity-dot:nth-child(5) { --dot-color: #e05a5a; --dot-bg: rgba(224, 90, 90, 0.15); }
+
+    /* Response Screen */
+    .response-screen {
+      padding: 30px 24px;
+    }
+
+    .response-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .response-emoji {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+    }
+
+    .response-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .response-feeling {
+      color: var(--accent-calm);
+      font-weight: 600;
+    }
+
+    /* Understanding section */
+    .understanding-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .understanding-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-soft);
+      margin-bottom: 12px;
+    }
+
+    .understanding-text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .understanding-text strong {
+      color: var(--text-primary);
+    }
+
+    /* Strategies section */
+    .strategies-section {
+      margin-bottom: 24px;
+    }
+
+    .strategies-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--accent-mint), var(--accent-purple));
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .logo-text {
-      font-weight: 800;
-      font-size: 1.25rem;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-md);
-      border: none;
-      background: var(--bg-secondary);
-      color: var(--text-secondary);
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .icon-btn:hover, .icon-btn:active {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-
-    /* Stats Bar */
-    .stats-bar {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-
-    .stats-bar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .stat-chip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      background: var(--bg-secondary);
-      border-radius: var(--radius-full);
-      flex-shrink: 0;
-    }
-
-    .stat-icon {
-      font-size: 14px;
-    }
-
-    .stat-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--accent-mint);
-    }
-
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* Search */
-    .search-container {
-      padding: 12px 20px;
-      background: var(--bg-primary);
-      flex-shrink: 0;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg-secondary);
-      border-radius: var(--radius-full);
-      padding: 12px 18px;
-      border: 1px solid transparent;
-      transition: all 0.2s;
-    }
-
-    .search-box:focus-within {
-      border-color: var(--accent-mint);
-      background: var(--bg-elevated);
-    }
-
-    .search-box input {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 1rem;
-    }
-
-    .search-box input::placeholder {
-      color: var(--text-muted);
-    }
-
-    .search-icon {
-      color: var(--text-muted);
-      font-size: 18px;
-    }
-
-    /* Category Pills */
-    .categories {
-      display: flex;
-      gap: 8px;
-      padding: 8px 20px 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      flex-shrink: 0;
-    }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
-    .cat-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 16px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--text-muted);
-      background: transparent;
-      color: var(--text-secondary);
-      font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-
-    .cat-pill:hover {
-      border-color: var(--accent-mint);
-      color: var(--accent-mint);
-    }
-
-    .cat-pill.active {
-      background: var(--accent-mint);
-      border-color: var(--accent-mint);
-      color: var(--bg-primary);
-    }
-
-    .cat-pill .emoji {
-      font-size: 1rem;
-    }
-
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 0 16px 120px;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* Problem Cards */
-    .problem-card {
+    .strategy-card {
       background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      margin-bottom: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.03);
-      transition: all 0.3s;
-    }
-
-    .problem-card.expanded {
-      border-color: rgba(255,255,255,0.08);
-    }
-
-    .problem-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .problem-header:active {
-      background: var(--bg-elevated);
-    }
-
-    .problem-emoji {
-      font-size: 1.75rem;
-      flex-shrink: 0;
-    }
-
-    .problem-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .problem-number {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .problem-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .problem-progress {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .progress-ring {
-      width: 36px;
-      height: 36px;
-      position: relative;
-    }
-
-    .progress-ring svg {
-      transform: rotate(-90deg);
-    }
-
-    .progress-ring circle {
-      fill: none;
-      stroke-width: 3;
-    }
-
-    .progress-ring .bg {
-      stroke: var(--bg-elevated);
-    }
-
-    .progress-ring .fill {
-      stroke: var(--accent-mint);
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.4s ease;
-    }
-
-    .progress-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .expand-icon {
-      color: var(--text-muted);
-      transition: transform 0.3s;
-      font-size: 1.25rem;
-    }
-
-    .problem-card.expanded .expand-icon {
-      transform: rotate(180deg);
-    }
-
-    /* Strategies */
-    .strategies-container {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-    }
-
-    .problem-card.expanded .strategies-container {
-      max-height: 1000px;
-    }
-
-    .strategies-list {
-      padding: 0 18px 18px;
-    }
-
-    .strategies-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--card-accent, var(--accent-mint));
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .strategies-label::before {
-      content: '';
-      width: 12px;
-      height: 2px;
-      background: var(--card-accent, var(--accent-mint));
-    }
-
-    .strategy-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 14px;
-      margin-bottom: 8px;
-      background: var(--bg-secondary);
       border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
+      padding: 20px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent-green);
     }
 
-    .strategy-item:last-child {
-      margin-bottom: 0;
+    .strategy-card.secondary {
+      border-left-color: var(--accent-calm);
     }
 
-    .strategy-item:active {
-      transform: scale(0.98);
+    .strategy-card.tertiary {
+      border-left-color: var(--accent-soft);
     }
 
-    .strategy-item.checked {
-      border-color: var(--accent-mint);
-      background: rgba(78, 205, 196, 0.08);
+    .strategy-name {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 6px;
+      color: var(--text-primary);
     }
 
-    .strategy-check {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
-      border: 2px solid var(--card-accent, var(--accent-mint));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      font-size: 14px;
-      color: transparent;
-    }
-
-    .strategy-item.checked .strategy-check {
-      background: var(--card-accent, var(--accent-mint));
-      color: var(--bg-primary);
-    }
-
-    .strategy-text {
-      flex: 1;
+    .strategy-desc {
       font-size: 0.9rem;
       color: var(--text-secondary);
       line-height: 1.5;
     }
 
-    .strategy-text strong {
-      color: var(--text-primary);
-      font-weight: 700;
+    .strategy-action {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--bg-elevated);
     }
 
-    .strategy-item.checked .strategy-text {
-      color: var(--text-primary);
-    }
-
-    /* Bottom Navigation */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: calc(var(--nav-height) + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom);
-      background: var(--bg-secondary);
-      border-top: 1px solid rgba(255,255,255,0.05);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 8px 16px;
-      border: none;
-      background: none;
+    .strategy-action-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .strategy-action-text {
+      font-size: 0.95rem;
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    /* Quick action */
+    .quick-action {
+      background: linear-gradient(135deg, rgba(125, 211, 168, 0.15), rgba(126, 184, 218, 0.15));
+      border: 1px solid rgba(125, 211, 168, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .quick-action-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-green);
+      margin-bottom: 10px;
+    }
+
+    .quick-action-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .quick-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--accent-green);
+      color: var(--bg-deep);
+      border: none;
+      border-radius: var(--radius-full);
       font-family: inherit;
-      font-size: 0.7rem;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .nav-item.active {
-      color: var(--accent-mint);
+    .quick-action-btn:active {
+      transform: scale(0.97);
     }
 
-    .nav-item .nav-icon {
-      font-size: 1.5rem;
-    }
-
-    /* Views */
-    .view {
-      display: none;
-    }
-
-    .view.active {
-      display: block;
-    }
-
-    /* Dashboard View */
-    .dashboard-header {
+    /* Feedback section */
+    .feedback-section {
       text-align: center;
-      padding: 30px 20px;
+      padding: 20px 0;
+      margin-top: auto;
     }
 
-    .dashboard-greeting {
+    .feedback-question {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .feedback-btns {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .feedback-btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--bg-elevated);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feedback-btn:active {
+      transform: scale(0.97);
+    }
+
+    .feedback-btn.positive:active,
+    .feedback-btn.positive.selected {
+      background: rgba(125, 211, 168, 0.15);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+
+    .feedback-btn.negative:active,
+    .feedback-btn.negative.selected {
+      background: rgba(224, 122, 122, 0.15);
+      border-color: var(--accent-coral);
+      color: var(--accent-coral);
+    }
+
+    /* Insights Screen */
+    .insights-screen {
+      padding: 20px;
+    }
+
+    .insights-header {
+      margin-bottom: 30px;
+    }
+
+    .insights-title {
       font-size: 1.5rem;
       font-weight: 800;
       margin-bottom: 8px;
     }
 
-    .dashboard-date {
-      color: var(--text-muted);
-      font-size: 0.9rem;
+    .insights-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
     }
 
-    .big-progress {
-      width: 160px;
-      height: 160px;
-      margin: 20px auto;
-      position: relative;
-    }
-
-    .big-progress svg {
-      transform: rotate(-90deg);
-    }
-
-    .big-progress circle {
-      fill: none;
-      stroke-width: 8;
-    }
-
-    .big-progress .bg {
-      stroke: var(--bg-elevated);
-    }
-
-    .big-progress .fill {
-      stroke: url(#gradient);
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.6s ease;
-    }
-
-    .big-progress-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-
-    .big-progress-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .big-progress-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .weekly-goal {
+    .insight-card {
       background: var(--bg-card);
       border-radius: var(--radius-lg);
-      padding: 20px;
-      margin: 20px 0;
+      padding: 24px;
+      margin-bottom: 16px;
     }
 
-    .weekly-goal h3 {
-      font-size: 1rem;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .goal-progress {
-      height: 8px;
-      background: var(--bg-elevated);
-      border-radius: var(--radius-full);
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .goal-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-mint), var(--accent-purple));
-      border-radius: var(--radius-full);
-      transition: width 0.4s ease;
-    }
-
-    .goal-text {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-
-    .recent-section {
-      margin-top: 24px;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .recent-item {
+    .insight-card-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 14px;
-      background: var(--bg-card);
-      border-radius: var(--radius-md);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
-    .recent-emoji {
+    .insight-card-emoji {
       font-size: 1.5rem;
     }
 
-    .recent-info {
-      flex: 1;
-    }
-
-    .recent-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .recent-time {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* Settings View */
-    .settings-section {
-      margin-bottom: 24px;
-    }
-
-    .settings-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-      padding: 0 4px;
-    }
-
-    .settings-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-
-    .settings-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.03);
-    }
-
-    .settings-item:last-child {
-      border-bottom: none;
-    }
-
-    .settings-item-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .settings-icon {
-      font-size: 1.25rem;
-    }
-
-    .settings-label {
-      font-weight: 600;
-    }
-
-    .settings-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* Toggle Switch */
-    .toggle {
-      width: 52px;
-      height: 28px;
-      background: var(--bg-elevated);
-      border-radius: var(--radius-full);
-      position: relative;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .toggle.active {
-      background: var(--accent-mint);
-    }
-
-    .toggle::after {
-      content: '';
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      background: white;
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: transform 0.3s;
-    }
-
-    .toggle.active::after {
-      transform: translateX(24px);
-    }
-
-    /* Action Button */
-    .action-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: var(--radius-lg);
-      font-family: inherit;
-      font-size: 1rem;
+    .insight-card-title {
       font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
+      font-size: 1rem;
     }
 
-    .action-btn.primary {
-      background: linear-gradient(135deg, var(--accent-mint), var(--accent-blue));
-      color: var(--bg-primary);
-    }
-
-    .action-btn.secondary {
-      background: var(--bg-card);
-      color: var(--text-primary);
-    }
-
-    .action-btn.danger {
-      background: rgba(255, 107, 107, 0.1);
-      color: var(--accent-coral);
-    }
-
-    .action-btn:active {
-      transform: scale(0.98);
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-      padding: 14px 24px;
-      border-radius: var(--radius-full);
-      font-weight: 600;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .toast.success {
-      background: var(--accent-mint);
-      color: var(--bg-primary);
-    }
-
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 300;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-    }
-
-    .modal-overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 360px;
-      padding: 24px;
-      transform: scale(0.9);
-      transition: transform 0.3s;
-    }
-
-    .modal-overlay.show .modal {
-      transform: scale(1);
-    }
-
-    .modal h3 {
-      font-size: 1.25rem;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .modal p {
+    .insight-card-content {
+      font-size: 0.95rem;
       color: var(--text-secondary);
-      margin-bottom: 20px;
       line-height: 1.6;
     }
 
-    .modal-actions {
-      display: flex;
-      gap: 12px;
+    .insight-highlight {
+      color: var(--accent-calm);
+      font-weight: 600;
     }
 
-    .modal-actions .action-btn {
+    .pattern-tag {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* History Screen */
+    .history-screen {
+      padding: 20px;
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .history-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .history-item {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .history-item-emoji {
+      font-size: 1.75rem;
+    }
+
+    .history-item-content {
       flex: 1;
+    }
+
+    .history-item-feeling {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .history-item-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .history-item-intensity {
+      display: flex;
+      gap: 3px;
+    }
+
+    .intensity-mini-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: var(--bg-elevated);
+    }
+
+    .intensity-mini-dot.filled {
+      background: var(--accent-warm);
     }
 
     /* Empty State */
@@ -880,1051 +711,937 @@
 
     .empty-state .emoji {
       font-size: 4rem;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .empty-state h3 {
-      font-size: 1.25rem;
-      margin-bottom: 8px;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
     }
 
     .empty-state p {
       color: var(--text-muted);
+      font-size: 0.95rem;
     }
 
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .problem-card {
-      animation: fadeIn 0.4s ease backwards;
-    }
-
-    .problem-card:nth-child(1) { animation-delay: 0.05s; }
-    .problem-card:nth-child(2) { animation-delay: 0.1s; }
-    .problem-card:nth-child(3) { animation-delay: 0.15s; }
-    .problem-card:nth-child(4) { animation-delay: 0.2s; }
-    .problem-card:nth-child(5) { animation-delay: 0.25s; }
-
-    /* Scrollbar */
-    .main-content::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .main-content::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .main-content::-webkit-scrollbar-thumb {
-      background: var(--text-muted);
-      border-radius: 2px;
-    }
-
-    /* Color themes for cards */
-    .theme-purple { --card-accent: var(--accent-purple); }
-    .theme-pink { --card-accent: var(--accent-pink); }
-    .theme-coral { --card-accent: var(--accent-coral); }
-    .theme-mint { --card-accent: var(--accent-mint); }
-    .theme-yellow { --card-accent: var(--accent-yellow); }
-    .theme-blue { --card-accent: var(--accent-blue); }
-
-    /* Install prompt */
-    .install-banner {
+    /* Continue Button */
+    .continue-btn {
       position: fixed;
-      bottom: calc(var(--nav-height) + var(--safe-bottom) + 10px);
-      left: 16px;
-      right: 16px;
-      background: linear-gradient(135deg, var(--accent-mint), var(--accent-purple));
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      display: none;
-      align-items: center;
-      gap: 14px;
-      z-index: 150;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    }
-
-    .install-banner.show {
-      display: flex;
-    }
-
-    .install-banner-text {
-      flex: 1;
-      color: var(--bg-primary);
-    }
-
-    .install-banner-text strong {
-      display: block;
-      font-size: 1rem;
-    }
-
-    .install-banner-text span {
-      font-size: 0.85rem;
-      opacity: 0.9;
-    }
-
-    .install-banner button {
-      padding: 10px 20px;
+      bottom: calc(var(--safe-bottom) + 20px);
+      left: 20px;
+      right: 20px;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--accent-calm), var(--accent-soft));
+      color: var(--bg-deep);
       border: none;
-      border-radius: var(--radius-full);
-      background: var(--bg-primary);
-      color: var(--text-primary);
+      border-radius: var(--radius-lg);
       font-family: inherit;
+      font-size: 1.1rem;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+      z-index: 100;
     }
 
-    .install-close {
-      width: 32px;
-      height: 32px;
-      border: none;
+    .continue-btn.show {
+      display: block;
+    }
+
+    .continue-btn:active {
+      transform: scale(0.98);
+    }
+
+    .continue-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      padding: 16px 28px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Notes input */
+    .notes-section {
+      margin-top: 24px;
+    }
+
+    .notes-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .notes-input {
+      width: 100%;
+      padding: 16px;
+      background: var(--bg-input);
+      border: 2px solid var(--bg-elevated);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 1rem;
+      resize: none;
+      min-height: 100px;
+      transition: border-color 0.2s;
+    }
+
+    .notes-input:focus {
+      outline: none;
+      border-color: var(--accent-calm);
+    }
+
+    .notes-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Close button for response */
+    .close-btn {
+      position: fixed;
+      top: calc(var(--safe-top) + 16px);
+      right: 20px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: rgba(0,0,0,0.2);
-      color: var(--bg-primary);
-      font-size: 1.25rem;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 1.5rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 100;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.5s ease backwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    /* Scrollbar */
+    .screen::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .screen::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .screen::-webkit-scrollbar-thumb {
+      background: var(--text-muted);
+      border-radius: 2px;
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- Header -->
-    <header class="header">
-      <div class="header-top">
-        <div class="logo">
-          <div class="logo-icon">🧠</div>
-          <span class="logo-text">ADHD Toolkit</span>
+    
+    <!-- HOME SCREEN -->
+    <div class="screen active" id="homeScreen">
+      <div class="home-screen">
+        <p class="home-greeting" id="greeting">Ciao</p>
+        <h1 class="home-question">Come stai<br>in questo momento?</h1>
+        
+        <button class="home-main-btn" onclick="startFlow()">
+          <span class="icon">💭</span>
+          <span>Ho bisogno<br>di aiuto</span>
+        </button>
+        
+        <div class="home-secondary">
+          <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
+          <button class="home-sec-btn" onclick="showScreen('historyScreen')">📝 Storico</button>
         </div>
-        <div class="header-actions">
-          <button class="icon-btn" onclick="showView('settings')" aria-label="Impostazioni">⚙️</button>
-        </div>
-      </div>
-      <div class="stats-bar">
-        <div class="stat-chip">
-          <span class="stat-icon">✅</span>
-          <span class="stat-value" id="checkedCount">0</span>
-          <span class="stat-label">provate</span>
-        </div>
-        <div class="stat-chip">
-          <span class="stat-icon">🎯</span>
-          <span class="stat-value" id="totalStrategies">76</span>
-          <span class="stat-label">strategie</span>
-        </div>
-        <div class="stat-chip">
-          <span class="stat-icon">📊</span>
-          <span class="stat-value" id="percentComplete">0%</span>
-          <span class="stat-label">completato</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Search -->
-    <div class="search-container" id="searchContainer">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Cerca problema o strategia..." oninput="handleSearch(this.value)">
       </div>
     </div>
 
-    <!-- Categories -->
-    <div class="categories" id="categoriesContainer">
-      <button class="cat-pill active" data-cat="all" onclick="filterCategory('all')">
-        <span class="emoji">📋</span> Tutti
-      </button>
-      <button class="cat-pill" data-cat="pensiero" onclick="filterCategory('pensiero')">
-        <span class="emoji">🧠</span> Pensiero
-      </button>
-      <button class="cat-pill" data-cat="emozioni" onclick="filterCategory('emozioni')">
-        <span class="emoji">💜</span> Emozioni
-      </button>
-      <button class="cat-pill" data-cat="azione" onclick="filterCategory('azione')">
-        <span class="emoji">🚀</span> Azione
-      </button>
-      <button class="cat-pill" data-cat="organizzazione" onclick="filterCategory('organizzazione')">
-        <span class="emoji">📋</span> Organizzazione
-      </button>
-      <button class="cat-pill" data-cat="energia" onclick="filterCategory('energia')">
-        <span class="emoji">⚡</span> Energia
-      </button>
+    <!-- FLOW: FEELING SCREEN -->
+    <div class="screen" id="feelingScreen">
+      <div class="flow-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="goBack()">←</button>
+          <div class="flow-progress">
+            <div class="flow-progress-fill" style="width: 33%"></div>
+          </div>
+          <span class="flow-step">1/3</span>
+        </div>
+
+        <h2 class="flow-question animate-in">Come ti senti?</h2>
+        <p class="flow-subtitle animate-in delay-1">Scegli quello che descrive meglio questo momento</p>
+
+        <div class="options-grid" id="feelingsGrid">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="intensity-section" id="intensitySection" style="display:none">
+          <div class="intensity-label">
+            <span>Quanto è forte questa sensazione?</span>
+            <span class="intensity-value" id="intensityValue">3</span>
+          </div>
+          <div class="intensity-bar">
+            <div class="intensity-dot" data-value="1" onclick="setIntensity(1)">1</div>
+            <div class="intensity-dot" data-value="2" onclick="setIntensity(2)">2</div>
+            <div class="intensity-dot selected" data-value="3" onclick="setIntensity(3)">3</div>
+            <div class="intensity-dot" data-value="4" onclick="setIntensity(4)">4</div>
+            <div class="intensity-dot" data-value="5" onclick="setIntensity(5)">5</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="continue-btn" id="feelingContinue" onclick="goToTrigger()">Continua →</button>
     </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Problems View -->
-      <div class="view active" id="problemsView">
-        <div id="problemsList"></div>
-      </div>
-
-      <!-- Dashboard View -->
-      <div class="view" id="dashboardView">
-        <div class="dashboard-header">
-          <h2 class="dashboard-greeting" id="greeting">Ciao!</h2>
-          <p class="dashboard-date" id="currentDate"></p>
-        </div>
-
-        <div class="big-progress">
-          <svg width="160" height="160">
-            <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:var(--accent-mint)"/>
-                <stop offset="100%" style="stop-color:var(--accent-purple)"/>
-              </linearGradient>
-            </defs>
-            <circle class="bg" cx="80" cy="80" r="70"/>
-            <circle class="fill" id="bigProgressCircle" cx="80" cy="80" r="70" 
-              stroke-dasharray="439.8" stroke-dashoffset="439.8"/>
-          </svg>
-          <div class="big-progress-text">
-            <div class="big-progress-value" id="bigProgressValue">0%</div>
-            <div class="big-progress-label">completato</div>
+    <!-- FLOW: TRIGGER SCREEN -->
+    <div class="screen" id="triggerScreen">
+      <div class="flow-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="goBack()">←</button>
+          <div class="flow-progress">
+            <div class="flow-progress-fill" style="width: 66%"></div>
           </div>
+          <span class="flow-step">2/3</span>
         </div>
 
-        <div class="weekly-goal">
-          <h3>🎯 Obiettivo settimanale</h3>
-          <div class="goal-progress">
-            <div class="goal-progress-fill" id="weeklyGoalFill" style="width: 0%"></div>
-          </div>
-          <p class="goal-text" id="weeklyGoalText">Prova 5 nuove strategie questa settimana</p>
+        <h2 class="flow-question animate-in">Cosa stava succedendo?</h2>
+        <p class="flow-subtitle animate-in delay-1">Cosa pensi abbia scatenato questa sensazione?</p>
+
+        <div class="triggers-list" id="triggersList">
+          <!-- Populated by JS -->
         </div>
 
-        <div class="recent-section">
-          <h3 class="section-title">⏱️ Attività recente</h3>
-          <div id="recentActivity"></div>
+        <div class="notes-section animate-in delay-3">
+          <p class="notes-label">Vuoi aggiungere qualcosa? (opzionale)</p>
+          <textarea class="notes-input" id="notesInput" placeholder="Descrivi la situazione..."></textarea>
         </div>
       </div>
 
-      <!-- Settings View -->
-      <div class="view" id="settingsView">
-        <div class="settings-section">
-          <h3 class="settings-title">Aspetto</h3>
-          <div class="settings-card">
-            <div class="settings-item">
-              <div class="settings-item-left">
-                <span class="settings-icon">🌙</span>
-                <div>
-                  <div class="settings-label">Tema scuro</div>
-                  <div class="settings-desc">Sempre attivo</div>
-                </div>
-              </div>
-              <div class="toggle active"></div>
-            </div>
-          </div>
+      <button class="continue-btn" id="triggerContinue" onclick="generateResponse()">Dammi una mano →</button>
+    </div>
+
+    <!-- RESPONSE SCREEN -->
+    <div class="screen" id="responseScreen">
+      <button class="close-btn" onclick="finishAndGoHome()">×</button>
+      
+      <div class="response-screen">
+        <div class="response-header animate-in">
+          <div class="response-emoji" id="responseEmoji">🤗</div>
+          <h2 class="response-title">Capisco, ti senti <span class="response-feeling" id="responseFeelingText">bloccato</span></h2>
         </div>
 
-        <div class="settings-section">
-          <h3 class="settings-title">Dati</h3>
-          <div class="settings-card">
-            <div class="settings-item" onclick="exportData()">
-              <div class="settings-item-left">
-                <span class="settings-icon">📤</span>
-                <div>
-                  <div class="settings-label">Esporta progressi</div>
-                  <div class="settings-desc">Salva un backup dei tuoi dati</div>
-                </div>
-              </div>
-              <span>→</span>
-            </div>
-            <div class="settings-item" onclick="document.getElementById('importInput').click()">
-              <div class="settings-item-left">
-                <span class="settings-icon">📥</span>
-                <div>
-                  <div class="settings-label">Importa progressi</div>
-                  <div class="settings-desc">Ripristina da un backup</div>
-                </div>
-              </div>
-              <span>→</span>
-            </div>
-            <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
-          </div>
+        <div class="understanding-card animate-in delay-1" id="understandingCard">
+          <div class="understanding-title">💡 Cosa sta succedendo</div>
+          <p class="understanding-text" id="understandingText">
+            <!-- Populated by JS -->
+          </p>
         </div>
 
-        <div class="settings-section">
-          <h3 class="settings-title">Reset</h3>
-          <button class="action-btn danger" onclick="showResetModal()">
-            🗑️ Azzera tutti i progressi
+        <div class="quick-action animate-in delay-2" id="quickAction">
+          <div class="quick-action-label">✨ Prova subito</div>
+          <p class="quick-action-text" id="quickActionText">
+            <!-- Populated by JS -->
+          </p>
+          <button class="quick-action-btn" id="quickActionBtn" onclick="markQuickActionDone()">
+            <span>Ce la faccio</span> 💪
           </button>
         </div>
 
-        <div class="settings-section">
-          <h3 class="settings-title">Info</h3>
-          <div class="settings-card">
-            <div class="settings-item">
-              <div class="settings-item-left">
-                <span class="settings-icon">📱</span>
-                <div>
-                  <div class="settings-label">ADHD Toolkit</div>
-                  <div class="settings-desc">Versione 1.0.0</div>
-                </div>
-              </div>
-            </div>
+        <div class="strategies-section animate-in delay-3">
+          <h3 class="strategies-title">🛠️ Strategie che possono aiutarti</h3>
+          <div id="strategiesList">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="feedback-section animate-in delay-4">
+          <p class="feedback-question">Questo ti è stato utile?</p>
+          <div class="feedback-btns">
+            <button class="feedback-btn positive" onclick="giveFeedback(true)">👍 Sì</button>
+            <button class="feedback-btn negative" onclick="giveFeedback(false)">👎 No</button>
           </div>
         </div>
       </div>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <button class="nav-item active" onclick="showView('problems')" data-view="problems">
-        <span class="nav-icon">📋</span>
-        <span>Strategie</span>
-      </button>
-      <button class="nav-item" onclick="showView('dashboard')" data-view="dashboard">
-        <span class="nav-icon">📊</span>
-        <span>Progressi</span>
-      </button>
-      <button class="nav-item" onclick="showView('settings')" data-view="settings">
-        <span class="nav-icon">⚙️</span>
-        <span>Opzioni</span>
-      </button>
-    </nav>
-
-    <!-- Install Banner -->
-    <div class="install-banner" id="installBanner">
-      <div class="install-banner-text">
-        <strong>Installa l'app</strong>
-        <span>Accedi offline, sempre a portata di mano</span>
-      </div>
-      <button onclick="installApp()">Installa</button>
-      <button class="install-close" onclick="hideInstallBanner()">×</button>
     </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <!-- INSIGHTS SCREEN -->
+    <div class="screen" id="insightsScreen">
+      <div class="insights-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
 
-    <!-- Reset Modal -->
-    <div class="modal-overlay" id="resetModal">
-      <div class="modal">
-        <h3>⚠️ Sei sicuro?</h3>
-        <p>Questa azione cancellerà tutti i tuoi progressi. Non potrai recuperarli.</p>
-        <div class="modal-actions">
-          <button class="action-btn secondary" onclick="hideResetModal()">Annulla</button>
-          <button class="action-btn danger" onclick="resetAllData()">Elimina tutto</button>
+        <div class="insights-header">
+          <h1 class="insights-title">I tuoi pattern</h1>
+          <p class="insights-subtitle">Cosa abbiamo imparato insieme</p>
+        </div>
+
+        <div id="insightsContent">
+          <!-- Populated by JS -->
         </div>
       </div>
     </div>
+
+    <!-- HISTORY SCREEN -->
+    <div class="screen" id="historyScreen">
+      <div class="history-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+
+        <div class="history-header">
+          <h1 class="history-title">Storico</h1>
+        </div>
+
+        <div id="historyContent">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
   </div>
 
   <script>
-    // Data
-    const problems = [
-      {
-        id: 1, num: '#1', emoji: '🏆', title: 'Svaluto ogni traguardo',
-        category: 'pensiero', theme: 'theme-purple',
-        strategies: [
-          { id: 's1-1', text: '<strong>Registro dei successi:</strong> annota anche le piccole vittorie giornaliere' },
-          { id: 's1-2', text: '<strong>Obiettivi realistici:</strong> confronta le aspettative con traguardi concordati col terapeuta' },
-          { id: 's1-3', text: '<strong>Self-compassion:</strong> parlati come parleresti a un amico' },
-          { id: 's1-4', text: '<strong>Feedback esterno:</strong> chiedi a una persona fidata di ancorare la tua percezione' }
-        ]
-      },
-      {
-        id: 2, num: '#2', emoji: '🔍', title: 'Ingrandisco gli errori',
-        category: 'pensiero', theme: 'theme-purple',
-        strategies: [
-          { id: 's2-1', text: '<strong>Fatto vs interpretazione:</strong> distingui cosa è accaduto da cosa immagini' },
-          { id: 's2-2', text: '<strong>Test di realtà:</strong> "Che prova ho che accadrà il peggio?"' },
-          { id: 's2-3', text: '<strong>Worry time:</strong> 10 minuti per preoccuparti, poi stop' },
-          { id: 's2-4', text: '<strong>Valida e ricalibra:</strong> accogli l\'emozione, poi agisci con lucidità' }
-        ]
-      },
-      {
-        id: 3, num: '#3', emoji: '🌧️', title: 'Vedo solo il negativo',
-        category: 'pensiero', theme: 'theme-purple',
-        strategies: [
-          { id: 's3-1', text: '<strong>Gratitudine strutturata:</strong> 3 cose positive al giorno, scritte' },
-          { id: 's3-2', text: '<strong>Contenitore delle vittorie:</strong> raccolta digitale o fisica dei successi' },
-          { id: 's3-3', text: '<strong>Lavoro col terapeuta:</strong> sviluppare pensiero più equilibrato' },
-          { id: 's3-4', text: '<strong>Regola 50/50:</strong> per ogni critica, trova 2 elementi positivi reali' }
-        ]
-      },
-      {
-        id: 4, num: '#4', emoji: '🧠', title: 'Sottovaluto la fatica mentale',
-        category: 'energia', theme: 'theme-yellow',
-        strategies: [
-          { id: 's4-1', text: '<strong>Pause obbligatorie:</strong> pianificale tra una task e l\'altra' },
-          { id: 's4-2', text: '<strong>Timer a blocchi:</strong> Pomodoro o varianti più flessibili' },
-          { id: 's4-3', text: '<strong>Normalizza col terapeuta:</strong> l\'ADHD richiede più energia' },
-          { id: 's4-4', text: '<strong>Delega o semplifica:</strong> riduci le attività non prioritarie' }
-        ]
-      },
-      {
-        id: 5, num: '#5', emoji: '⚫', title: 'Pensiero tutto o niente',
-        category: 'pensiero', theme: 'theme-purple',
-        strategies: [
-          { id: 's5-1', text: '<strong>Primo passo minuscolo:</strong> suddividi fino all\'azione più piccola' },
-          { id: 's5-2', text: '<strong>"Basta che sia fatto":</strong> accetta l\'imperfetto al posto del perfetto' },
-          { id: 's5-3', text: '<strong>Premia l\'avvio:</strong> celebra l\'inizio, non solo il completamento' },
-          { id: 's5-4', text: '<strong>Esposizione graduale:</strong> abituati a imperfezioni controllate' }
-        ]
-      },
-      {
-        id: 6, num: '#6', emoji: '🔮', title: 'Rimando al futuro ideale',
-        category: 'azione', theme: 'theme-coral',
-        strategies: [
-          { id: 's6-1', text: '<strong>Adesso per 2 minuti:</strong> inizia per un tempo minimo' },
-          { id: 's6-2', text: '<strong>Micro-task immediate:</strong> non piani ideali, azioni concrete' },
-          { id: 's6-3', text: '<strong>Sostituisci la frase:</strong> "oggi X minuti" invece di "quando avrò tempo"' },
-          { id: 's6-4', text: '<strong>Analisi con terapeuta:</strong> esplora gli schemi di evitamento' }
-        ]
-      },
-      {
-        id: 7, num: '#7', emoji: '📊', title: 'Valore = produttività',
-        category: 'pensiero', theme: 'theme-purple',
-        strategies: [
-          { id: 's7-1', text: '<strong>Metriche alternative:</strong> relazioni, benessere, apprendimento contano' },
-          { id: 's7-2', text: '<strong>Giorni senza obiettivi:</strong> normalizza il riposo programmato' },
-          { id: 's7-3', text: '<strong>Riformulazione:</strong> identifica frasi automatiche svalutanti e cambiale' },
-          { id: 's7-4', text: '<strong>Monitoraggio carico:</strong> previeni il burnout controllando il volume' }
-        ]
-      },
-      {
-        id: 8, num: '#8', emoji: '🌊', title: 'Emozioni = verità',
-        category: 'emozioni', theme: 'theme-pink',
-        strategies: [
-          { id: 's8-1', text: '<strong>Diario emotivo:</strong> riconosci che le emozioni sono temporanee' },
-          { id: 's8-2', text: '<strong>Regola delle 24h:</strong> niente decisioni importanti sotto emozione intensa' },
-          { id: 's8-3', text: '<strong>Grounding sensoriale:</strong> àncora al presente quando l\'emotività sale' },
-          { id: 's8-4', text: '<strong>Confronto coi fatti:</strong> separa percezione da realtà oggettiva' }
-        ]
-      },
-      {
-        id: 9, num: '#9', emoji: '🌙', title: 'Pensieri che non fanno dormire',
-        category: 'emozioni', theme: 'theme-pink',
-        strategies: [
-          { id: 's9-1', text: '<strong>Routine a scaletta:</strong> luci basse, niente schermi, attività calmanti' },
-          { id: 's9-2', text: '<strong>Quaderno scarica-pensieri:</strong> scrivi per "postporre" la mente' },
-          { id: 's9-3', text: '<strong>Respirazione/rilassamento:</strong> tecniche guidate per calmare' },
-          { id: 's9-4', text: '<strong>Decompressione:</strong> rituali almeno 1 ora prima di dormire' }
-        ]
-      },
-      {
-        id: 10, num: '#10', emoji: '🚧', title: 'Difficoltà a iniziare',
-        category: 'azione', theme: 'theme-coral',
-        strategies: [
-          { id: 's10-1', text: '<strong>Prepara in anticipo:</strong> riduci le barriere iniziali' },
-          { id: 's10-2', text: '<strong>Body doubling:</strong> avvia il compito insieme a qualcuno' },
-          { id: 's10-3', text: '<strong>Micro-obiettivi visibili:</strong> check-box che puoi barrare' },
-          { id: 's10-4', text: '<strong>Elimina il superfluo:</strong> togli i passaggi che rallentano' }
-        ]
-      },
-      {
-        id: 11, num: '#11', emoji: '🔥', title: 'Hyperfocus sbagliato',
-        category: 'azione', theme: 'theme-coral',
-        strategies: [
-          { id: 's11-1', text: '<strong>3 priorità non negoziabili:</strong> definiscile ogni mattina' },
-          { id: 's11-2', text: '<strong>Timer con allarmi:</strong> esci dai loop di hyperfocus' },
-          { id: 's11-3', text: '<strong>Ambiente povero di distrazioni:</strong> riduci le tentazioni' },
-          { id: 's11-4', text: '<strong>Check a metà giornata:</strong> rivedi la pianificazione' }
-        ]
-      },
-      {
-        id: 12, num: '#12', emoji: '🧱', title: 'Evito il compito che blocca',
-        category: 'azione', theme: 'theme-coral',
-        strategies: [
-          { id: 's12-1', text: '<strong>Identifica la paura:</strong> tempo? competenza? rischio errore?' },
-          { id: 's12-2', text: '<strong>Azione da 30 secondi:</strong> trasforma il compito nel primo micro-passo' },
-          { id: 's12-3', text: '<strong>Supporto sociale:</strong> messaggio, check-in, coworking' },
-          { id: 's12-4', text: '<strong>Premia il solo avvio:</strong> iniziare è già un successo' }
-        ]
-      },
-      {
-        id: 13, num: '#13', emoji: '📡', title: 'Troppi stimoli = tilt',
-        category: 'energia', theme: 'theme-yellow',
-        strategies: [
-          { id: 's13-1', text: '<strong>Riduci input:</strong> cuffie, notifiche off, meno stimoli visivi' },
-          { id: 's13-2', text: '<strong>Blocchi protetti:</strong> periodi senza interruzioni' },
-          { id: 's13-3', text: '<strong>Decompressione sensoriale:</strong> pause in ambienti calmi' },
-          { id: 's13-4', text: '<strong>Identifica i trigger:</strong> quali stimoli ti attivano di più?' }
-        ]
-      },
-      {
-        id: 14, num: '#14', emoji: '🤯', title: 'Ogni decisione è un peso',
-        category: 'azione', theme: 'theme-coral',
-        strategies: [
-          { id: 's14-1', text: '<strong>Automatizza:</strong> meal prep, outfit predefiniti, routine fisse' },
-          { id: 's14-2', text: '<strong>Menu limitato:</strong> max 3 opzioni per evitare overload' },
-          { id: 's14-3', text: '<strong>Regola dei 60 secondi:</strong> decidi subito per le cose minori' },
-          { id: 's14-4', text: '<strong>Schemi pronti:</strong> template decisionali per situazioni ricorrenti' }
-        ]
-      },
-      {
-        id: 15, num: '#15', emoji: '💔', title: 'Bassa autostima',
-        category: 'emozioni', theme: 'theme-pink',
-        strategies: [
-          { id: 's15-1', text: '<strong>Terapia cognitiva:</strong> lavora sugli schemi di autosvalutazione' },
-          { id: 's15-2', text: '<strong>Traccia i progressi:</strong> vedere miglioramenti concreti aiuta' },
-          { id: 's15-3', text: '<strong>Autostima basata sui valori:</strong> non sulle prestazioni' },
-          { id: 's15-4', text: '<strong>Accetta la vulnerabilità:</strong> non è sinonimo di fallimento' }
-        ]
-      },
-      {
-        id: 16, num: '#16', emoji: '💼', title: 'Problemi di lavoro',
-        category: 'organizzazione', theme: 'theme-mint',
-        strategies: [
-          { id: 's16-1', text: '<strong>Pianificazione visiva:</strong> calendario a parete, lavagna, app dedicate' },
-          { id: 's16-2', text: '<strong>Review settimanale:</strong> rivedi le priorità ogni settimana' },
-          { id: 's16-3', text: '<strong>Routine fisse:</strong> crea abitudini per compiti ripetitivi' },
-          { id: 's16-4', text: '<strong>Una cosa alla volta:</strong> riduci il multitasking al minimo' }
-        ]
-      },
-      {
-        id: 17, num: '#17', emoji: '⚡', title: 'Ansia e impulsività',
-        category: 'emozioni', theme: 'theme-pink',
-        strategies: [
-          { id: 's17-1', text: '<strong>Regolazione emotiva:</strong> respiro, grounding, mindfulness' },
-          { id: 's17-2', text: '<strong>Pause frequenti:</strong> strutturale per evitare sovraccarico' },
-          { id: 's17-3', text: '<strong>Mappa i trigger:</strong> monitora cosa scatena l\'impulsività' },
-          { id: 's17-4', text: '<strong>Ritmi sostenibili:</strong> gestisci energia, non solo tempo' }
-        ]
-      },
-      {
-        id: 18, num: '#18', emoji: '📅', title: 'Gestire le scadenze',
-        category: 'organizzazione', theme: 'theme-mint',
-        strategies: [
-          { id: 's18-1', text: '<strong>Scadenze visibili:</strong> board, app con notifiche multiple, reminder vocali' },
-          { id: 's18-2', text: '<strong>Tappe intermedie:</strong> scomponi ogni scadenza in milestone' },
-          { id: 's18-3', text: '<strong>Review giornaliera:</strong> rivedi le priorità ogni giorno' },
-          { id: 's18-4', text: '<strong>Timeline visiva:</strong> strumenti che mostrano la linea temporale' }
-        ]
-      },
-      {
-        id: 19, num: '#19', emoji: '👁️', title: 'Fuori vista = fuori mente',
-        category: 'organizzazione', theme: 'theme-mint',
-        strategies: [
-          { id: 's19-1', text: '<strong>Sistemi visivi:</strong> post-it, kanban, oggetti in vista permanente' },
-          { id: 's19-2', text: '<strong>Contenitori dedicati:</strong> posti fissi per oggetti critici' },
-          { id: 's19-3', text: '<strong>Notifiche ripetute:</strong> promemoria multipli programmati' },
-          { id: 's19-4', text: '<strong>Niente cassetti chiusi:</strong> evita di riporre cose importanti dove non le vedi' }
-        ]
-      }
+    // ===================== DATA =====================
+    const feelings = [
+      { id: 'blocked', emoji: '😶', label: 'Bloccato', desc: 'Non riesco a partire' },
+      { id: 'frustrated', emoji: '😤', label: 'Frustrato', desc: 'Tutto mi irrita' },
+      { id: 'overwhelmed', emoji: '🌀', label: 'Sovraccarico', desc: 'Troppe cose' },
+      { id: 'down', emoji: '😔', label: 'Giù', desc: 'Non ne vale la pena' },
+      { id: 'anxious', emoji: '😰', label: 'Ansioso', desc: 'Paura di sbagliare' },
+      { id: 'drained', emoji: '🥱', label: 'Svuotato', desc: 'Zero energia' }
     ];
 
-    // State
-    let checkedStrategies = new Set();
-    let recentActivity = [];
-    let currentCategory = 'all';
-    let searchQuery = '';
-    let deferredPrompt = null;
+    const triggers = [
+      { id: 'big_task', emoji: '📋', label: 'Devo iniziare un compito importante' },
+      { id: 'too_many', emoji: '🗂️', label: 'Troppe cose da fare, non so da dove partire' },
+      { id: 'criticized', emoji: '💬', label: 'Mi hanno criticato o giudicato' },
+      { id: 'mistake', emoji: '❌', label: 'Ho fatto un errore' },
+      { id: 'distracted', emoji: '📱', label: 'Mi sono distratto e ho perso tempo' },
+      { id: 'deadline', emoji: '⏰', label: 'Ho una scadenza vicina' },
+      { id: 'conflict', emoji: '💢', label: 'Ho avuto un conflitto con qualcuno' },
+      { id: 'bored', emoji: '😑', label: 'Noia profonda, niente mi stimola' },
+      { id: 'tired', emoji: '😴', label: 'Sono stanco fisicamente' },
+      { id: 'unknown', emoji: '❓', label: 'Non so, è arrivato così' }
+    ];
 
-    // Initialize
+    // Responses database: feeling + trigger → understanding + strategies
+    const responses = {
+      // BLOCKED
+      'blocked_big_task': {
+        understanding: 'Quando un compito sembra grande, il cervello ADHD va in <strong>paralisi da decisione</strong>. Non è pigrizia: è che il tuo cervello non riesce a spezzare il compito in passi gestibili e si blocca.',
+        quickAction: 'Scrivi solo la PRIMA micro-azione. Non tutto il piano, solo il primo passo fisico. "Aprire il documento" o "Prendere il telefono".',
+        strategies: [
+          { name: 'Regola dei 2 minuti', desc: 'Prometti a te stesso solo 2 minuti. Non di finire, solo di iniziare. Spesso basta questo per sbloccarsi.', action: 'Imposta un timer per 2 minuti e inizia' },
+          { name: 'Body doubling', desc: 'Lavora accanto a qualcuno (anche in videocall). La presenza di altri riduce la resistenza.', action: 'Chiama un amico o usa un video "study with me"' },
+          { name: 'Rimuovi un passaggio', desc: 'Qual è il passaggio che ti blocca di più? Eliminalo o semplificalo drasticamente.', action: 'Identifica l\'ostacolo e bypassalo' }
+        ]
+      },
+      'blocked_too_many': {
+        understanding: 'Con troppe opzioni, il cervello ADHD si <strong>sovraccarica</strong>. Non sai da dove partire perché tutto sembra urgente e importante allo stesso tempo.',
+        quickAction: 'Scegli UNA cosa sola. Non la più importante, quella che riesci a fare ORA. Il resto non esiste per i prossimi 25 minuti.',
+        strategies: [
+          { name: 'Brain dump + 1', desc: 'Scrivi tutto quello che hai in testa su carta. Poi cerchia UNA sola cosa e ignora il resto.', action: 'Prendi carta e penna, svuota la mente' },
+          { name: 'La regola dei 3', desc: 'Oggi puoi fare al massimo 3 cose importanti. Sceglile ora e lascia perdere il resto.', action: 'Scrivi le tue 3 priorità di oggi' },
+          { name: 'Domanda magica', desc: '"Se potessi fare solo UNA cosa oggi, quale farebbe la differenza maggiore?"', action: 'Rispondi onestamente e parti da lì' }
+        ]
+      },
+      'blocked_deadline': {
+        understanding: 'Le scadenze vicine possono creare <strong>panico paralizzante</strong>. L\'urgenza non ti motiva, ti blocca ancora di più perché aumenta la pressione.',
+        quickAction: 'Fermati. Respira. Hai più tempo di quanto pensi. Qual è il minimo accettabile che puoi consegnare?',
+        strategies: [
+          { name: 'Abbassa lo standard', desc: 'Non deve essere perfetto, deve essere fatto. "Fatto" batte "perfetto" sempre.', action: 'Chiediti: qual è il 70% accettabile?' },
+          { name: 'Spezza la scadenza', desc: 'Crea 3-4 mini-scadenze da qui a quella vera. Rende tutto più gestibile.', action: 'Dividi il lavoro in blocchi con orari' },
+          { name: 'Comunica', desc: 'Se sei davvero in difficoltà, meglio avvisare prima che dopo. Spesso si trova una soluzione.', action: 'Scrivi un messaggio onesto a chi aspetta' }
+        ]
+      },
+
+      // FRUSTRATED
+      'frustrated_criticized': {
+        understanding: 'La <strong>sensibilità al rifiuto</strong> (RSD) è comune con l\'ADHD. Una critica che per altri è un feedback, per te può sembrare un attacco personale devastante.',
+        quickAction: 'Quello che senti è reale, ma potrebbe non essere proporzionato. Aspetta 30 minuti prima di reagire.',
+        strategies: [
+          { name: 'Fatto vs Interpretazione', desc: 'Scrivi: cosa è stato DETTO esattamente? Cosa sto INTERPRETANDO io? Spesso sono molto diversi.', action: 'Separa i fatti dalle tue conclusioni' },
+          { name: 'Il test del tempo', desc: 'Tra una settimana questo sembrerà ancora così grave? Di solito no.', action: 'Immagina te stesso tra 7 giorni' },
+          { name: 'Parla come a un amico', desc: 'Se un amico ricevesse questa critica, cosa gli diresti? Dillo a te stesso.', action: 'Sii gentile con te' }
+        ]
+      },
+      'frustrated_mistake': {
+        understanding: 'Gli errori attivano il <strong>critico interiore</strong> che è spesso spietato con chi ha ADHD. Tendi a trasformare un errore in una conferma di non essere "abbastanza".',
+        quickAction: 'Un errore è un dato, non un verdetto su chi sei. Cosa puoi imparare? E poi lascia andare.',
+        strategies: [
+          { name: 'Zoom out', desc: 'Su 100 cose che fai, quante vanno bene? Gli errori sembrano enormi ma sono una piccola percentuale.', action: 'Elenca 3 cose che hai fatto bene oggi' },
+          { name: 'Normalizza', desc: 'Tutti sbagliano. Letteralmente tutti. L\'errore ti rende umano, non incapace.', action: 'Ricorda un errore di qualcuno che ammiri' },
+          { name: 'Ripara e vai avanti', desc: 'Puoi fare qualcosa per rimediare? Fallo. Non puoi? Allora lascia andare.', action: 'Decidi: riparo o rilascio?' }
+        ]
+      },
+      'frustrated_distracted': {
+        understanding: 'La frustrazione post-distrazione è <strong>doppiamente difficile</strong>: non solo hai perso tempo, ma ora ti senti anche in colpa. È una trappola emotiva.',
+        quickAction: 'Stop. Il tempo perso è perso. L\'unica domanda che conta: cosa faccio ADESSO nei prossimi 15 minuti?',
+        strategies: [
+          { name: 'Reset senza giudizio', desc: 'Dì "ok, è successo" e ricomincia. La colpa non ti fa recuperare tempo.', action: 'Accetta e riparte da zero' },
+          { name: 'Blocca il trigger', desc: 'Cosa ti ha distratto? Puoi toglierlo di mezzo per la prossima ora?', action: 'Metti il telefono in un\'altra stanza' },
+          { name: 'Sessione breve', desc: 'Non provare a recuperare tutto. 25 minuti di focus valgono più di 2 ore di senso di colpa.', action: 'Timer 25 min, una cosa sola' }
+        ]
+      },
+
+      // OVERWHELMED
+      'overwhelmed_too_many': {
+        understanding: 'Il <strong>sovraccarico</strong> non è debolezza: è il tuo cervello che dice "troppi input". L\'ADHD rende difficile filtrare e prioritizzare automaticamente.',
+        quickAction: 'Fermati completamente. Chiudi tutto. 5 minuti di silenzio. Il mondo può aspettare.',
+        strategies: [
+          { name: 'Triage brutale', desc: 'Di tutto quello che devi fare, cosa succede se NON lo fai? Elimina tutto il possibile.', action: 'Taglia almeno 3 cose dalla lista' },
+          { name: 'Una cosa alla volta', desc: 'Il multitasking è un mito. Scegli UNA cosa. Finiscila. Poi la prossima.', action: 'Nascondi tutto tranne una cosa' },
+          { name: 'Scarica su carta', desc: 'Tutto quello che hai in testa, scrivilo. Una volta fuori dalla mente, pesa meno.', action: 'Brain dump di 5 minuti' }
+        ]
+      },
+      'overwhelmed_deadline': {
+        understanding: 'Scadenza + sovraccarico = <strong>tempesta perfetta</strong>. Il panico aumenta il rumore mentale e rende ancora più difficile pensare chiaramente.',
+        quickAction: 'Prima: un respiro profondo. Poi: qual è la cosa minima che devi consegnare? Fai solo quella.',
+        strategies: [
+          { name: 'Minimo vitale', desc: 'Non il lavoro perfetto, il lavoro minimo accettabile. Puoi migliorarlo dopo.', action: 'Definisci il "buono abbastanza"' },
+          { name: 'Aiuto esterno', desc: 'Puoi chiedere aiuto? Delegare qualcosa? Chiedere una proroga?', action: 'Identifica chi può aiutarti' },
+          { name: 'Un\'ora alla volta', desc: 'Non guardare tutto. Guarda solo la prossima ora. Cosa puoi fare ORA?', action: 'Pianifica solo i prossimi 60 minuti' }
+        ]
+      },
+
+      // DOWN
+      'down_criticized': {
+        understanding: 'La critica ha toccato un punto dolente. Spesso con l\'ADHD porti già un <strong>carico di autosvalutazione</strong>, e basta poco per farlo traboccare.',
+        quickAction: 'Quello che senti è valido. Ma non è la verità completa su chi sei. È solo un momento.',
+        strategies: [
+          { name: 'Contenitore delle vittorie', desc: 'Hai un posto dove tieni traccia delle cose buone che fai? Se no, crealo ora.', action: 'Scrivi 3 cose di cui vai fiero' },
+          { name: 'Prospettiva esterna', desc: 'Cosa direbbe qualcuno che ti vuole bene? Ascolta quella voce, non il critico.', action: 'Chiama o scrivi a quella persona' },
+          { name: 'Questo non sei tu', desc: 'Un feedback negativo è su un\'AZIONE, non sulla tua PERSONA.', action: 'Separa cosa hai fatto da chi sei' }
+        ]
+      },
+      'down_mistake': {
+        understanding: 'L\'errore ha attivato la spirale del <strong>"vedi? Non sei capace"</strong>. Questa voce mente. Gli errori non definiscono il tuo valore.',
+        quickAction: 'Respira. Metti una mano sul petto. Dì: "Ho sbagliato. Va bene. Posso riprovarci."',
+        strategies: [
+          { name: 'Storia completa', desc: 'Stai guardando solo l\'errore. Ma oggi cos\'altro è successo? Cosa hai fatto bene?', action: 'Elenca il quadro completo' },
+          { name: 'Self-compassion', desc: 'Parleresti così duramente a un amico che ha sbagliato? Trattati con la stessa gentilezza.', action: 'Scrivi una frase gentile per te' },
+          { name: 'Impara e rilascia', desc: 'Cosa puoi imparare da questo errore? Una volta capito, lascialo andare.', action: 'Trova una lezione e voltia pagina' }
+        ]
+      },
+
+      // ANXIOUS
+      'anxious_big_task': {
+        understanding: 'L\'ansia davanti a un compito grande è <strong>paura del fallimento</strong> mascherata. Il tuo cervello sta cercando di proteggerti evitando il rischio.',
+        quickAction: 'L\'ansia diminuisce quando inizi. Il primo passo non deve essere perfetto, deve solo esistere.',
+        strategies: [
+          { name: 'Worst case scenario', desc: 'Cosa succederebbe davvero se non andasse bene? Probabilmente molto meno di quanto temi.', action: 'Scrivi il peggio che può succedere' },
+          { name: 'Versione brutta', desc: 'E se facessi prima una versione volutamente imperfetta? Puoi sempre migliorarla.', action: 'Crea una bozza "orribile" in 10 min' },
+          { name: 'Ancora al presente', desc: 'L\'ansia vive nel futuro. Torna al presente: cosa devi fare ORA, in questo minuto?', action: '5 respiri profondi, poi un\'azione' }
+        ]
+      },
+      'anxious_deadline': {
+        understanding: 'L\'ansia da scadenza è il tuo cervello in <strong>modalità allarme</strong>. Vuole aiutarti ma sta solo aumentando il panico.',
+        quickAction: 'Fermati. 3 respiri lenti. Il panico non accelera il lavoro, lo rallenta. La calma è produttiva.',
+        strategies: [
+          { name: 'Grounding', desc: 'Prima di tutto: 5 cose che vedi, 4 che tocchi, 3 che senti. Torna nel tuo corpo.', action: 'Fai l\'esercizio 5-4-3-2-1' },
+          { name: 'Mini-win', desc: 'Fai la cosa più piccola e veloce della lista. La sensazione di progresso calma l\'ansia.', action: 'Completa un micro-task in 5 minuti' },
+          { name: 'Relativizza', desc: 'Su una scala 1-10 di "disastri della vita", quanto è grave davvero? Di solito max 4.', action: 'Dai un voto realistico alla situazione' }
+        ]
+      },
+
+      // DRAINED
+      'drained_tired': {
+        understanding: 'Sei <strong>svuotato</strong>. L\'ADHD consuma più energia degli altri perché il tuo cervello lavora sempre di più per le cose "normali".',
+        quickAction: 'Non è il momento di forzare. Cosa ti serve DAVVERO? Riposo? Cibo? Aria? Datti quello.',
+        strategies: [
+          { name: 'Permesso di fermarti', desc: 'Riposare non è pigrizia, è necessario. Soprattutto per te. Il riposo è produttivo.', action: 'Datti 20 minuti di pausa vera' },
+          { name: 'Ricarica fisica', desc: 'Spesso lo svuotamento mentale è anche fisico. Hai mangiato? Bevuto acqua? Dormito?', action: 'Controlla i bisogni base' },
+          { name: 'Domani esiste', desc: 'Non tutto deve essere fatto oggi. Cosa puoi rimandare a domani senza conseguenze gravi?', action: 'Sposta 2 cose a domani' }
+        ]
+      },
+      'drained_too_many': {
+        understanding: 'Hai dato troppo e ora sei <strong>in riserva</strong>. La lista infinita ha consumato le tue energie. È normale, non è fallimento.',
+        quickAction: 'Stop. Basta per oggi. Scegli UNA cosa non negoziabile, fai quella, poi fermati.',
+        strategies: [
+          { name: 'Chiudi i loop', desc: 'Le cose "quasi finite" consumano energia. Finiscine una, anche piccola.', action: 'Completa una cosa al 100%' },
+          { name: 'Dichiara "basta"', desc: 'Dì ad alta voce: "Per oggi ho fatto abbastanza." E credici.', action: 'Dillo, ad alta voce, ora' },
+          { name: 'Rituali di chiusura', desc: 'Un gesto fisico che dice "la giornata lavorativa è finita". Chiudi il laptop, cambia stanza.', action: 'Crea un confine fisico' }
+        ]
+      },
+
+      // DEFAULT
+      'default': {
+        understanding: 'Anche se non hai identificato un trigger specifico, quello che senti è <strong>valido</strong>. A volte il cervello ADHD si sovraccarica senza un motivo apparente.',
+        quickAction: 'Prenditi 5 minuti per te. Respira. Non devi capire tutto ora. Devi solo essere gentile con te stesso.',
+        strategies: [
+          { name: 'Check-in fisico', desc: 'Come sta il tuo corpo? Fame? Sete? Stanchezza? A volte il disagio mentale è fisico mascherato.', action: 'Ascolta il corpo e rispondi ai suoi bisogni' },
+          { name: 'Movimento', desc: '5 minuti di movimento possono resettare il cervello. Cammina, stretching, balla.', action: 'Muoviti per 5 minuti' },
+          { name: 'Parla con qualcuno', desc: 'A volte basta dire ad alta voce cosa senti per sentirsi meglio.', action: 'Chiama o scrivi a qualcuno' }
+        ]
+      }
+    };
+
+    // ===================== STATE =====================
+    let state = {
+      history: [],
+      patterns: {}
+    };
+
+    let currentFlow = {
+      feeling: null,
+      intensity: 3,
+      trigger: null,
+      notes: ''
+    };
+
+    let screenHistory = ['homeScreen'];
+
+    // ===================== INIT =====================
     document.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      renderProblems();
-      updateStats();
-      updateDashboard();
+      loadState();
       setGreeting();
-      setCurrentDate();
+      renderFeelings();
+      renderTriggers();
     });
 
-    // Service Worker Registration
+    // Service Worker
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW registrato'))
-          .catch(err => console.log('SW errore:', err));
+      navigator.serviceWorker.register('sw.js').catch(console.error);
+    }
+
+    // ===================== STATE MANAGEMENT =====================
+    function loadState() {
+      const saved = localStorage.getItem('come-stai-data');
+      if (saved) {
+        state = JSON.parse(saved);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('come-stai-data', JSON.stringify(state));
+    }
+
+    // ===================== NAVIGATION =====================
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      
+      if (screenHistory[screenHistory.length - 1] !== screenId) {
+        screenHistory.push(screenId);
+      }
+
+      // Render content for specific screens
+      if (screenId === 'insightsScreen') renderInsights();
+      if (screenId === 'historyScreen') renderHistory();
+    }
+
+    function goBack() {
+      screenHistory.pop();
+      const prevScreen = screenHistory[screenHistory.length - 1] || 'homeScreen';
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(prevScreen).classList.add('active');
+    }
+
+    // ===================== HOME =====================
+    function setGreeting() {
+      const hour = new Date().getHours();
+      let greeting = 'Ciao';
+      if (hour < 12) greeting = 'Buongiorno';
+      else if (hour < 18) greeting = 'Buon pomeriggio';
+      else greeting = 'Buonasera';
+      document.getElementById('greeting').textContent = greeting;
+    }
+
+    // ===================== FLOW =====================
+    function startFlow() {
+      currentFlow = { feeling: null, intensity: 3, trigger: null, notes: '' };
+      renderFeelings();
+      document.getElementById('intensitySection').style.display = 'none';
+      document.getElementById('feelingContinue').classList.remove('show');
+      showScreen('feelingScreen');
+    }
+
+    function renderFeelings() {
+      const grid = document.getElementById('feelingsGrid');
+      grid.innerHTML = feelings.map((f, i) => `
+        <div class="option-card animate-in delay-${Math.min(i, 4)}" data-id="${f.id}" onclick="selectFeeling('${f.id}')">
+          <span class="emoji">${f.emoji}</span>
+          <span class="label">${f.label}</span>
+        </div>
+      `).join('');
+    }
+
+    function selectFeeling(id) {
+      currentFlow.feeling = id;
+      
+      // Update UI
+      document.querySelectorAll('#feelingsGrid .option-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.id === id);
+      });
+      
+      // Show intensity section
+      document.getElementById('intensitySection').style.display = 'block';
+      document.getElementById('feelingContinue').classList.add('show');
+    }
+
+    function setIntensity(value) {
+      currentFlow.intensity = value;
+      document.getElementById('intensityValue').textContent = value;
+      
+      document.querySelectorAll('.intensity-dot').forEach(dot => {
+        dot.classList.toggle('selected', parseInt(dot.dataset.value) === value);
       });
     }
 
-    // Install prompt
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      setTimeout(() => {
-        document.getElementById('installBanner').classList.add('show');
-      }, 3000);
-    });
-
-    function installApp() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(choice => {
-          if (choice.outcome === 'accepted') {
-            showToast('✅ App installata!', 'success');
-          }
-          deferredPrompt = null;
-          hideInstallBanner();
-        });
-      }
+    function goToTrigger() {
+      renderTriggers();
+      document.getElementById('triggerContinue').classList.remove('show');
+      showScreen('triggerScreen');
     }
 
-    function hideInstallBanner() {
-      document.getElementById('installBanner').classList.remove('show');
+    function renderTriggers() {
+      const list = document.getElementById('triggersList');
+      
+      // Filter triggers based on feeling for relevance
+      const relevantTriggers = triggers;
+      
+      list.innerHTML = relevantTriggers.map((t, i) => `
+        <div class="trigger-card animate-in delay-${Math.min(i, 4)}" data-id="${t.id}" onclick="selectTrigger('${t.id}')">
+          <span class="emoji">${t.emoji}</span>
+          <span class="label">${t.label}</span>
+        </div>
+      `).join('');
     }
 
-    // Data persistence
-    function loadData() {
-      const saved = localStorage.getItem('adhd-toolkit-data');
-      if (saved) {
-        const data = JSON.parse(saved);
-        checkedStrategies = new Set(data.checked || []);
-        recentActivity = data.recent || [];
-      }
+    function selectTrigger(id) {
+      currentFlow.trigger = id;
+      
+      // Update UI
+      document.querySelectorAll('#triggersList .trigger-card').forEach(card => {
+        card.classList.toggle('selected', card.dataset.id === id);
+      });
+      
+      document.getElementById('triggerContinue').classList.add('show');
     }
 
-    function saveData() {
-      const data = {
-        checked: Array.from(checkedStrategies),
-        recent: recentActivity.slice(0, 20)
+    // ===================== RESPONSE =====================
+    function generateResponse() {
+      currentFlow.notes = document.getElementById('notesInput').value;
+      
+      // Find matching response
+      const key = `${currentFlow.feeling}_${currentFlow.trigger}`;
+      const response = responses[key] || responses['default'];
+      const feeling = feelings.find(f => f.id === currentFlow.feeling);
+      
+      // Update response screen
+      document.getElementById('responseEmoji').textContent = feeling.emoji;
+      document.getElementById('responseFeelingText').textContent = feeling.label.toLowerCase();
+      document.getElementById('understandingText').innerHTML = response.understanding;
+      document.getElementById('quickActionText').textContent = response.quickAction;
+      
+      // Render strategies
+      const strategiesHtml = response.strategies.map((s, i) => `
+        <div class="strategy-card ${i === 1 ? 'secondary' : i === 2 ? 'tertiary' : ''}">
+          <div class="strategy-name">${s.name}</div>
+          <div class="strategy-desc">${s.desc}</div>
+          ${s.action ? `
+            <div class="strategy-action">
+              <div class="strategy-action-label">Prova ora</div>
+              <div class="strategy-action-text">${s.action}</div>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+      document.getElementById('strategiesList').innerHTML = strategiesHtml;
+      
+      // Save to history
+      const entry = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        feeling: currentFlow.feeling,
+        trigger: currentFlow.trigger,
+        intensity: currentFlow.intensity,
+        notes: currentFlow.notes,
+        helpful: null
       };
-      localStorage.setItem('adhd-toolkit-data', JSON.stringify(data));
+      state.history.unshift(entry);
+      
+      // Update patterns
+      updatePatterns(entry);
+      saveState();
+      
+      showScreen('responseScreen');
     }
 
-    // Render problems
-    function renderProblems() {
-      const container = document.getElementById('problemsList');
-      let filtered = problems;
+    function markQuickActionDone() {
+      const btn = document.getElementById('quickActionBtn');
+      btn.innerHTML = '✅ Fatto!';
+      btn.style.background = 'var(--bg-elevated)';
+      btn.style.color = 'var(--accent-green)';
+      showToast('Ottimo lavoro! 💪');
+    }
 
-      if (currentCategory !== 'all') {
-        filtered = filtered.filter(p => p.category === currentCategory);
+    function giveFeedback(helpful) {
+      // Update last entry
+      if (state.history.length > 0) {
+        state.history[0].helpful = helpful;
+        saveState();
       }
-
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(p => 
-          p.title.toLowerCase().includes(q) ||
-          p.strategies.some(s => s.text.toLowerCase().includes(q))
-        );
+      
+      // Update UI
+      document.querySelectorAll('.feedback-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      event.target.classList.add('selected');
+      
+      if (helpful) {
+        showToast('Grazie! Sono contento che ti sia stato utile 💚');
+      } else {
+        showToast('Grazie per il feedback. Cercherò di migliorare.');
       }
+    }
 
-      if (filtered.length === 0) {
+    function finishAndGoHome() {
+      screenHistory = ['homeScreen'];
+      showScreen('homeScreen');
+    }
+
+    // ===================== PATTERNS =====================
+    function updatePatterns(entry) {
+      const feelingKey = entry.feeling;
+      const triggerKey = entry.trigger;
+      const dayOfWeek = new Date(entry.date).getDay();
+      const hour = new Date(entry.date).getHours();
+      
+      if (!state.patterns.feelings) state.patterns.feelings = {};
+      if (!state.patterns.triggers) state.patterns.triggers = {};
+      if (!state.patterns.days) state.patterns.days = {};
+      if (!state.patterns.times) state.patterns.times = {};
+      if (!state.patterns.combinations) state.patterns.combinations = {};
+      
+      // Count feelings
+      state.patterns.feelings[feelingKey] = (state.patterns.feelings[feelingKey] || 0) + 1;
+      
+      // Count triggers
+      state.patterns.triggers[triggerKey] = (state.patterns.triggers[triggerKey] || 0) + 1;
+      
+      // Count days
+      state.patterns.days[dayOfWeek] = (state.patterns.days[dayOfWeek] || 0) + 1;
+      
+      // Count time periods
+      let timePeriod = 'notte';
+      if (hour >= 6 && hour < 12) timePeriod = 'mattina';
+      else if (hour >= 12 && hour < 18) timePeriod = 'pomeriggio';
+      else if (hour >= 18 && hour < 22) timePeriod = 'sera';
+      state.patterns.times[timePeriod] = (state.patterns.times[timePeriod] || 0) + 1;
+      
+      // Count combinations
+      const comboKey = `${feelingKey}_${triggerKey}`;
+      state.patterns.combinations[comboKey] = (state.patterns.combinations[comboKey] || 0) + 1;
+    }
+
+    // ===================== INSIGHTS =====================
+    function renderInsights() {
+      const container = document.getElementById('insightsContent');
+      
+      if (state.history.length < 3) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="emoji">🔍</div>
-            <h3>Nessun risultato</h3>
-            <p>Prova a cercare qualcos'altro</p>
+            <div class="emoji">📊</div>
+            <h3>Non ho ancora abbastanza dati</h3>
+            <p>Usa l'app qualche volta e inizierò a mostrarti i tuoi pattern.</p>
           </div>
         `;
         return;
       }
-
-      container.innerHTML = filtered.map(problem => {
-        const checkedCount = problem.strategies.filter(s => checkedStrategies.has(s.id)).length;
-        const total = problem.strategies.length;
-        const percent = Math.round((checkedCount / total) * 100);
-        const circumference = 2 * Math.PI * 14;
-        const offset = circumference - (percent / 100) * circumference;
-
-        return `
-          <div class="problem-card ${problem.theme}" data-id="${problem.id}">
-            <div class="problem-header" onclick="toggleProblem(${problem.id})">
-              <span class="problem-emoji">${problem.emoji}</span>
-              <div class="problem-info">
-                <div class="problem-number">${problem.num}</div>
-                <div class="problem-title">${problem.title}</div>
+      
+      let html = '';
+      
+      // Most common feeling
+      if (state.patterns.feelings) {
+        const topFeeling = Object.entries(state.patterns.feelings)
+          .sort((a, b) => b[1] - a[1])[0];
+        if (topFeeling) {
+          const feeling = feelings.find(f => f.id === topFeeling[0]);
+          html += `
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-card-emoji">${feeling.emoji}</span>
+                <span class="insight-card-title">La tua emozione più frequente</span>
               </div>
-              <div class="problem-progress">
-                <div class="progress-ring">
-                  <svg width="36" height="36">
-                    <circle class="bg" cx="18" cy="18" r="14"/>
-                    <circle class="fill" cx="18" cy="18" r="14" 
-                      stroke-dasharray="${circumference}" 
-                      stroke-dashoffset="${offset}"
-                      style="stroke: var(--card-accent)"/>
-                  </svg>
-                  <span class="progress-text">${checkedCount}/${total}</span>
-                </div>
-              </div>
-              <span class="expand-icon">▼</span>
-            </div>
-            <div class="strategies-container">
-              <div class="strategies-list">
-                <div class="strategies-label">Strategie</div>
-                ${problem.strategies.map(s => `
-                  <div class="strategy-item ${checkedStrategies.has(s.id) ? 'checked' : ''}" 
-                       onclick="toggleStrategy('${s.id}', '${problem.title}')">
-                    <div class="strategy-check">✓</div>
-                    <div class="strategy-text">${s.text}</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function toggleProblem(id) {
-      const card = document.querySelector(`.problem-card[data-id="${id}"]`);
-      card.classList.toggle('expanded');
-    }
-
-    function toggleStrategy(strategyId, problemTitle) {
-      if (checkedStrategies.has(strategyId)) {
-        checkedStrategies.delete(strategyId);
-      } else {
-        checkedStrategies.add(strategyId);
-        addRecentActivity(strategyId, problemTitle);
-        showToast('✅ Strategia provata!', 'success');
-      }
-      saveData();
-      renderProblems();
-      updateStats();
-      updateDashboard();
-    }
-
-    function addRecentActivity(strategyId, problemTitle) {
-      recentActivity.unshift({
-        id: strategyId,
-        problem: problemTitle,
-        time: Date.now()
-      });
-      recentActivity = recentActivity.slice(0, 20);
-    }
-
-    // Stats
-    function updateStats() {
-      const total = problems.reduce((acc, p) => acc + p.strategies.length, 0);
-      const checked = checkedStrategies.size;
-      const percent = Math.round((checked / total) * 100);
-
-      document.getElementById('checkedCount').textContent = checked;
-      document.getElementById('totalStrategies').textContent = total;
-      document.getElementById('percentComplete').textContent = percent + '%';
-    }
-
-    // Dashboard
-    function updateDashboard() {
-      const total = problems.reduce((acc, p) => acc + p.strategies.length, 0);
-      const checked = checkedStrategies.size;
-      const percent = Math.round((checked / total) * 100);
-      const circumference = 2 * Math.PI * 70;
-      const offset = circumference - (percent / 100) * circumference;
-
-      document.getElementById('bigProgressCircle').style.strokeDashoffset = offset;
-      document.getElementById('bigProgressValue').textContent = percent + '%';
-
-      // Weekly goal (simple: 5 strategies)
-      const weeklyGoal = 5;
-      const weeklyPercent = Math.min(100, Math.round((checked / weeklyGoal) * 100));
-      document.getElementById('weeklyGoalFill').style.width = weeklyPercent + '%';
-      document.getElementById('weeklyGoalText').textContent = 
-        checked >= weeklyGoal 
-          ? '🎉 Obiettivo raggiunto!' 
-          : `Prova ${weeklyGoal - Math.min(checked, weeklyGoal)} nuove strategie`;
-
-      // Recent activity
-      const recentContainer = document.getElementById('recentActivity');
-      if (recentActivity.length === 0) {
-        recentContainer.innerHTML = `
-          <div class="empty-state" style="padding: 30px 0;">
-            <div class="emoji">📝</div>
-            <p>Inizia a provare le strategie!</p>
-          </div>
-        `;
-      } else {
-        recentContainer.innerHTML = recentActivity.slice(0, 5).map(item => {
-          const problem = problems.find(p => p.strategies.some(s => s.id === item.id));
-          const timeAgo = getTimeAgo(item.time);
-          return `
-            <div class="recent-item">
-              <span class="recent-emoji">${problem?.emoji || '✅'}</span>
-              <div class="recent-info">
-                <div class="recent-title">${item.problem}</div>
-                <div class="recent-time">${timeAgo}</div>
-              </div>
+              <p class="insight-card-content">
+                Ti senti <span class="insight-highlight">${feeling.label.toLowerCase()}</span> più spesso delle altre emozioni.
+                È emerso in ${topFeeling[1]} occasioni.
+              </p>
             </div>
           `;
-        }).join('');
-      }
-    }
-
-    function getTimeAgo(timestamp) {
-      const diff = Date.now() - timestamp;
-      const minutes = Math.floor(diff / 60000);
-      const hours = Math.floor(diff / 3600000);
-      const days = Math.floor(diff / 86400000);
-
-      if (minutes < 1) return 'Adesso';
-      if (minutes < 60) return `${minutes} min fa`;
-      if (hours < 24) return `${hours} ore fa`;
-      return `${days} giorni fa`;
-    }
-
-    function setGreeting() {
-      const hour = new Date().getHours();
-      let greeting = 'Ciao!';
-      if (hour < 12) greeting = 'Buongiorno! ☀️';
-      else if (hour < 18) greeting = 'Buon pomeriggio! 🌤️';
-      else greeting = 'Buonasera! 🌙';
-      document.getElementById('greeting').textContent = greeting;
-    }
-
-    function setCurrentDate() {
-      const options = { weekday: 'long', day: 'numeric', month: 'long' };
-      const date = new Date().toLocaleDateString('it-IT', options);
-      document.getElementById('currentDate').textContent = date.charAt(0).toUpperCase() + date.slice(1);
-    }
-
-    // Navigation
-    function showView(viewName) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-      document.getElementById(viewName + 'View').classList.add('active');
-      document.querySelector(`.nav-item[data-view="${viewName}"]`).classList.add('active');
-
-      // Show/hide search and categories
-      const showSearch = viewName === 'problems';
-      document.getElementById('searchContainer').style.display = showSearch ? 'block' : 'none';
-      document.getElementById('categoriesContainer').style.display = showSearch ? 'flex' : 'none';
-
-      if (viewName === 'dashboard') {
-        updateDashboard();
-      }
-    }
-
-    // Filter & Search
-    function filterCategory(cat) {
-      currentCategory = cat;
-      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-      document.querySelector(`.cat-pill[data-cat="${cat}"]`).classList.add('active');
-      renderProblems();
-    }
-
-    function handleSearch(value) {
-      searchQuery = value.trim();
-      renderProblems();
-    }
-
-    // Settings functions
-    function exportData() {
-      const data = {
-        checked: Array.from(checkedStrategies),
-        recent: recentActivity,
-        exportDate: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `adhd-toolkit-backup-${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('📤 Backup esportato!');
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          checkedStrategies = new Set(data.checked || []);
-          recentActivity = data.recent || [];
-          saveData();
-          renderProblems();
-          updateStats();
-          updateDashboard();
-          showToast('📥 Dati importati!', 'success');
-        } catch (err) {
-          showToast('❌ File non valido');
         }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
-    }
-
-    function showResetModal() {
-      document.getElementById('resetModal').classList.add('show');
-    }
-
-    function hideResetModal() {
-      document.getElementById('resetModal').classList.remove('show');
-    }
-
-    function resetAllData() {
-      checkedStrategies = new Set();
-      recentActivity = [];
-      saveData();
-      renderProblems();
-      updateStats();
-      updateDashboard();
-      hideResetModal();
-      showToast('🗑️ Dati eliminati');
-    }
-
-    // Toast
-    function showToast(message, type = '') {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = 'toast show ' + type;
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2500);
-    }
-
-    // ==================== REPORT VIEW ====================
-    function renderReport() {
-      const weekCheckins = getCheckinsInRange(7);
-      
-      // Date range
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 7);
-      document.getElementById('reportDateRange').textContent = 
-        formatDateShort(startDate) + ' - ' + formatDateShort(endDate);
-
-      // Stats
-      document.getElementById('reportCheckins').textContent = weekCheckins.length;
-      
-      const uniqueProblems = new Set();
-      const uniqueStrategies = new Set();
-      weekCheckins.forEach(c => {
-        c.problems.forEach(p => {
-          uniqueProblems.add(p.id);
-          p.strategies.forEach(s => uniqueStrategies.add(s));
-        });
-      });
-      document.getElementById('reportProblems').textContent = uniqueProblems.size;
-      document.getElementById('reportStrategies').textContent = uniqueStrategies.size;
-
-      // Top problems
-      const problemCounts = {};
-      weekCheckins.forEach(c => {
-        c.problems.forEach(p => {
-          problemCounts[p.id] = (problemCounts[p.id] || 0) + 1;
-        });
-      });
-
-      const topProblemsEl = document.getElementById('topProblems');
-      const sortedProblems = Object.entries(problemCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3);
-
-      if (sortedProblems.length === 0) {
-        topProblemsEl.innerHTML = '<p style="color:var(--text-muted)">Nessun dato questa settimana</p>';
-      } else {
-        topProblemsEl.innerHTML = sortedProblems.map(([pid, count], i) => {
-          const problem = problems.find(p => p.id === parseInt(pid));
-          return '<div class="top-problem"><span class="rank">#' + (i + 1) + '</span><span class="emoji">' + problem.emoji + '</span><span class="name">' + problem.title + '</span><span class="count">' + count + 'x</span></div>';
-        }).join('');
       }
-
-      // Effective strategies
-      const effectiveEl = document.getElementById('effectiveStrategies');
-      const effectiveStrats = Object.entries(state.strategyUsage)
-        .filter(([id, data]) => data.used >= 2 && data.helped / data.used >= 0.5)
-        .sort((a, b) => (b[1].helped / b[1].used) - (a[1].helped / a[1].used))
-        .slice(0, 3);
-
-      if (effectiveStrats.length === 0) {
-        effectiveEl.innerHTML = '<p style="color:var(--text-muted)">Usa più strategie per vedere quali funzionano</p>';
-      } else {
-        effectiveEl.innerHTML = effectiveStrats.map(([sid, data]) => {
-          let stratText = '';
-          problems.forEach(p => {
-            const s = p.strategies.find(s => s.id === sid);
-            if (s) stratText = s.text;
-          });
-          const rate = Math.round((data.helped / data.used) * 100);
-          return '<div class="effective-strategy"><span class="icon">✅</span><span class="text">' + stratText + '</span><span class="success-rate">' + rate + '%</span></div>';
-        }).join('');
+      
+      // Most common trigger
+      if (state.patterns.triggers) {
+        const topTrigger = Object.entries(state.patterns.triggers)
+          .sort((a, b) => b[1] - a[1])[0];
+        if (topTrigger) {
+          const trigger = triggers.find(t => t.id === topTrigger[0]);
+          html += `
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-card-emoji">${trigger.emoji}</span>
+                <span class="insight-card-title">Il trigger più comune</span>
+              </div>
+              <p class="insight-card-content">
+                "<span class="insight-highlight">${trigger.label}</span>" è la situazione che più spesso ti mette in difficoltà.
+              </p>
+            </div>
+          `;
+        }
       }
-
-      renderReportChart();
+      
+      // Time patterns
+      if (state.patterns.times) {
+        const topTime = Object.entries(state.patterns.times)
+          .sort((a, b) => b[1] - a[1])[0];
+        if (topTime && topTime[1] >= 2) {
+          html += `
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-card-emoji">🕐</span>
+                <span class="insight-card-title">Quando succede di più</span>
+              </div>
+              <p class="insight-card-content">
+                I momenti difficili tendono ad arrivare più spesso <span class="insight-highlight">di ${topTime[0]}</span>.
+                Potresti prepararti meglio per quei momenti.
+              </p>
+            </div>
+          `;
+        }
+      }
+      
+      // Helpful strategies
+      const helpfulEntries = state.history.filter(h => h.helpful === true);
+      if (helpfulEntries.length >= 2) {
+        html += `
+          <div class="insight-card">
+            <div class="insight-card-header">
+              <span class="insight-card-emoji">✅</span>
+              <span class="insight-card-title">Le strategie funzionano</span>
+            </div>
+            <p class="insight-card-content">
+              In <span class="insight-highlight">${helpfulEntries.length} occasioni</span> hai detto che i consigli ti sono stati utili.
+              Continua così!
+            </p>
+          </div>
+        `;
+      }
+      
+      container.innerHTML = html || `
+        <div class="empty-state">
+          <div class="emoji">🔍</div>
+          <h3>Ancora pochi dati</h3>
+          <p>Continua a usare l'app per scoprire i tuoi pattern.</p>
+        </div>
+      `;
     }
 
-    function renderReportChart() {
-      const container = document.getElementById('reportChart');
-      const days = getLast7Days();
+    // ===================== HISTORY =====================
+    function renderHistory() {
+      const container = document.getElementById('historyContent');
       
-      const dayData = days.map(day => {
-        const dayCheckins = state.checkins.filter(c => 
-          new Date(c.date).toDateString() === day.date.toDateString()
-        );
-        const avgIntensity = dayCheckins.length > 0 
-          ? dayCheckins.reduce((sum, c) => sum + (c.avgIntensity || 0), 0) / dayCheckins.length
-          : 0;
-        return { label: day.label, intensity: avgIntensity };
-      });
-
-      container.innerHTML = dayData.map(d => {
-        const height = d.intensity > 0 ? Math.max(10, (d.intensity / 5) * 100) : 4;
-        return '<div class="bar-group"><div class="bar-value">' + (d.intensity > 0 ? d.intensity.toFixed(1) : '-') + '</div><div class="bar" style="height:' + height + 'px"></div><div class="bar-label">' + d.label + '</div></div>';
+      if (state.history.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="emoji">📝</div>
+            <h3>Nessun momento registrato</h3>
+            <p>Quando hai bisogno di aiuto, troverai qui lo storico.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = state.history.slice(0, 20).map(entry => {
+        const feeling = feelings.find(f => f.id === entry.feeling);
+        const trigger = triggers.find(t => t.id === entry.trigger);
+        const date = new Date(entry.date);
+        const dateStr = formatDate(date);
+        
+        return `
+          <div class="history-item">
+            <span class="history-item-emoji">${feeling?.emoji || '😶'}</span>
+            <div class="history-item-content">
+              <div class="history-item-feeling">${feeling?.label || 'Sconosciuto'}</div>
+              <div class="history-item-meta">
+                ${dateStr} · ${trigger?.label || ''}
+              </div>
+            </div>
+            <div class="history-item-intensity">
+              ${[1,2,3,4,5].map(i => `
+                <div class="intensity-mini-dot ${i <= entry.intensity ? 'filled' : ''}"></div>
+              `).join('')}
+            </div>
+          </div>
+        `;
       }).join('');
     }
 
-    // ==================== SETTINGS ====================
-    function renderSettings() {
-      const toggle = document.getElementById('reminderToggle');
-      if (state.reminderEnabled) {
-        toggle.classList.add('active');
-      } else {
-        toggle.classList.remove('active');
-      }
-    }
-
-    function toggleReminder() {
-      state.reminderEnabled = !state.reminderEnabled;
-      saveState();
-      renderSettings();
-      showToast(state.reminderEnabled ? '🔔 Promemoria attivato' : '🔕 Promemoria disattivato');
-    }
-
-    function exportData() {
-      const data = { ...state, exportDate: new Date().toISOString(), version: '2.0' };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'adhd-toolkit-backup-' + new Date().toISOString().split('T')[0] + '.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('📤 Backup esportato!');
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          state = { ...state, ...data };
-          saveState();
-          renderHome();
-          updateHeaderStats();
-          showToast('📥 Dati importati!', 'success');
-        } catch (err) {
-          showToast('❌ File non valido');
+    function formatDate(date) {
+      const now = new Date();
+      const diff = now - date;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      
+      if (days === 0) {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        if (hours === 0) {
+          const mins = Math.floor(diff / (1000 * 60));
+          return mins <= 1 ? 'Ora' : `${mins} min fa`;
         }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
-    }
-
-    function confirmReset() {
-      if (confirm('Sei sicuro? Tutti i dati verranno eliminati permanentemente.')) {
-        state = { checkins: [], strategyUsage: {}, streak: 0, lastCheckinDate: null, reminderEnabled: false };
-        saveState();
-        renderHome();
-        updateHeaderStats();
-        showToast('🗑️ Dati eliminati');
+        return hours === 1 ? '1 ora fa' : `${hours} ore fa`;
+      } else if (days === 1) {
+        return 'Ieri';
+      } else if (days < 7) {
+        return `${days} giorni fa`;
+      } else {
+        return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
       }
     }
 
-    function viewCheckinDetail(checkinId) {
-      const checkin = state.checkins.find(c => c.id === checkinId);
-      if (checkin) {
-        let msg = 'Check-in del ' + formatDate(new Date(checkin.date)) + '\n\n';
-        checkin.problems.forEach(p => {
-          const prob = problems.find(pr => pr.id === p.id);
-          msg += prob.emoji + ' ' + prob.title + ' - Intensità: ' + p.intensity + '/5\n';
-        });
-        alert(msg);
-      }
-    }
-
-    function formatDateShort(date) {
-      return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+    // ===================== UTILS =====================
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
     }
   </script>
 </body>
