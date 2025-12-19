@@ -211,6 +211,7 @@
           <button class="home-sec-btn" onclick="showScreen('learnScreen')">💡 Impara</button>
           <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
           <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
+          <button class="home-sec-btn" onclick="showScreen('settingsScreen')">⚙️ Dati</button>
         </div>
       </div>
     </div>
@@ -361,6 +362,53 @@
           <p class="insights-subtitle">Comprendi il tuo ADHD</p>
         </div>
         <div id="learnContent"></div>
+      </div>
+    </div>
+    <div class="screen" id="settingsScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="insights-header">
+          <h1 class="insights-title">⚙️ Gestione Dati</h1>
+          <p class="insights-subtitle">Backup e sicurezza</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">💾 BACKUP</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Esporta i tuoi dati per creare una copia di sicurezza. Potrai reimportarla in qualsiasi momento.
+            </p>
+            <button class="timer-btn primary" onclick="exportData()" style="width:100%">
+              📥 Scarica Backup
+            </button>
+          </div>
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">📤 RIPRISTINO</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Importa un backup precedente per ripristinare i tuoi dati.
+            </p>
+            <button class="timer-btn secondary" onclick="importData()" style="width:100%;background:var(--accent-calm);color:white">
+              📤 Carica Backup
+            </button>
+          </div>
+          <div class="understanding-card" style="background:rgba(224,122,122,0.1);border:1px solid var(--accent-coral)">
+            <div class="understanding-title" style="color:var(--accent-coral)">🗑️ ZONA PERICOLOSA</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Elimina tutti i dati salvati nell'app. Questa azione è irreversibile.
+            </p>
+            <button class="timer-btn secondary" onclick="clearAllData()" style="width:100%;background:var(--accent-coral);color:white">
+              ⚠️ Elimina Tutti i Dati
+            </button>
+          </div>
+          <div class="understanding-card" style="margin-top:20px;background:rgba(126,184,218,0.1)">
+            <div class="understanding-title">ℹ️ INFO STORAGE</div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+              I tuoi dati sono salvati localmente nel browser. Per sicurezza, viene creato automaticamente un backup ad ogni salvataggio. I dati più vecchi di 6 mesi vengono archiviati automaticamente se lo storage si riempie.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
     <div class="screen" id="diaryScreen">
@@ -532,8 +580,252 @@ let currentDiaryEntry=null;
 document.addEventListener('DOMContentLoaded',()=>{loadState();setGreeting();renderFeelings();renderTriggers();renderDiaryMoods();});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
 
-function loadState(){const s=localStorage.getItem('come-stai-v2');if(s)state=JSON.parse(s);}
-function saveState(){localStorage.setItem('come-stai-v2',JSON.stringify(state));}
+// Versione schema dati per migrazioni future
+const SCHEMA_VERSION = 1;
+const STORAGE_KEY = 'come-stai-v2';
+
+// Carica stato con gestione errori robusta e validazione
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (!s) return; // Prima installazione, usa stato di default
+
+    const loaded = JSON.parse(s);
+
+    // Validazione base dello schema
+    if (!loaded || typeof loaded !== 'object') {
+      console.warn('Stato non valido, uso default');
+      return;
+    }
+
+    // Migrazione versione se necessario
+    if (!loaded.version || loaded.version < SCHEMA_VERSION) {
+      loaded.version = SCHEMA_VERSION;
+      // Aggiungi qui future migrazioni
+    }
+
+    // Validazione struttura minima
+    state.history = Array.isArray(loaded.history) ? loaded.history : [];
+    state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
+    state.patterns = (loaded.patterns && typeof loaded.patterns === 'object') ? loaded.patterns : {};
+    state.version = SCHEMA_VERSION;
+
+    console.log('Dati caricati:', state.history.length + ' momenti, ' + state.diary.length + ' note');
+  } catch (err) {
+    console.error('Errore caricamento dati:', err);
+    // Tenta backup recovery
+    try {
+      const backup = localStorage.getItem(STORAGE_KEY + '-backup');
+      if (backup) {
+        const loaded = JSON.parse(backup);
+        state.history = Array.isArray(loaded.history) ? loaded.history : [];
+        state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
+        state.patterns = loaded.patterns || {};
+        console.log('Recupero da backup riuscito');
+        showToast('⚠️ Dati recuperati da backup');
+        return;
+      }
+    } catch (backupErr) {
+      console.error('Backup non disponibile:', backupErr);
+    }
+    showToast('⚠️ Errore caricamento dati');
+  }
+}
+
+// Salva stato con gestione errori e backup
+function saveState() {
+  try {
+    state.version = SCHEMA_VERSION;
+    state.lastSaved = new Date().toISOString();
+
+    const data = JSON.stringify(state);
+
+    // Verifica dimensioni (warning se > 4MB)
+    if (data.length > 4 * 1024 * 1024) {
+      console.warn('Storage grande:', (data.length / 1024 / 1024).toFixed(2) + 'MB');
+    }
+
+    // Crea backup prima di salvare
+    try {
+      const current = localStorage.getItem(STORAGE_KEY);
+      if (current) {
+        localStorage.setItem(STORAGE_KEY + '-backup', current);
+      }
+    } catch (backupErr) {
+      // Backup non critico, continua
+      console.warn('Backup non creato:', backupErr);
+    }
+
+    // Salva stato principale
+    localStorage.setItem(STORAGE_KEY, data);
+
+  } catch (err) {
+    console.error('Errore salvataggio:', err);
+
+    // Gestione quota exceeded
+    if (err.name === 'QuotaExceededError' || err.code === 22) {
+      console.warn('Storage pieno, provo cleanup...');
+
+      // Rimuovi dati vecchi (oltre 6 mesi)
+      const sixMonthsAgo = Date.now() - (6 * 30 * 24 * 60 * 60 * 1000);
+      const originalHistoryLength = state.history.length;
+      const originalDiaryLength = state.diary.length;
+
+      state.history = state.history.filter(e => new Date(e.date).getTime() > sixMonthsAgo);
+      state.diary = state.diary.filter(e => new Date(e.date).getTime() > sixMonthsAgo);
+
+      const removedHistory = originalHistoryLength - state.history.length;
+      const removedDiary = originalDiaryLength - state.diary.length;
+
+      if (removedHistory > 0 || removedDiary > 0) {
+        console.log('Rimossi dati vecchi:', removedHistory + ' momenti, ' + removedDiary + ' note');
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          showToast('⚠️ Dati vecchi archiviati (storage pieno)');
+          return;
+        } catch (retryErr) {
+          console.error('Salvataggio fallito dopo cleanup:', retryErr);
+        }
+      }
+
+      showToast('❌ Storage pieno - esporta i dati');
+    } else {
+      showToast('❌ Errore salvataggio dati');
+    }
+  }
+}
+
+// Sincronizzazione automatica tra tab multipli
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY && e.newValue) {
+    try {
+      const newState = JSON.parse(e.newValue);
+      if (newState && typeof newState === 'object') {
+        state.history = Array.isArray(newState.history) ? newState.history : state.history;
+        state.diary = Array.isArray(newState.diary) ? newState.diary : state.diary;
+        state.patterns = newState.patterns || state.patterns;
+
+        // Ricarica vista corrente se necessario
+        const activeScreen = document.querySelector('.screen.active');
+        if (activeScreen) {
+          const id = activeScreen.id;
+          if (id === 'insightsScreen') renderInsights();
+          if (id === 'historyScreen') renderHistory();
+          if (id === 'diaryScreen') renderDiaryEntries();
+        }
+
+        console.log('Dati sincronizzati da altro tab');
+      }
+    } catch (err) {
+      console.error('Errore sincronizzazione tab:', err);
+    }
+  }
+});
+
+// Esporta dati in formato JSON per backup
+function exportData() {
+  try {
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'come-stai-backup-' + new Date().toISOString().split('T')[0] + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('💾 Backup scaricato');
+  } catch (err) {
+    console.error('Errore export:', err);
+    showToast('❌ Errore export');
+  }
+}
+
+// Importa dati da file JSON
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+
+        // Validazione
+        if (!imported || typeof imported !== 'object') {
+          showToast('❌ File non valido');
+          return;
+        }
+
+        // Conferma sovrascrittura
+        const hasData = state.history.length > 0 || state.diary.length > 0;
+        if (hasData) {
+          if (!confirm('Attenzione: questo sovrascriverà i tuoi dati attuali. Continua?')) {
+            return;
+          }
+        }
+
+        // Importa dati validati
+        state.history = Array.isArray(imported.history) ? imported.history : [];
+        state.diary = Array.isArray(imported.diary) ? imported.diary : [];
+        state.patterns = imported.patterns || {};
+
+        saveState();
+
+        // Ricarica vista corrente
+        const activeScreen = document.querySelector('.screen.active');
+        if (activeScreen) {
+          const id = activeScreen.id;
+          if (id === 'insightsScreen') renderInsights();
+          if (id === 'historyScreen') renderHistory();
+          if (id === 'diaryScreen') renderDiaryEntries();
+        }
+
+        showToast('✅ Dati importati (' + state.history.length + ' momenti, ' + state.diary.length + ' note)');
+      } catch (err) {
+        console.error('Errore import:', err);
+        showToast('❌ Errore lettura file');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// Cancella tutti i dati (con conferma)
+function clearAllData() {
+  if (!confirm('Attenzione: questo eliminerà TUTTI i tuoi dati in modo permanente. Sei sicuro?')) {
+    return;
+  }
+  if (!confirm('Ultima conferma: eliminare tutti i dati?')) {
+    return;
+  }
+
+  state.history = [];
+  state.diary = [];
+  state.patterns = {};
+
+  saveState();
+
+  // Pulisci anche backup
+  try {
+    localStorage.removeItem(STORAGE_KEY + '-backup');
+  } catch (err) {
+    console.warn('Errore pulizia backup:', err);
+  }
+
+  showToast('🗑️ Tutti i dati eliminati');
+
+  // Torna alla home
+  screenHistory = ['homeScreen'];
+  showScreen('homeScreen');
+}
+
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
 function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';}
