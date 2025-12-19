@@ -272,7 +272,7 @@ Hai il diritto di presentare reclamo al **Garante per la Protezione dei Dati Per
 
 ---
 
-**Ultimo aggiornamento:** 19 Dicembre 2024
+**Ultimo aggiornamento:** 19 Dicembre 2025
 **Versione:** 1.0
 
 Se hai domande sulla privacy, contattaci prima di usare l'App.
