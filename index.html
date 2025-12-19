@@ -315,7 +315,7 @@
 
         <div class="legal-footer">
           © 2024 Alo - Come Stai? - Tutti i diritti riservati<br>
-          Versione 1.0 • Ultimo aggiornamento: 19/12/2024
+          Versione 1.0.0 • Ultimo aggiornamento: 19/12/2024
         </div>
       </div>
     </div>
@@ -793,6 +793,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderDiaryMoods();
 });
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
+
+// Versione app - deve corrispondere a sw.js e manifest.json
+const APP_VERSION = '1.0.0';
 
 // Versione schema dati per migrazioni future
 const SCHEMA_VERSION = 1;
