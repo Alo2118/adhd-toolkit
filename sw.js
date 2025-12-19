@@ -1,5 +1,5 @@
 // Versione app - deve corrispondere a index.html e manifest.json
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.0.2';
 const CACHE_NAME = `come-stai-v${APP_VERSION.replace(/\./g, '-')}`;
 const urlsToCache = [
   './',
@@ -7,7 +7,6 @@ const urlsToCache = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './icon-192.svg',
   'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
