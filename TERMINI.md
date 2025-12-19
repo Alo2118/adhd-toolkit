@@ -1,6 +1,6 @@
 # Termini e Condizioni d'Uso
 
-**Data ultimo aggiornamento: 19 Dicembre 2024**
+**Data ultimo aggiornamento: 19 Dicembre 2025**
 
 ## 1. Accettazione dei Termini
 
@@ -153,5 +153,5 @@ Per domande sui presenti Termini:
 
 ---
 
-**Ultimo aggiornamento:** 19 Dicembre 2024
+**Ultimo aggiornamento:** 19 Dicembre 2025
 **Versione:** 1.0
