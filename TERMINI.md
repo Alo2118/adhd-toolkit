@@ -120,7 +120,7 @@ L'autore si riserva il diritto di sospendere o terminare l'accesso all'App in qu
 
 ## 10. Legge Applicabile e Foro Competente
 
-Questi Termini sono regolati dalla legge italiana. Per qualsiasi controversia è competente il foro di [Inserire Città], Italia.
+Questi Termini sono regolati dalla legge italiana. Per qualsiasi controversia è competente esclusivamente il Foro del luogo di residenza del consumatore, ai sensi dell'art. 66-bis del Codice del Consumo (D.Lgs. 206/2005).
 
 ## 11. Divisibilità
 
@@ -133,8 +133,8 @@ Questi Termini, insieme alla Privacy Policy, costituiscono l'intero accordo tra 
 ## 13. Contatti
 
 Per domande sui presenti Termini:
-- Email: [inserire email]
-- GitHub: [inserire link repository]
+- Email: nicola.hdr@gmail.com
+- GitHub: https://github.com/Alo2118/adhd-toolkit
 
 ---
 

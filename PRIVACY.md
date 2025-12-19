@@ -8,8 +8,8 @@ Questa Privacy Policy descrive come l'applicazione "Come Stai? - Supporto ADHD" 
 
 ## 2. Titolare del Trattamento
 
-**Titolare:** [Il Tuo Nome o Pseudonimo]
-**Contatto:** [Inserire email]
+**Titolare:** Alo
+**Contatto:** nicola.hdr@gmail.com
 
 ## 3. Principio Fondamentale: Privacy by Design
 
@@ -246,8 +246,8 @@ L'autore si riserva il diritto di modificare questa Privacy Policy.
 
 ### 18.1 Contatti
 Per domande sulla privacy:
-- **Email:** [Inserire email]
-- **GitHub Issues:** [Link repository]
+- **Email:** nicola.hdr@gmail.com
+- **GitHub Issues:** https://github.com/Alo2118/adhd-toolkit/issues
 
 ### 18.2 Autorità di Controllo
 Hai il diritto di presentare reclamo al **Garante per la Protezione dei Dati Personali** (Italia):
