@@ -7,986 +7,269 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Come Stai?">
-  <meta name="description" content="Il tuo supporto per i momenti difficili">
-  
   <title>Come Stai?</title>
-  
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" type="image/png" href="icon-192.png">
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-deep: #1a1a2e;
-      --bg-card: #25253d;
-      --bg-elevated: #2d2d4a;
-      --bg-input: #1f1f35;
-      
-      --accent-calm: #7eb8da;
-      --accent-warm: #e8a87c;
-      --accent-soft: #c3aed6;
-      --accent-green: #7dd3a8;
-      --accent-coral: #e07a7a;
-      
-      --text-primary: #f0f0f5;
-      --text-secondary: #a0a0b8;
-      --text-muted: #6a6a82;
-      
-      --radius-sm: 12px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
-      --radius-full: 100px;
-      
-      --safe-top: env(safe-area-inset-top, 20px);
-      --safe-bottom: env(safe-area-inset-bottom, 20px);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      font-family: 'Nunito', -apple-system, sans-serif;
-      background: var(--bg-deep);
-      color: var(--text-primary);
-      line-height: 1.6;
-    }
-
-    .app {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding-top: var(--safe-top);
-      padding-bottom: var(--safe-bottom);
-    }
-
-    /* Screens */
-    .screen {
-      display: none;
-      flex-direction: column;
-      height: 100%;
-      padding: 20px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    /* Home Screen */
-    .home-screen {
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 40px 30px;
-    }
-
-    .home-greeting {
-      font-size: 1.1rem;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-
-    .home-question {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 40px;
-      line-height: 1.2;
-    }
-
-    .home-main-btn {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(135deg, var(--accent-calm), var(--accent-soft));
-      color: var(--bg-deep);
-      font-family: inherit;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 20px 60px rgba(126, 184, 218, 0.3);
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .home-main-btn:active {
-      transform: scale(0.95);
-    }
-
-    .home-main-btn .icon {
-      font-size: 2.5rem;
-    }
-
-    .home-secondary {
-      margin-top: 50px;
-      display: flex;
-      gap: 16px;
-    }
-
-    .home-sec-btn {
-      padding: 14px 24px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--bg-elevated);
-      background: var(--bg-card);
-      color: var(--text-secondary);
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .home-sec-btn:active {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-
-    /* Flow Screen */
-    .flow-screen {
-      padding-bottom: 100px;
-    }
-
-    .flow-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 30px;
-      padding-top: 10px;
-    }
-
-    .back-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: var(--bg-card);
-      color: var(--text-secondary);
-      font-size: 1.25rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .flow-progress {
-      flex: 1;
-      height: 4px;
-      background: var(--bg-elevated);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .flow-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-calm), var(--accent-soft));
-      transition: width 0.4s ease;
-    }
-
-    .flow-step {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      flex-shrink: 0;
-    }
-
-    .flow-question {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      line-height: 1.3;
-    }
-
-    .flow-subtitle {
-      color: var(--text-secondary);
-      font-size: 1rem;
-      margin-bottom: 30px;
-    }
-
-    /* Emotion/Trigger Selection */
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .option-card {
-      background: var(--bg-card);
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      padding: 20px 16px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-    }
-
-    .option-card:active {
-      transform: scale(0.97);
-    }
-
-    .option-card.selected {
-      border-color: var(--accent-calm);
-      background: rgba(126, 184, 218, 0.1);
-    }
-
-    .option-card .emoji {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .option-card .label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.3;
-    }
-
-    .option-card.selected .label {
-      color: var(--accent-calm);
-    }
-
-    /* Trigger list (single column) */
-    .triggers-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .trigger-card {
-      background: var(--bg-card);
-      border: 2px solid transparent;
-      border-radius: var(--radius-md);
-      padding: 18px 20px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .trigger-card:active {
-      transform: scale(0.98);
-    }
-
-    .trigger-card.selected {
-      border-color: var(--accent-warm);
-      background: rgba(232, 168, 124, 0.1);
-    }
-
-    .trigger-card .emoji {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .trigger-card .label {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .trigger-card.selected .label {
-      color: var(--accent-warm);
-    }
-
-    /* Intensity slider */
-    .intensity-section {
-      margin-top: 20px;
-    }
-
-    .intensity-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .intensity-label span {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    .intensity-value {
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .intensity-bar {
-      display: flex;
-      gap: 8px;
-    }
-
-    .intensity-dot {
-      flex: 1;
-      height: 50px;
-      border-radius: var(--radius-sm);
-      border: 2px solid var(--bg-elevated);
-      background: var(--bg-card);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .intensity-dot:active {
-      transform: scale(0.95);
-    }
-
-    .intensity-dot.selected {
-      border-color: var(--dot-color);
-      background: var(--dot-bg);
-      color: var(--dot-color);
-    }
-
-    .intensity-dot:nth-child(1) { --dot-color: var(--accent-green); --dot-bg: rgba(125, 211, 168, 0.15); }
-    .intensity-dot:nth-child(2) { --dot-color: var(--accent-calm); --dot-bg: rgba(126, 184, 218, 0.15); }
-    .intensity-dot:nth-child(3) { --dot-color: var(--accent-warm); --dot-bg: rgba(232, 168, 124, 0.15); }
-    .intensity-dot:nth-child(4) { --dot-color: var(--accent-coral); --dot-bg: rgba(224, 122, 122, 0.15); }
-    .intensity-dot:nth-child(5) { --dot-color: #e05a5a; --dot-bg: rgba(224, 90, 90, 0.15); }
-
-    /* Response Screen */
-    .response-screen {
-      padding: 30px 24px;
-    }
-
-    .response-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .response-emoji {
-      font-size: 3.5rem;
-      margin-bottom: 16px;
-    }
-
-    .response-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      line-height: 1.3;
-    }
-
-    .response-feeling {
-      color: var(--accent-calm);
-      font-weight: 600;
-    }
-
-    /* Understanding section */
-    .understanding-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-
-    .understanding-title {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent-soft);
-      margin-bottom: 12px;
-    }
-
-    .understanding-text {
-      font-size: 1rem;
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-
-    .understanding-text strong {
-      color: var(--text-primary);
-    }
-
-    /* Strategies section */
-    .strategies-section {
-      margin-bottom: 24px;
-    }
-
-    .strategies-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .strategy-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--accent-green);
-    }
-
-    .strategy-card.secondary {
-      border-left-color: var(--accent-calm);
-    }
-
-    .strategy-card.tertiary {
-      border-left-color: var(--accent-soft);
-    }
-
-    .strategy-name {
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 6px;
-      color: var(--text-primary);
-    }
-
-    .strategy-desc {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .strategy-action {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--bg-elevated);
-    }
-
-    .strategy-action-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .strategy-action-text {
-      font-size: 0.95rem;
-      color: var(--accent-green);
-      font-weight: 600;
-    }
-
-    /* Quick action */
-    .quick-action {
-      background: linear-gradient(135deg, rgba(125, 211, 168, 0.15), rgba(126, 184, 218, 0.15));
-      border: 1px solid rgba(125, 211, 168, 0.3);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .quick-action-label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent-green);
-      margin-bottom: 10px;
-    }
-
-    .quick-action-text {
-      font-size: 1.15rem;
-      font-weight: 700;
-      line-height: 1.4;
-      margin-bottom: 16px;
-    }
-
-    .quick-action-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
-      background: var(--accent-green);
-      color: var(--bg-deep);
-      border: none;
-      border-radius: var(--radius-full);
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .quick-action-btn:active {
-      transform: scale(0.97);
-    }
-
-    /* Feedback section */
-    .feedback-section {
-      text-align: center;
-      padding: 20px 0;
-      margin-top: auto;
-    }
-
-    .feedback-question {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-
-    .feedback-btns {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
-
-    .feedback-btn {
-      padding: 12px 24px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--bg-elevated);
-      background: var(--bg-card);
-      color: var(--text-secondary);
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .feedback-btn:active {
-      transform: scale(0.97);
-    }
-
-    .feedback-btn.positive:active,
-    .feedback-btn.positive.selected {
-      background: rgba(125, 211, 168, 0.15);
-      border-color: var(--accent-green);
-      color: var(--accent-green);
-    }
-
-    .feedback-btn.negative:active,
-    .feedback-btn.negative.selected {
-      background: rgba(224, 122, 122, 0.15);
-      border-color: var(--accent-coral);
-      color: var(--accent-coral);
-    }
-
-    /* Insights Screen */
-    .insights-screen {
-      padding: 20px;
-    }
-
-    .insights-header {
-      margin-bottom: 30px;
-    }
-
-    .insights-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .insights-subtitle {
-      color: var(--text-secondary);
-      font-size: 1rem;
-    }
-
-    .insight-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      margin-bottom: 16px;
-    }
-
-    .insight-card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .insight-card-emoji {
-      font-size: 1.5rem;
-    }
-
-    .insight-card-title {
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .insight-card-content {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .insight-highlight {
-      color: var(--accent-calm);
-      font-weight: 600;
-    }
-
-    .pattern-tag {
-      display: inline-block;
-      padding: 6px 14px;
-      background: var(--bg-elevated);
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-right: 8px;
-      margin-bottom: 8px;
-    }
-
-    /* History Screen */
-    .history-screen {
-      padding: 20px;
-    }
-
-    .history-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-    }
-
-    .history-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-    }
-
-    .history-item {
-      background: var(--bg-card);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .history-item-emoji {
-      font-size: 1.75rem;
-    }
-
-    .history-item-content {
-      flex: 1;
-    }
-
-    .history-item-feeling {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-
-    .history-item-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .history-item-intensity {
-      display: flex;
-      gap: 3px;
-    }
-
-    .intensity-mini-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      background: var(--bg-elevated);
-    }
-
-    .intensity-mini-dot.filled {
-      background: var(--accent-warm);
-    }
-
-    /* Empty State */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .empty-state .emoji {
-      font-size: 4rem;
-      margin-bottom: 20px;
-    }
-
-    .empty-state h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-
-    .empty-state p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    /* Continue Button */
-    .continue-btn {
-      position: fixed;
-      bottom: calc(var(--safe-bottom) + 20px);
-      left: 20px;
-      right: 20px;
-      padding: 18px;
-      background: linear-gradient(135deg, var(--accent-calm), var(--accent-soft));
-      color: var(--bg-deep);
-      border: none;
-      border-radius: var(--radius-lg);
-      font-family: inherit;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: none;
-      z-index: 100;
-    }
-
-    .continue-btn.show {
-      display: block;
-    }
-
-    .continue-btn:active {
-      transform: scale(0.98);
-    }
-
-    .continue-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-      padding: 16px 28px;
-      border-radius: var(--radius-full);
-      font-weight: 600;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 200;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    /* Notes input */
-    .notes-section {
-      margin-top: 24px;
-    }
-
-    .notes-label {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-
-    .notes-input {
-      width: 100%;
-      padding: 16px;
-      background: var(--bg-input);
-      border: 2px solid var(--bg-elevated);
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 1rem;
-      resize: none;
-      min-height: 100px;
-      transition: border-color 0.2s;
-    }
-
-    .notes-input:focus {
-      outline: none;
-      border-color: var(--accent-calm);
-    }
-
-    .notes-input::placeholder {
-      color: var(--text-muted);
-    }
-
-    /* Close button for response */
-    .close-btn {
-      position: fixed;
-      top: calc(var(--safe-top) + 16px);
-      right: 20px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: var(--bg-card);
-      color: var(--text-secondary);
-      font-size: 1.5rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-
-    .animate-in {
-      animation: fadeIn 0.5s ease backwards;
-    }
-
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
-
-    /* Scrollbar */
-    .screen::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .screen::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .screen::-webkit-scrollbar-thumb {
-      background: var(--text-muted);
-      border-radius: 2px;
-    }
+    :root{--bg-deep:#1a1a2e;--bg-card:#25253d;--bg-elevated:#2d2d4a;--accent-calm:#7eb8da;--accent-warm:#e8a87c;--accent-soft:#c3aed6;--accent-green:#7dd3a8;--accent-coral:#e07a7a;--text-primary:#f0f0f5;--text-secondary:#a0a0b8;--text-muted:#6a6a82;--radius-sm:12px;--radius-md:16px;--radius-lg:24px;--radius-full:100px;--safe-top:env(safe-area-inset-top,20px);--safe-bottom:env(safe-area-inset-bottom,20px)}
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'Nunito',sans-serif;background:var(--bg-deep);color:var(--text-primary);line-height:1.6}
+    .app{height:100%;display:flex;flex-direction:column;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
+    .screen{display:none;flex-direction:column;height:100%;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .screen.active{display:flex}
+    .home-screen{justify-content:center;align-items:center;text-align:center;padding:40px 24px}
+    .home-greeting{font-size:1.1rem;color:var(--text-secondary);margin-bottom:8px}
+    .home-question{font-size:1.9rem;font-weight:800;margin-bottom:35px;line-height:1.2}
+    .home-main-btn{width:160px;height:160px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 20px 60px rgba(126,184,218,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+    .home-main-btn:active{transform:scale(0.95)}
+    .home-main-btn .icon{font-size:2.2rem}
+    .home-actions{margin-top:40px;display:flex;flex-direction:column;gap:12px;width:100%;max-width:280px}
+    .home-action-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 24px;border-radius:var(--radius-lg);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer}
+    .home-action-btn:active{background:var(--bg-elevated);transform:scale(0.98)}
+    .home-secondary{margin-top:30px;display:flex;gap:12px}
+    .home-sec-btn{padding:12px 20px;border-radius:var(--radius-full);border:1px solid var(--bg-elevated);background:transparent;color:var(--text-muted);font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer}
+    .flow-header{display:flex;align-items:center;gap:16px;margin-bottom:30px;padding-top:10px}
+    .back-btn{width:44px;height:44px;border-radius:50%;border:none;background:var(--bg-card);color:var(--text-secondary);font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .flow-progress{flex:1;height:4px;background:var(--bg-elevated);border-radius:2px;overflow:hidden}
+    .flow-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-calm),var(--accent-soft));transition:width 0.4s}
+    .flow-step{font-size:0.85rem;color:var(--text-muted)}
+    .flow-question{font-size:1.5rem;font-weight:700;margin-bottom:12px}
+    .flow-subtitle{color:var(--text-secondary);font-size:1rem;margin-bottom:30px}
+    .options-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .option-card{background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius-md);padding:20px 16px;cursor:pointer;text-align:center;transition:all 0.2s}
+    .option-card:active{transform:scale(0.97)}
+    .option-card.selected{border-color:var(--accent-calm);background:rgba(126,184,218,0.1)}
+    .option-card .emoji{font-size:2rem;margin-bottom:10px;display:block}
+    .option-card .label{font-size:0.9rem;font-weight:600}
+    .triggers-list{display:flex;flex-direction:column;gap:10px}
+    .trigger-card{background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius-md);padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:14px}
+    .trigger-card.selected{border-color:var(--accent-warm);background:rgba(232,168,124,0.1)}
+    .trigger-card .emoji{font-size:1.5rem}
+    .trigger-card .label{font-size:0.95rem;font-weight:600}
+    .intensity-section{margin-top:24px}
+    .intensity-label{display:flex;justify-content:space-between;margin-bottom:16px;font-size:0.9rem;color:var(--text-secondary)}
+    .intensity-value{font-weight:700;color:var(--text-primary)}
+    .intensity-bar{display:flex;gap:8px}
+    .intensity-dot{flex:1;height:50px;border-radius:var(--radius-sm);border:2px solid var(--bg-elevated);background:var(--bg-card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-muted)}
+    .intensity-dot.selected{border-color:var(--accent-warm);background:rgba(232,168,124,0.15);color:var(--accent-warm)}
+    .response-screen{padding:20px;padding-bottom:40px}
+    .response-header{text-align:center;margin-bottom:24px}
+    .response-emoji{font-size:3rem;margin-bottom:12px}
+    .response-title{font-size:1.3rem;font-weight:700;margin-bottom:6px}
+    .response-feeling{color:var(--accent-calm);font-weight:600}
+    .understanding-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+    .understanding-title{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent-soft);margin-bottom:10px}
+    .understanding-text{font-size:0.95rem;color:var(--text-secondary);line-height:1.6}
+    .understanding-text strong{color:var(--text-primary)}
+    .guided-actions{margin-bottom:24px}
+    .guided-actions-title{font-size:1rem;font-weight:700;margin-bottom:14px}
+    .guided-action-card{background:var(--bg-card);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;border:1px solid transparent}
+    .guided-action-card:active{border-color:var(--accent-calm)}
+    .guided-action-icon{width:48px;height:48px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:rgba(126,184,218,0.15)}
+    .guided-action-info{flex:1}
+    .guided-action-name{font-weight:700;font-size:0.95rem}
+    .guided-action-desc{font-size:0.8rem;color:var(--text-muted)}
+    .guided-action-arrow{color:var(--text-muted);font-size:1.2rem}
+    .strategies-section{margin-bottom:24px}
+    .strategies-title{font-size:1rem;font-weight:700;margin-bottom:14px}
+    .strategy-card{background:var(--bg-card);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;border-left:3px solid var(--accent-green)}
+    .strategy-card.secondary{border-left-color:var(--accent-calm)}
+    .strategy-name{font-weight:700;font-size:0.95rem;margin-bottom:4px}
+    .strategy-desc{font-size:0.85rem;color:var(--text-secondary);line-height:1.5}
+    .feedback-section{text-align:center;padding:16px 0}
+    .feedback-question{font-size:0.9rem;color:var(--text-secondary);margin-bottom:12px}
+    .feedback-btns{display:flex;justify-content:center;gap:12px}
+    .feedback-btn{padding:10px 20px;border-radius:var(--radius-full);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer}
+    .feedback-btn.selected.positive{background:rgba(125,211,168,0.15);border-color:var(--accent-green);color:var(--accent-green)}
+    .feedback-btn.selected.negative{background:rgba(224,122,122,0.15);border-color:var(--accent-coral);color:var(--accent-coral)}
+    .timer-screen,.breathe-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+    .timer-title,.breathe-title{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+    .timer-subtitle,.breathe-subtitle{color:var(--text-secondary);font-size:0.95rem;margin-bottom:40px}
+    .timer-circle{width:200px;height:200px;position:relative;margin-bottom:40px}
+    .timer-circle svg{transform:rotate(-90deg)}
+    .timer-circle circle{fill:none;stroke-width:8}
+    .timer-circle .bg{stroke:var(--bg-elevated)}
+    .timer-circle .progress{stroke:var(--accent-calm);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+    .timer-display{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;font-weight:800}
+    .timer-controls,.breathe-controls{display:flex;gap:16px}
+    .timer-btn{padding:16px 32px;border-radius:var(--radius-full);border:none;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer}
+    .timer-btn.primary{background:var(--accent-calm);color:var(--bg-deep)}
+    .timer-btn.secondary{background:var(--bg-card);color:var(--text-secondary)}
+    .timer-done{display:none;flex-direction:column;align-items:center;gap:16px}
+    .timer-done.show{display:flex}
+    .timer-done-emoji{font-size:4rem}
+    .timer-done-text{font-size:1.2rem;font-weight:700}
+    .breathe-circle{width:180px;height:180px;border-radius:50%;background:linear-gradient(135deg,var(--accent-soft),var(--accent-calm));display:flex;align-items:center;justify-content:center;margin-bottom:30px;transition:transform 4s ease-in-out;box-shadow:0 0 60px rgba(195,174,214,0.3)}
+    .breathe-circle.inhale{transform:scale(1.3)}
+    .breathe-circle.exhale{transform:scale(1)}
+    .breathe-instruction{font-size:1.5rem;font-weight:700;color:var(--bg-deep)}
+    .breathe-counter{font-size:1.1rem;color:var(--text-secondary);margin-bottom:40px}
+    .dump-screen,.ground-screen{padding:20px;padding-bottom:120px}
+    .dump-header,.ground-header{text-align:center;margin-bottom:24px}
+    .dump-emoji,.ground-emoji{font-size:2.5rem;margin-bottom:12px}
+    .dump-title,.ground-title{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+    .dump-subtitle,.ground-subtitle{color:var(--text-secondary);font-size:0.9rem}
+    .dump-textarea{width:100%;min-height:250px;padding:20px;background:var(--bg-card);border:2px solid var(--bg-elevated);border-radius:var(--radius-lg);color:var(--text-primary);font-family:inherit;font-size:1rem;line-height:1.6;resize:none}
+    .dump-textarea:focus{outline:none;border-color:var(--accent-warm)}
+    .dump-tip{margin-top:16px;padding:14px;background:rgba(232,168,124,0.1);border-radius:var(--radius-md);font-size:0.85rem;color:var(--accent-warm)}
+    .dump-actions{position:fixed;bottom:calc(var(--safe-bottom) + 20px);left:20px;right:20px;display:flex;gap:12px}
+    .dump-actions .btn{flex:1;padding:16px;border-radius:var(--radius-lg);border:none;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer}
+    .dump-actions .btn.primary{background:var(--accent-warm);color:var(--bg-deep)}
+    .dump-actions .btn.secondary{background:var(--bg-card);color:var(--text-secondary)}
+    .ground-step{background:var(--bg-card);border-radius:var(--radius-lg);padding:20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:16px;border:2px solid transparent}
+    .ground-step.active{border-color:var(--accent-green);background:rgba(125,211,168,0.08)}
+    .ground-step.done{opacity:0.5}
+    .ground-step-num{width:36px;height:36px;border-radius:50%;background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem}
+    .ground-step.active .ground-step-num{background:var(--accent-green);color:var(--bg-deep)}
+    .ground-step-content{flex:1}
+    .ground-step-title{font-weight:700;margin-bottom:4px}
+    .ground-step-desc{font-size:0.85rem;color:var(--text-secondary)}
+    .ground-step-input{margin-top:12px;display:none}
+    .ground-step.active .ground-step-input{display:block}
+    .ground-input-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .ground-input-item{padding:8px 14px;background:var(--bg-elevated);border:1px solid transparent;border-radius:var(--radius-full);color:var(--text-secondary);font-family:inherit;font-size:0.85rem}
+    .ground-input-item:focus{outline:none;border-color:var(--accent-green)}
+    .ground-next-btn{margin-top:12px;padding:12px 24px;background:var(--accent-green);color:var(--bg-deep);border:none;border-radius:var(--radius-full);font-family:inherit;font-size:0.9rem;font-weight:700;cursor:pointer}
+    .diary-screen{padding:20px}
+    .diary-header,.insights-header{margin-bottom:24px}
+    .diary-title,.insights-title{font-size:1.5rem;font-weight:800;margin-bottom:6px}
+    .diary-subtitle,.insights-subtitle{color:var(--text-secondary);font-size:0.95rem}
+    .diary-new-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px;background:linear-gradient(135deg,var(--accent-warm),var(--accent-coral));color:white;border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:24px}
+    .diary-entries-title{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:12px}
+    .diary-entry{background:var(--bg-card);border-radius:var(--radius-md);padding:16px;margin-bottom:12px;cursor:pointer}
+    .diary-entry-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .diary-entry-emoji{font-size:1.5rem}
+    .diary-entry-meta{flex:1}
+    .diary-entry-date{font-weight:600;font-size:0.9rem}
+    .diary-entry-time{font-size:0.8rem;color:var(--text-muted)}
+    .diary-entry-text{font-size:0.9rem;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .diary-entry-intensity{display:flex;gap:3px}
+    .diary-intensity-dot{width:8px;height:8px;border-radius:2px;background:var(--bg-elevated)}
+    .diary-intensity-dot.filled{background:var(--accent-warm)}
+    .diary-new-screen{padding:20px;padding-bottom:120px}
+    .diary-new-header{text-align:center;margin-bottom:24px}
+    .diary-new-title{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+    .diary-section-label{font-size:0.9rem;font-weight:600;margin-bottom:12px}
+    .diary-mood-grid{display:flex;justify-content:space-between;gap:8px}
+    .diary-mood-btn{flex:1;padding:14px 8px;background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius-md);cursor:pointer;text-align:center}
+    .diary-mood-btn.selected{border-color:var(--accent-calm);background:rgba(126,184,218,0.1)}
+    .diary-mood-btn .emoji{font-size:1.5rem;display:block;margin-bottom:4px}
+    .diary-mood-btn .label{font-size:0.7rem;color:var(--text-muted)}
+    .diary-text-section{margin-bottom:20px}
+    .diary-text-input{width:100%;min-height:150px;padding:16px;background:var(--bg-card);border:2px solid var(--bg-elevated);border-radius:var(--radius-lg);color:var(--text-primary);font-family:inherit;font-size:1rem;line-height:1.6;resize:none}
+    .diary-text-input:focus{outline:none;border-color:var(--accent-calm)}
+    .diary-prompts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .diary-prompt{padding:8px 14px;background:var(--bg-card);border:1px solid var(--bg-elevated);border-radius:var(--radius-full);font-size:0.8rem;color:var(--text-secondary);cursor:pointer}
+    .diary-save-btn{position:fixed;bottom:calc(var(--safe-bottom) + 20px);left:20px;right:20px;padding:18px;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer}
+    .diary-detail-screen{padding:20px}
+    .diary-detail-header{text-align:center;padding:20px 0;border-bottom:1px solid var(--bg-elevated);margin-bottom:20px}
+    .diary-detail-emoji{font-size:3rem;margin-bottom:12px}
+    .diary-detail-date{font-size:1.1rem;font-weight:700}
+    .diary-detail-time{color:var(--text-muted);font-size:0.9rem}
+    .diary-detail-content{background:var(--bg-card);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+    .diary-detail-text{font-size:1rem;line-height:1.7;color:var(--text-secondary)}
+    .diary-delete-btn{width:100%;padding:14px;background:rgba(224,122,122,0.1);border:none;border-radius:var(--radius-lg);color:var(--accent-coral);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer}
+    .insight-card{background:var(--bg-card);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px}
+    .insight-card-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .insight-card-emoji{font-size:1.4rem}
+    .insight-card-title{font-weight:700;font-size:0.95rem}
+    .insight-card-content{font-size:0.9rem;color:var(--text-secondary);line-height:1.6}
+    .insight-highlight{color:var(--accent-calm);font-weight:600}
+    .continue-btn{position:fixed;bottom:calc(var(--safe-bottom) + 20px);left:20px;right:20px;padding:18px;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;display:none;z-index:100}
+    .continue-btn.show{display:block}
+    .close-btn{position:fixed;top:calc(var(--safe-top) + 16px);right:20px;width:44px;height:44px;border-radius:50%;border:none;background:var(--bg-card);color:var(--text-secondary);font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100}
+    .notes-section{margin-top:20px}
+    .notes-label{font-size:0.9rem;color:var(--text-secondary);margin-bottom:10px}
+    .notes-input{width:100%;padding:16px;background:var(--bg-elevated);border:2px solid var(--bg-elevated);border-radius:var(--radius-md);color:var(--text-primary);font-family:inherit;font-size:1rem;resize:none;min-height:80px}
+    .notes-input:focus{outline:none;border-color:var(--accent-calm)}
+    .empty-state{text-align:center;padding:50px 20px}
+    .empty-state .emoji{font-size:3.5rem;margin-bottom:16px}
+    .empty-state h3{font-size:1.1rem;margin-bottom:8px}
+    .empty-state p{color:var(--text-muted);font-size:0.9rem}
+    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-elevated);color:var(--text-primary);padding:16px 28px;border-radius:var(--radius-full);font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.3);opacity:0;transition:all 0.3s;z-index:200}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
   </style>
 </head>
 <body>
   <div class="app">
-    
-    <!-- HOME SCREEN -->
     <div class="screen active" id="homeScreen">
       <div class="home-screen">
         <p class="home-greeting" id="greeting">Ciao</p>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
-        
         <button class="home-main-btn" onclick="startFlow()">
           <span class="icon">💭</span>
           <span>Ho bisogno<br>di aiuto</span>
         </button>
-        
+        <div class="home-actions">
+          <button class="home-action-btn" onclick="showScreen('diaryScreen')">
+            <span>📝</span><span>Scrivi nel diario</span>
+          </button>
+        </div>
         <div class="home-secondary">
           <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
-          <button class="home-sec-btn" onclick="showScreen('historyScreen')">📝 Storico</button>
+          <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
         </div>
       </div>
     </div>
-
-    <!-- FLOW: FEELING SCREEN -->
     <div class="screen" id="feelingScreen">
-      <div class="flow-screen">
-        <div class="flow-header">
-          <button class="back-btn" onclick="goBack()">←</button>
-          <div class="flow-progress">
-            <div class="flow-progress-fill" style="width: 33%"></div>
-          </div>
-          <span class="flow-step">1/3</span>
-        </div>
-
-        <h2 class="flow-question animate-in">Come ti senti?</h2>
-        <p class="flow-subtitle animate-in delay-1">Scegli quello che descrive meglio questo momento</p>
-
-        <div class="options-grid" id="feelingsGrid">
-          <!-- Populated by JS -->
-        </div>
-
-        <div class="intensity-section" id="intensitySection" style="display:none">
-          <div class="intensity-label">
-            <span>Quanto è forte questa sensazione?</span>
-            <span class="intensity-value" id="intensityValue">3</span>
-          </div>
-          <div class="intensity-bar">
-            <div class="intensity-dot" data-value="1" onclick="setIntensity(1)">1</div>
-            <div class="intensity-dot" data-value="2" onclick="setIntensity(2)">2</div>
-            <div class="intensity-dot selected" data-value="3" onclick="setIntensity(3)">3</div>
-            <div class="intensity-dot" data-value="4" onclick="setIntensity(4)">4</div>
-            <div class="intensity-dot" data-value="5" onclick="setIntensity(5)">5</div>
-          </div>
+      <div class="flow-header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="flow-progress"><div class="flow-progress-fill" style="width:33%"></div></div>
+        <span class="flow-step">1/3</span>
+      </div>
+      <h2 class="flow-question">Come ti senti?</h2>
+      <p class="flow-subtitle">Scegli quello che descrive meglio questo momento</p>
+      <div class="options-grid" id="feelingsGrid"></div>
+      <div class="intensity-section" id="intensitySection" style="display:none">
+        <div class="intensity-label"><span>Quanto è forte?</span><span class="intensity-value" id="intensityValue">3</span></div>
+        <div class="intensity-bar">
+          <div class="intensity-dot" onclick="setIntensity(1)">1</div>
+          <div class="intensity-dot" onclick="setIntensity(2)">2</div>
+          <div class="intensity-dot selected" onclick="setIntensity(3)">3</div>
+          <div class="intensity-dot" onclick="setIntensity(4)">4</div>
+          <div class="intensity-dot" onclick="setIntensity(5)">5</div>
         </div>
       </div>
-
       <button class="continue-btn" id="feelingContinue" onclick="goToTrigger()">Continua →</button>
     </div>
-
-    <!-- FLOW: TRIGGER SCREEN -->
     <div class="screen" id="triggerScreen">
-      <div class="flow-screen">
-        <div class="flow-header">
-          <button class="back-btn" onclick="goBack()">←</button>
-          <div class="flow-progress">
-            <div class="flow-progress-fill" style="width: 66%"></div>
-          </div>
-          <span class="flow-step">2/3</span>
-        </div>
-
-        <h2 class="flow-question animate-in">Cosa stava succedendo?</h2>
-        <p class="flow-subtitle animate-in delay-1">Cosa pensi abbia scatenato questa sensazione?</p>
-
-        <div class="triggers-list" id="triggersList">
-          <!-- Populated by JS -->
-        </div>
-
-        <div class="notes-section animate-in delay-3">
-          <p class="notes-label">Vuoi aggiungere qualcosa? (opzionale)</p>
-          <textarea class="notes-input" id="notesInput" placeholder="Descrivi la situazione..."></textarea>
-        </div>
+      <div class="flow-header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <div class="flow-progress"><div class="flow-progress-fill" style="width:66%"></div></div>
+        <span class="flow-step">2/3</span>
       </div>
-
+      <h2 class="flow-question">Cosa stava succedendo?</h2>
+      <p class="flow-subtitle">Cosa ha scatenato questa sensazione?</p>
+      <div class="triggers-list" id="triggersList"></div>
+      <div class="notes-section">
+        <p class="notes-label">Vuoi aggiungere qualcosa? (opzionale)</p>
+        <textarea class="notes-input" id="notesInput" placeholder="Descrivi la situazione..."></textarea>
+      </div>
       <button class="continue-btn" id="triggerContinue" onclick="generateResponse()">Dammi una mano →</button>
     </div>
-
-    <!-- RESPONSE SCREEN -->
     <div class="screen" id="responseScreen">
       <button class="close-btn" onclick="finishAndGoHome()">×</button>
-      
       <div class="response-screen">
-        <div class="response-header animate-in">
+        <div class="response-header">
           <div class="response-emoji" id="responseEmoji">🤗</div>
           <h2 class="response-title">Capisco, ti senti <span class="response-feeling" id="responseFeelingText">bloccato</span></h2>
         </div>
-
-        <div class="understanding-card animate-in delay-1" id="understandingCard">
+        <div class="understanding-card">
           <div class="understanding-title">💡 Cosa sta succedendo</div>
-          <p class="understanding-text" id="understandingText">
-            <!-- Populated by JS -->
-          </p>
+          <p class="understanding-text" id="understandingText"></p>
         </div>
-
-        <div class="quick-action animate-in delay-2" id="quickAction">
-          <div class="quick-action-label">✨ Prova subito</div>
-          <p class="quick-action-text" id="quickActionText">
-            <!-- Populated by JS -->
-          </p>
-          <button class="quick-action-btn" id="quickActionBtn" onclick="markQuickActionDone()">
-            <span>Ce la faccio</span> 💪
-          </button>
+        <div class="guided-actions">
+          <h3 class="guided-actions-title">⚡ Prova subito</h3>
+          <div id="guidedActionsList"></div>
         </div>
-
-        <div class="strategies-section animate-in delay-3">
-          <h3 class="strategies-title">🛠️ Strategie che possono aiutarti</h3>
-          <div id="strategiesList">
-            <!-- Populated by JS -->
-          </div>
+        <div class="strategies-section">
+          <h3 class="strategies-title">🛠️ Altre strategie</h3>
+          <div id="strategiesList"></div>
         </div>
-
-        <div class="feedback-section animate-in delay-4">
-          <p class="feedback-question">Questo ti è stato utile?</p>
+        <div class="feedback-section">
+          <p class="feedback-question">Ti è stato utile?</p>
           <div class="feedback-btns">
             <button class="feedback-btn positive" onclick="giveFeedback(true)">👍 Sì</button>
             <button class="feedback-btn negative" onclick="giveFeedback(false)">👎 No</button>
@@ -994,655 +277,227 @@
         </div>
       </div>
     </div>
-
-    <!-- INSIGHTS SCREEN -->
-    <div class="screen" id="insightsScreen">
-      <div class="insights-screen">
+    <div class="screen" id="timerScreen">
+      <button class="close-btn" onclick="stopTimer();showScreen('responseScreen')">×</button>
+      <div class="timer-screen">
+        <h2 class="timer-title">⏱️ Regola dei 2 minuti</h2>
+        <p class="timer-subtitle">Inizia qualsiasi cosa per soli 2 minuti. Spesso basta per sbloccarsi.</p>
+        <div class="timer-circle">
+          <svg width="200" height="200">
+            <circle class="bg" cx="100" cy="100" r="90"/>
+            <circle class="progress" id="timerProgress" cx="100" cy="100" r="90" stroke-dasharray="565.48" stroke-dashoffset="0"/>
+          </svg>
+          <div class="timer-display" id="timerDisplay">2:00</div>
+        </div>
+        <div class="timer-controls" id="timerControls">
+          <button class="timer-btn primary" id="timerStartBtn" onclick="startTimer()">Inizia</button>
+          <button class="timer-btn secondary" onclick="stopTimer();showScreen('responseScreen')">Annulla</button>
+        </div>
+        <div class="timer-done" id="timerDone">
+          <div class="timer-done-emoji">🎉</div>
+          <div class="timer-done-text">Ce l'hai fatta!</div>
+          <button class="timer-btn primary" onclick="resetTimer()">Altri 2 minuti</button>
+          <button class="timer-btn secondary" onclick="showScreen('responseScreen')">Ho finito</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="breatheScreen">
+      <button class="close-btn" onclick="stopBreathing();showScreen('responseScreen')">×</button>
+      <div class="breathe-screen">
+        <h2 class="breathe-title">🌬️ Respira con me</h2>
+        <p class="breathe-subtitle">Segui il ritmo. 4 secondi inspira, 4 secondi espira.</p>
+        <div class="breathe-circle" id="breatheCircle">
+          <span class="breathe-instruction" id="breatheInstruction">Pronto?</span>
+        </div>
+        <div class="breathe-counter" id="breatheCounter">5 cicli</div>
+        <div class="breathe-controls">
+          <button class="timer-btn primary" id="breatheStartBtn" onclick="startBreathing()">Inizia</button>
+          <button class="timer-btn secondary" onclick="stopBreathing();showScreen('responseScreen')">Chiudi</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="dumpScreen">
+      <div class="dump-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('responseScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="dump-header">
+          <div class="dump-emoji">🧠</div>
+          <h2 class="dump-title">Svuota la mente</h2>
+          <p class="dump-subtitle">Scrivi tutto quello che hai in testa. Non deve essere ordinato o sensato.</p>
+        </div>
+        <textarea class="dump-textarea" id="dumpTextarea" placeholder="Scrivi tutto..."></textarea>
+        <div class="dump-tip">💡 Una volta fuori dalla testa, i pensieri pesano meno.</div>
+      </div>
+      <div class="dump-actions">
+        <button class="btn secondary" onclick="showScreen('responseScreen')">Chiudi</button>
+        <button class="btn primary" onclick="saveDump()">Fatto ✓</button>
+      </div>
+    </div>
+    <div class="screen" id="groundScreen">
+      <div class="ground-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('responseScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="ground-header">
+          <div class="ground-emoji">🌿</div>
+          <h2 class="ground-title">Torna al presente</h2>
+          <p class="ground-subtitle">Tecnica 5-4-3-2-1</p>
+        </div>
+        <div id="groundingSteps"></div>
+      </div>
+    </div>
+    <div class="screen" id="diaryScreen">
+      <div class="diary-screen">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-
+        <div class="diary-header">
+          <h1 class="diary-title">📝 Diario emotivo</h1>
+          <p class="diary-subtitle">Cattura i tuoi momenti</p>
+        </div>
+        <button class="diary-new-btn" onclick="showScreen('diaryNewScreen')">✏️ Nuova nota</button>
+        <div class="diary-entries-title">Note recenti</div>
+        <div id="diaryEntries"></div>
+      </div>
+    </div>
+    <div class="screen" id="diaryNewScreen">
+      <div class="diary-new-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('diaryScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="diary-new-header">
+          <h2 class="diary-new-title">Come ti senti ora?</h2>
+        </div>
+        <div class="diary-mood-section">
+          <p class="diary-section-label">Il tuo stato d'animo</p>
+          <div class="diary-mood-grid" id="diaryMoodGrid"></div>
+        </div>
+        <div class="diary-text-section">
+          <p class="diary-section-label">Cosa vuoi annotare?</p>
+          <textarea class="diary-text-input" id="diaryTextInput" placeholder="Scrivi liberamente..."></textarea>
+          <div class="diary-prompts">
+            <button class="diary-prompt" onclick="addPrompt('Mi sento così perché...')">Mi sento così perché...</button>
+            <button class="diary-prompt" onclick="addPrompt('Oggi ho notato che...')">Oggi ho notato...</button>
+          </div>
+        </div>
+      </div>
+      <button class="diary-save-btn" onclick="saveDiaryEntry()">Salva nota</button>
+    </div>
+    <div class="screen" id="diaryDetailScreen">
+      <div class="diary-detail-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('diaryScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="diary-detail-header" id="diaryDetailHeader"></div>
+        <div class="diary-detail-content">
+          <p class="diary-detail-text" id="diaryDetailText"></p>
+        </div>
+        <button class="diary-delete-btn" onclick="deleteDiaryEntry()">🗑️ Elimina nota</button>
+      </div>
+    </div>
+    <div class="screen" id="insightsScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
         <div class="insights-header">
-          <h1 class="insights-title">I tuoi pattern</h1>
+          <h1 class="insights-title">📊 I tuoi pattern</h1>
           <p class="insights-subtitle">Cosa abbiamo imparato insieme</p>
         </div>
-
-        <div id="insightsContent">
-          <!-- Populated by JS -->
-        </div>
+        <div id="insightsContent"></div>
       </div>
     </div>
-
-    <!-- HISTORY SCREEN -->
     <div class="screen" id="historyScreen">
-      <div class="history-screen">
+      <div class="diary-screen">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-
-        <div class="history-header">
-          <h1 class="history-title">Storico</h1>
+        <div class="diary-header">
+          <h1 class="diary-title">📋 Storico</h1>
         </div>
-
-        <div id="historyContent">
-          <!-- Populated by JS -->
-        </div>
+        <div id="historyContent"></div>
       </div>
     </div>
-
-    <!-- TOAST -->
     <div class="toast" id="toast"></div>
   </div>
+<script>
+const feelings=[{id:'blocked',emoji:'😶',label:'Bloccato'},{id:'frustrated',emoji:'😤',label:'Frustrato'},{id:'overwhelmed',emoji:'🌀',label:'Sovraccarico'},{id:'down',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'drained',emoji:'🥱',label:'Svuotato'}];
+const triggers=[{id:'big_task',emoji:'📋',label:'Devo iniziare un compito importante'},{id:'too_many',emoji:'🗂️',label:'Troppe cose, non so da dove partire'},{id:'criticized',emoji:'💬',label:'Mi hanno criticato'},{id:'mistake',emoji:'❌',label:'Ho fatto un errore'},{id:'distracted',emoji:'📱',label:'Mi sono distratto'},{id:'deadline',emoji:'⏰',label:'Scadenza vicina'},{id:'conflict',emoji:'💢',label:'Conflitto con qualcuno'},{id:'tired',emoji:'😴',label:'Stanchezza fisica'},{id:'unknown',emoji:'❓',label:'Non so, è arrivato così'}];
+const diaryMoods=[{id:'great',emoji:'😊',label:'Bene'},{id:'okay',emoji:'😐',label:'Così così'},{id:'low',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'angry',emoji:'😤',label:'Irritato'}];
+const guidedActions=[{id:'timer',icon:'⏱️',name:'Timer 2 minuti',desc:'Inizia per soli 2 minuti',screen:'timerScreen'},{id:'breathe',icon:'🌬️',name:'Respira con me',desc:'5 cicli di respirazione',screen:'breatheScreen'},{id:'dump',icon:'🧠',name:'Svuota la mente',desc:'Scrivi tutto senza filtri',screen:'dumpScreen'},{id:'ground',icon:'🌿',name:'Torna al presente',desc:'Tecnica 5-4-3-2-1',screen:'groundScreen'}];
+const groundingSteps=[{num:5,sense:'VEDI',desc:'5 cose che vedi',placeholders:['lampada','muro','telefono','finestra','mano']},{num:4,sense:'TOCCA',desc:'4 cose che tocchi',placeholders:['tavolo','tessuto','sedia','pelle']},{num:3,sense:'SENTI',desc:'3 cose che senti',placeholders:['respiro','traffico','musica']},{num:2,sense:'ANNUSA',desc:'2 cose che annusi',placeholders:['aria','caffè']},{num:1,sense:'GUSTA',desc:'1 cosa che gusti',placeholders:['saliva']}];
+const responses={
+  'blocked_big_task':{understanding:'Quando un compito sembra grande, il cervello ADHD va in <strong>paralisi</strong>. Non è pigrizia.',actions:['timer','dump'],strategies:[{name:'Body doubling',desc:'Lavora accanto a qualcuno.'},{name:'Versione brutta',desc:'Fai prima una versione imperfetta.'}]},
+  'blocked_too_many':{understanding:'Troppe opzioni causano <strong>sovraccarico</strong>. Tutto sembra urgente.',actions:['dump','timer'],strategies:[{name:'Regola dei 3',desc:'Max 3 cose importanti oggi.'},{name:'Domanda magica',desc:'"Se potessi fare solo UNA cosa?"'}]},
+  'frustrated_criticized':{understanding:'La <strong>sensibilità al rifiuto</strong> (RSD) è comune con ADHD.',actions:['breathe','ground'],strategies:[{name:'Fatto vs Interpretazione',desc:'Cosa è stato DETTO vs cosa INTERPRETO?'},{name:'Test del tempo',desc:'Tra una settimana sarà ancora grave?'}]},
+  'frustrated_mistake':{understanding:'Gli errori attivano il <strong>critico interiore</strong>.',actions:['breathe','dump'],strategies:[{name:'Zoom out',desc:'Su 100 cose, quante vanno bene?'},{name:'Ripara e vai',desc:'Puoi rimediare? Fallo. Altrimenti lascia andare.'}]},
+  'overwhelmed_too_many':{understanding:'Il <strong>sovraccarico</strong> è il cervello che dice "troppi input".',actions:['breathe','dump','ground'],strategies:[{name:'Triage brutale',desc:'Cosa succede se NON lo fai?'},{name:'Una cosa alla volta',desc:'Finisci UNA cosa, poi la prossima.'}]},
+  'anxious_big_task':{understanding:'L\'ansia è <strong>paura del fallimento</strong> mascherata.',actions:['breathe','timer','ground'],strategies:[{name:'Worst case',desc:'Cosa succederebbe davvero?'},{name:'Ancora al presente',desc:'Cosa devi fare ORA?'}]},
+  'anxious_deadline':{understanding:'L\'ansia da scadenza è il cervello in <strong>modalità allarme</strong>.',actions:['breathe','ground','timer'],strategies:[{name:'Mini-win',desc:'Fai la cosa più piccola. Il progresso calma.'},{name:'Relativizza',desc:'Su scala 1-10, quanto è grave davvero?'}]},
+  'down_criticized':{understanding:'La critica ha toccato un punto dolente.',actions:['breathe','dump'],strategies:[{name:'Contenitore vittorie',desc:'Scrivi 3 cose di cui vai fiero.'},{name:'Questo non sei tu',desc:'Un feedback è su un\'azione, non su di te.'}]},
+  'drained_tired':{understanding:'Sei <strong>svuotato</strong>. L\'ADHD consuma più energia.',actions:['breathe','ground'],strategies:[{name:'Permesso di fermarti',desc:'Riposare non è pigrizia.'},{name:'Check fisico',desc:'Fame? Sete? Sonno?'}]},
+  'default':{understanding:'Quello che senti è <strong>valido</strong>.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza?'},{name:'Movimento',desc:'5 minuti possono resettare il cervello.'}]}
+};
+let state={history:[],diary:[],patterns:{}};
+let currentFlow={feeling:null,intensity:3,trigger:null,notes:''};
+let screenHistory=['homeScreen'];
+let timerInterval=null,timerSeconds=120;
+let breatheCycles=5;
+let currentGroundStep=0;
+let diaryMood=null;
+let currentDiaryEntry=null;
 
-  <script>
-    // ===================== DATA =====================
-    const feelings = [
-      { id: 'blocked', emoji: '😶', label: 'Bloccato', desc: 'Non riesco a partire' },
-      { id: 'frustrated', emoji: '😤', label: 'Frustrato', desc: 'Tutto mi irrita' },
-      { id: 'overwhelmed', emoji: '🌀', label: 'Sovraccarico', desc: 'Troppe cose' },
-      { id: 'down', emoji: '😔', label: 'Giù', desc: 'Non ne vale la pena' },
-      { id: 'anxious', emoji: '😰', label: 'Ansioso', desc: 'Paura di sbagliare' },
-      { id: 'drained', emoji: '🥱', label: 'Svuotato', desc: 'Zero energia' }
-    ];
+document.addEventListener('DOMContentLoaded',()=>{loadState();setGreeting();renderFeelings();renderTriggers();renderDiaryMoods();});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
 
-    const triggers = [
-      { id: 'big_task', emoji: '📋', label: 'Devo iniziare un compito importante' },
-      { id: 'too_many', emoji: '🗂️', label: 'Troppe cose da fare, non so da dove partire' },
-      { id: 'criticized', emoji: '💬', label: 'Mi hanno criticato o giudicato' },
-      { id: 'mistake', emoji: '❌', label: 'Ho fatto un errore' },
-      { id: 'distracted', emoji: '📱', label: 'Mi sono distratto e ho perso tempo' },
-      { id: 'deadline', emoji: '⏰', label: 'Ho una scadenza vicina' },
-      { id: 'conflict', emoji: '💢', label: 'Ho avuto un conflitto con qualcuno' },
-      { id: 'bored', emoji: '😑', label: 'Noia profonda, niente mi stimola' },
-      { id: 'tired', emoji: '😴', label: 'Sono stanco fisicamente' },
-      { id: 'unknown', emoji: '❓', label: 'Non so, è arrivato così' }
-    ];
-
-    // Responses database: feeling + trigger → understanding + strategies
-    const responses = {
-      // BLOCKED
-      'blocked_big_task': {
-        understanding: 'Quando un compito sembra grande, il cervello ADHD va in <strong>paralisi da decisione</strong>. Non è pigrizia: è che il tuo cervello non riesce a spezzare il compito in passi gestibili e si blocca.',
-        quickAction: 'Scrivi solo la PRIMA micro-azione. Non tutto il piano, solo il primo passo fisico. "Aprire il documento" o "Prendere il telefono".',
-        strategies: [
-          { name: 'Regola dei 2 minuti', desc: 'Prometti a te stesso solo 2 minuti. Non di finire, solo di iniziare. Spesso basta questo per sbloccarsi.', action: 'Imposta un timer per 2 minuti e inizia' },
-          { name: 'Body doubling', desc: 'Lavora accanto a qualcuno (anche in videocall). La presenza di altri riduce la resistenza.', action: 'Chiama un amico o usa un video "study with me"' },
-          { name: 'Rimuovi un passaggio', desc: 'Qual è il passaggio che ti blocca di più? Eliminalo o semplificalo drasticamente.', action: 'Identifica l\'ostacolo e bypassalo' }
-        ]
-      },
-      'blocked_too_many': {
-        understanding: 'Con troppe opzioni, il cervello ADHD si <strong>sovraccarica</strong>. Non sai da dove partire perché tutto sembra urgente e importante allo stesso tempo.',
-        quickAction: 'Scegli UNA cosa sola. Non la più importante, quella che riesci a fare ORA. Il resto non esiste per i prossimi 25 minuti.',
-        strategies: [
-          { name: 'Brain dump + 1', desc: 'Scrivi tutto quello che hai in testa su carta. Poi cerchia UNA sola cosa e ignora il resto.', action: 'Prendi carta e penna, svuota la mente' },
-          { name: 'La regola dei 3', desc: 'Oggi puoi fare al massimo 3 cose importanti. Sceglile ora e lascia perdere il resto.', action: 'Scrivi le tue 3 priorità di oggi' },
-          { name: 'Domanda magica', desc: '"Se potessi fare solo UNA cosa oggi, quale farebbe la differenza maggiore?"', action: 'Rispondi onestamente e parti da lì' }
-        ]
-      },
-      'blocked_deadline': {
-        understanding: 'Le scadenze vicine possono creare <strong>panico paralizzante</strong>. L\'urgenza non ti motiva, ti blocca ancora di più perché aumenta la pressione.',
-        quickAction: 'Fermati. Respira. Hai più tempo di quanto pensi. Qual è il minimo accettabile che puoi consegnare?',
-        strategies: [
-          { name: 'Abbassa lo standard', desc: 'Non deve essere perfetto, deve essere fatto. "Fatto" batte "perfetto" sempre.', action: 'Chiediti: qual è il 70% accettabile?' },
-          { name: 'Spezza la scadenza', desc: 'Crea 3-4 mini-scadenze da qui a quella vera. Rende tutto più gestibile.', action: 'Dividi il lavoro in blocchi con orari' },
-          { name: 'Comunica', desc: 'Se sei davvero in difficoltà, meglio avvisare prima che dopo. Spesso si trova una soluzione.', action: 'Scrivi un messaggio onesto a chi aspetta' }
-        ]
-      },
-
-      // FRUSTRATED
-      'frustrated_criticized': {
-        understanding: 'La <strong>sensibilità al rifiuto</strong> (RSD) è comune con l\'ADHD. Una critica che per altri è un feedback, per te può sembrare un attacco personale devastante.',
-        quickAction: 'Quello che senti è reale, ma potrebbe non essere proporzionato. Aspetta 30 minuti prima di reagire.',
-        strategies: [
-          { name: 'Fatto vs Interpretazione', desc: 'Scrivi: cosa è stato DETTO esattamente? Cosa sto INTERPRETANDO io? Spesso sono molto diversi.', action: 'Separa i fatti dalle tue conclusioni' },
-          { name: 'Il test del tempo', desc: 'Tra una settimana questo sembrerà ancora così grave? Di solito no.', action: 'Immagina te stesso tra 7 giorni' },
-          { name: 'Parla come a un amico', desc: 'Se un amico ricevesse questa critica, cosa gli diresti? Dillo a te stesso.', action: 'Sii gentile con te' }
-        ]
-      },
-      'frustrated_mistake': {
-        understanding: 'Gli errori attivano il <strong>critico interiore</strong> che è spesso spietato con chi ha ADHD. Tendi a trasformare un errore in una conferma di non essere "abbastanza".',
-        quickAction: 'Un errore è un dato, non un verdetto su chi sei. Cosa puoi imparare? E poi lascia andare.',
-        strategies: [
-          { name: 'Zoom out', desc: 'Su 100 cose che fai, quante vanno bene? Gli errori sembrano enormi ma sono una piccola percentuale.', action: 'Elenca 3 cose che hai fatto bene oggi' },
-          { name: 'Normalizza', desc: 'Tutti sbagliano. Letteralmente tutti. L\'errore ti rende umano, non incapace.', action: 'Ricorda un errore di qualcuno che ammiri' },
-          { name: 'Ripara e vai avanti', desc: 'Puoi fare qualcosa per rimediare? Fallo. Non puoi? Allora lascia andare.', action: 'Decidi: riparo o rilascio?' }
-        ]
-      },
-      'frustrated_distracted': {
-        understanding: 'La frustrazione post-distrazione è <strong>doppiamente difficile</strong>: non solo hai perso tempo, ma ora ti senti anche in colpa. È una trappola emotiva.',
-        quickAction: 'Stop. Il tempo perso è perso. L\'unica domanda che conta: cosa faccio ADESSO nei prossimi 15 minuti?',
-        strategies: [
-          { name: 'Reset senza giudizio', desc: 'Dì "ok, è successo" e ricomincia. La colpa non ti fa recuperare tempo.', action: 'Accetta e riparte da zero' },
-          { name: 'Blocca il trigger', desc: 'Cosa ti ha distratto? Puoi toglierlo di mezzo per la prossima ora?', action: 'Metti il telefono in un\'altra stanza' },
-          { name: 'Sessione breve', desc: 'Non provare a recuperare tutto. 25 minuti di focus valgono più di 2 ore di senso di colpa.', action: 'Timer 25 min, una cosa sola' }
-        ]
-      },
-
-      // OVERWHELMED
-      'overwhelmed_too_many': {
-        understanding: 'Il <strong>sovraccarico</strong> non è debolezza: è il tuo cervello che dice "troppi input". L\'ADHD rende difficile filtrare e prioritizzare automaticamente.',
-        quickAction: 'Fermati completamente. Chiudi tutto. 5 minuti di silenzio. Il mondo può aspettare.',
-        strategies: [
-          { name: 'Triage brutale', desc: 'Di tutto quello che devi fare, cosa succede se NON lo fai? Elimina tutto il possibile.', action: 'Taglia almeno 3 cose dalla lista' },
-          { name: 'Una cosa alla volta', desc: 'Il multitasking è un mito. Scegli UNA cosa. Finiscila. Poi la prossima.', action: 'Nascondi tutto tranne una cosa' },
-          { name: 'Scarica su carta', desc: 'Tutto quello che hai in testa, scrivilo. Una volta fuori dalla mente, pesa meno.', action: 'Brain dump di 5 minuti' }
-        ]
-      },
-      'overwhelmed_deadline': {
-        understanding: 'Scadenza + sovraccarico = <strong>tempesta perfetta</strong>. Il panico aumenta il rumore mentale e rende ancora più difficile pensare chiaramente.',
-        quickAction: 'Prima: un respiro profondo. Poi: qual è la cosa minima che devi consegnare? Fai solo quella.',
-        strategies: [
-          { name: 'Minimo vitale', desc: 'Non il lavoro perfetto, il lavoro minimo accettabile. Puoi migliorarlo dopo.', action: 'Definisci il "buono abbastanza"' },
-          { name: 'Aiuto esterno', desc: 'Puoi chiedere aiuto? Delegare qualcosa? Chiedere una proroga?', action: 'Identifica chi può aiutarti' },
-          { name: 'Un\'ora alla volta', desc: 'Non guardare tutto. Guarda solo la prossima ora. Cosa puoi fare ORA?', action: 'Pianifica solo i prossimi 60 minuti' }
-        ]
-      },
-
-      // DOWN
-      'down_criticized': {
-        understanding: 'La critica ha toccato un punto dolente. Spesso con l\'ADHD porti già un <strong>carico di autosvalutazione</strong>, e basta poco per farlo traboccare.',
-        quickAction: 'Quello che senti è valido. Ma non è la verità completa su chi sei. È solo un momento.',
-        strategies: [
-          { name: 'Contenitore delle vittorie', desc: 'Hai un posto dove tieni traccia delle cose buone che fai? Se no, crealo ora.', action: 'Scrivi 3 cose di cui vai fiero' },
-          { name: 'Prospettiva esterna', desc: 'Cosa direbbe qualcuno che ti vuole bene? Ascolta quella voce, non il critico.', action: 'Chiama o scrivi a quella persona' },
-          { name: 'Questo non sei tu', desc: 'Un feedback negativo è su un\'AZIONE, non sulla tua PERSONA.', action: 'Separa cosa hai fatto da chi sei' }
-        ]
-      },
-      'down_mistake': {
-        understanding: 'L\'errore ha attivato la spirale del <strong>"vedi? Non sei capace"</strong>. Questa voce mente. Gli errori non definiscono il tuo valore.',
-        quickAction: 'Respira. Metti una mano sul petto. Dì: "Ho sbagliato. Va bene. Posso riprovarci."',
-        strategies: [
-          { name: 'Storia completa', desc: 'Stai guardando solo l\'errore. Ma oggi cos\'altro è successo? Cosa hai fatto bene?', action: 'Elenca il quadro completo' },
-          { name: 'Self-compassion', desc: 'Parleresti così duramente a un amico che ha sbagliato? Trattati con la stessa gentilezza.', action: 'Scrivi una frase gentile per te' },
-          { name: 'Impara e rilascia', desc: 'Cosa puoi imparare da questo errore? Una volta capito, lascialo andare.', action: 'Trova una lezione e voltia pagina' }
-        ]
-      },
-
-      // ANXIOUS
-      'anxious_big_task': {
-        understanding: 'L\'ansia davanti a un compito grande è <strong>paura del fallimento</strong> mascherata. Il tuo cervello sta cercando di proteggerti evitando il rischio.',
-        quickAction: 'L\'ansia diminuisce quando inizi. Il primo passo non deve essere perfetto, deve solo esistere.',
-        strategies: [
-          { name: 'Worst case scenario', desc: 'Cosa succederebbe davvero se non andasse bene? Probabilmente molto meno di quanto temi.', action: 'Scrivi il peggio che può succedere' },
-          { name: 'Versione brutta', desc: 'E se facessi prima una versione volutamente imperfetta? Puoi sempre migliorarla.', action: 'Crea una bozza "orribile" in 10 min' },
-          { name: 'Ancora al presente', desc: 'L\'ansia vive nel futuro. Torna al presente: cosa devi fare ORA, in questo minuto?', action: '5 respiri profondi, poi un\'azione' }
-        ]
-      },
-      'anxious_deadline': {
-        understanding: 'L\'ansia da scadenza è il tuo cervello in <strong>modalità allarme</strong>. Vuole aiutarti ma sta solo aumentando il panico.',
-        quickAction: 'Fermati. 3 respiri lenti. Il panico non accelera il lavoro, lo rallenta. La calma è produttiva.',
-        strategies: [
-          { name: 'Grounding', desc: 'Prima di tutto: 5 cose che vedi, 4 che tocchi, 3 che senti. Torna nel tuo corpo.', action: 'Fai l\'esercizio 5-4-3-2-1' },
-          { name: 'Mini-win', desc: 'Fai la cosa più piccola e veloce della lista. La sensazione di progresso calma l\'ansia.', action: 'Completa un micro-task in 5 minuti' },
-          { name: 'Relativizza', desc: 'Su una scala 1-10 di "disastri della vita", quanto è grave davvero? Di solito max 4.', action: 'Dai un voto realistico alla situazione' }
-        ]
-      },
-
-      // DRAINED
-      'drained_tired': {
-        understanding: 'Sei <strong>svuotato</strong>. L\'ADHD consuma più energia degli altri perché il tuo cervello lavora sempre di più per le cose "normali".',
-        quickAction: 'Non è il momento di forzare. Cosa ti serve DAVVERO? Riposo? Cibo? Aria? Datti quello.',
-        strategies: [
-          { name: 'Permesso di fermarti', desc: 'Riposare non è pigrizia, è necessario. Soprattutto per te. Il riposo è produttivo.', action: 'Datti 20 minuti di pausa vera' },
-          { name: 'Ricarica fisica', desc: 'Spesso lo svuotamento mentale è anche fisico. Hai mangiato? Bevuto acqua? Dormito?', action: 'Controlla i bisogni base' },
-          { name: 'Domani esiste', desc: 'Non tutto deve essere fatto oggi. Cosa puoi rimandare a domani senza conseguenze gravi?', action: 'Sposta 2 cose a domani' }
-        ]
-      },
-      'drained_too_many': {
-        understanding: 'Hai dato troppo e ora sei <strong>in riserva</strong>. La lista infinita ha consumato le tue energie. È normale, non è fallimento.',
-        quickAction: 'Stop. Basta per oggi. Scegli UNA cosa non negoziabile, fai quella, poi fermati.',
-        strategies: [
-          { name: 'Chiudi i loop', desc: 'Le cose "quasi finite" consumano energia. Finiscine una, anche piccola.', action: 'Completa una cosa al 100%' },
-          { name: 'Dichiara "basta"', desc: 'Dì ad alta voce: "Per oggi ho fatto abbastanza." E credici.', action: 'Dillo, ad alta voce, ora' },
-          { name: 'Rituali di chiusura', desc: 'Un gesto fisico che dice "la giornata lavorativa è finita". Chiudi il laptop, cambia stanza.', action: 'Crea un confine fisico' }
-        ]
-      },
-
-      // DEFAULT
-      'default': {
-        understanding: 'Anche se non hai identificato un trigger specifico, quello che senti è <strong>valido</strong>. A volte il cervello ADHD si sovraccarica senza un motivo apparente.',
-        quickAction: 'Prenditi 5 minuti per te. Respira. Non devi capire tutto ora. Devi solo essere gentile con te stesso.',
-        strategies: [
-          { name: 'Check-in fisico', desc: 'Come sta il tuo corpo? Fame? Sete? Stanchezza? A volte il disagio mentale è fisico mascherato.', action: 'Ascolta il corpo e rispondi ai suoi bisogni' },
-          { name: 'Movimento', desc: '5 minuti di movimento possono resettare il cervello. Cammina, stretching, balla.', action: 'Muoviti per 5 minuti' },
-          { name: 'Parla con qualcuno', desc: 'A volte basta dire ad alta voce cosa senti per sentirsi meglio.', action: 'Chiama o scrivi a qualcuno' }
-        ]
-      }
-    };
-
-    // ===================== STATE =====================
-    let state = {
-      history: [],
-      patterns: {}
-    };
-
-    let currentFlow = {
-      feeling: null,
-      intensity: 3,
-      trigger: null,
-      notes: ''
-    };
-
-    let screenHistory = ['homeScreen'];
-
-    // ===================== INIT =====================
-    document.addEventListener('DOMContentLoaded', () => {
-      loadState();
-      setGreeting();
-      renderFeelings();
-      renderTriggers();
-    });
-
-    // Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(console.error);
-    }
-
-    // ===================== STATE MANAGEMENT =====================
-    function loadState() {
-      const saved = localStorage.getItem('come-stai-data');
-      if (saved) {
-        state = JSON.parse(saved);
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem('come-stai-data', JSON.stringify(state));
-    }
-
-    // ===================== NAVIGATION =====================
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-      
-      if (screenHistory[screenHistory.length - 1] !== screenId) {
-        screenHistory.push(screenId);
-      }
-
-      // Render content for specific screens
-      if (screenId === 'insightsScreen') renderInsights();
-      if (screenId === 'historyScreen') renderHistory();
-    }
-
-    function goBack() {
-      screenHistory.pop();
-      const prevScreen = screenHistory[screenHistory.length - 1] || 'homeScreen';
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(prevScreen).classList.add('active');
-    }
-
-    // ===================== HOME =====================
-    function setGreeting() {
-      const hour = new Date().getHours();
-      let greeting = 'Ciao';
-      if (hour < 12) greeting = 'Buongiorno';
-      else if (hour < 18) greeting = 'Buon pomeriggio';
-      else greeting = 'Buonasera';
-      document.getElementById('greeting').textContent = greeting;
-    }
-
-    // ===================== FLOW =====================
-    function startFlow() {
-      currentFlow = { feeling: null, intensity: 3, trigger: null, notes: '' };
-      renderFeelings();
-      document.getElementById('intensitySection').style.display = 'none';
-      document.getElementById('feelingContinue').classList.remove('show');
-      showScreen('feelingScreen');
-    }
-
-    function renderFeelings() {
-      const grid = document.getElementById('feelingsGrid');
-      grid.innerHTML = feelings.map((f, i) => `
-        <div class="option-card animate-in delay-${Math.min(i, 4)}" data-id="${f.id}" onclick="selectFeeling('${f.id}')">
-          <span class="emoji">${f.emoji}</span>
-          <span class="label">${f.label}</span>
-        </div>
-      `).join('');
-    }
-
-    function selectFeeling(id) {
-      currentFlow.feeling = id;
-      
-      // Update UI
-      document.querySelectorAll('#feelingsGrid .option-card').forEach(card => {
-        card.classList.toggle('selected', card.dataset.id === id);
-      });
-      
-      // Show intensity section
-      document.getElementById('intensitySection').style.display = 'block';
-      document.getElementById('feelingContinue').classList.add('show');
-    }
-
-    function setIntensity(value) {
-      currentFlow.intensity = value;
-      document.getElementById('intensityValue').textContent = value;
-      
-      document.querySelectorAll('.intensity-dot').forEach(dot => {
-        dot.classList.toggle('selected', parseInt(dot.dataset.value) === value);
-      });
-    }
-
-    function goToTrigger() {
-      renderTriggers();
-      document.getElementById('triggerContinue').classList.remove('show');
-      showScreen('triggerScreen');
-    }
-
-    function renderTriggers() {
-      const list = document.getElementById('triggersList');
-      
-      // Filter triggers based on feeling for relevance
-      const relevantTriggers = triggers;
-      
-      list.innerHTML = relevantTriggers.map((t, i) => `
-        <div class="trigger-card animate-in delay-${Math.min(i, 4)}" data-id="${t.id}" onclick="selectTrigger('${t.id}')">
-          <span class="emoji">${t.emoji}</span>
-          <span class="label">${t.label}</span>
-        </div>
-      `).join('');
-    }
-
-    function selectTrigger(id) {
-      currentFlow.trigger = id;
-      
-      // Update UI
-      document.querySelectorAll('#triggersList .trigger-card').forEach(card => {
-        card.classList.toggle('selected', card.dataset.id === id);
-      });
-      
-      document.getElementById('triggerContinue').classList.add('show');
-    }
-
-    // ===================== RESPONSE =====================
-    function generateResponse() {
-      currentFlow.notes = document.getElementById('notesInput').value;
-      
-      // Find matching response
-      const key = `${currentFlow.feeling}_${currentFlow.trigger}`;
-      const response = responses[key] || responses['default'];
-      const feeling = feelings.find(f => f.id === currentFlow.feeling);
-      
-      // Update response screen
-      document.getElementById('responseEmoji').textContent = feeling.emoji;
-      document.getElementById('responseFeelingText').textContent = feeling.label.toLowerCase();
-      document.getElementById('understandingText').innerHTML = response.understanding;
-      document.getElementById('quickActionText').textContent = response.quickAction;
-      
-      // Render strategies
-      const strategiesHtml = response.strategies.map((s, i) => `
-        <div class="strategy-card ${i === 1 ? 'secondary' : i === 2 ? 'tertiary' : ''}">
-          <div class="strategy-name">${s.name}</div>
-          <div class="strategy-desc">${s.desc}</div>
-          ${s.action ? `
-            <div class="strategy-action">
-              <div class="strategy-action-label">Prova ora</div>
-              <div class="strategy-action-text">${s.action}</div>
-            </div>
-          ` : ''}
-        </div>
-      `).join('');
-      document.getElementById('strategiesList').innerHTML = strategiesHtml;
-      
-      // Save to history
-      const entry = {
-        id: Date.now(),
-        date: new Date().toISOString(),
-        feeling: currentFlow.feeling,
-        trigger: currentFlow.trigger,
-        intensity: currentFlow.intensity,
-        notes: currentFlow.notes,
-        helpful: null
-      };
-      state.history.unshift(entry);
-      
-      // Update patterns
-      updatePatterns(entry);
-      saveState();
-      
-      showScreen('responseScreen');
-    }
-
-    function markQuickActionDone() {
-      const btn = document.getElementById('quickActionBtn');
-      btn.innerHTML = '✅ Fatto!';
-      btn.style.background = 'var(--bg-elevated)';
-      btn.style.color = 'var(--accent-green)';
-      showToast('Ottimo lavoro! 💪');
-    }
-
-    function giveFeedback(helpful) {
-      // Update last entry
-      if (state.history.length > 0) {
-        state.history[0].helpful = helpful;
-        saveState();
-      }
-      
-      // Update UI
-      document.querySelectorAll('.feedback-btn').forEach(btn => {
-        btn.classList.remove('selected');
-      });
-      event.target.classList.add('selected');
-      
-      if (helpful) {
-        showToast('Grazie! Sono contento che ti sia stato utile 💚');
-      } else {
-        showToast('Grazie per il feedback. Cercherò di migliorare.');
-      }
-    }
-
-    function finishAndGoHome() {
-      screenHistory = ['homeScreen'];
-      showScreen('homeScreen');
-    }
-
-    // ===================== PATTERNS =====================
-    function updatePatterns(entry) {
-      const feelingKey = entry.feeling;
-      const triggerKey = entry.trigger;
-      const dayOfWeek = new Date(entry.date).getDay();
-      const hour = new Date(entry.date).getHours();
-      
-      if (!state.patterns.feelings) state.patterns.feelings = {};
-      if (!state.patterns.triggers) state.patterns.triggers = {};
-      if (!state.patterns.days) state.patterns.days = {};
-      if (!state.patterns.times) state.patterns.times = {};
-      if (!state.patterns.combinations) state.patterns.combinations = {};
-      
-      // Count feelings
-      state.patterns.feelings[feelingKey] = (state.patterns.feelings[feelingKey] || 0) + 1;
-      
-      // Count triggers
-      state.patterns.triggers[triggerKey] = (state.patterns.triggers[triggerKey] || 0) + 1;
-      
-      // Count days
-      state.patterns.days[dayOfWeek] = (state.patterns.days[dayOfWeek] || 0) + 1;
-      
-      // Count time periods
-      let timePeriod = 'notte';
-      if (hour >= 6 && hour < 12) timePeriod = 'mattina';
-      else if (hour >= 12 && hour < 18) timePeriod = 'pomeriggio';
-      else if (hour >= 18 && hour < 22) timePeriod = 'sera';
-      state.patterns.times[timePeriod] = (state.patterns.times[timePeriod] || 0) + 1;
-      
-      // Count combinations
-      const comboKey = `${feelingKey}_${triggerKey}`;
-      state.patterns.combinations[comboKey] = (state.patterns.combinations[comboKey] || 0) + 1;
-    }
-
-    // ===================== INSIGHTS =====================
-    function renderInsights() {
-      const container = document.getElementById('insightsContent');
-      
-      if (state.history.length < 3) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="emoji">📊</div>
-            <h3>Non ho ancora abbastanza dati</h3>
-            <p>Usa l'app qualche volta e inizierò a mostrarti i tuoi pattern.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      let html = '';
-      
-      // Most common feeling
-      if (state.patterns.feelings) {
-        const topFeeling = Object.entries(state.patterns.feelings)
-          .sort((a, b) => b[1] - a[1])[0];
-        if (topFeeling) {
-          const feeling = feelings.find(f => f.id === topFeeling[0]);
-          html += `
-            <div class="insight-card">
-              <div class="insight-card-header">
-                <span class="insight-card-emoji">${feeling.emoji}</span>
-                <span class="insight-card-title">La tua emozione più frequente</span>
-              </div>
-              <p class="insight-card-content">
-                Ti senti <span class="insight-highlight">${feeling.label.toLowerCase()}</span> più spesso delle altre emozioni.
-                È emerso in ${topFeeling[1]} occasioni.
-              </p>
-            </div>
-          `;
-        }
-      }
-      
-      // Most common trigger
-      if (state.patterns.triggers) {
-        const topTrigger = Object.entries(state.patterns.triggers)
-          .sort((a, b) => b[1] - a[1])[0];
-        if (topTrigger) {
-          const trigger = triggers.find(t => t.id === topTrigger[0]);
-          html += `
-            <div class="insight-card">
-              <div class="insight-card-header">
-                <span class="insight-card-emoji">${trigger.emoji}</span>
-                <span class="insight-card-title">Il trigger più comune</span>
-              </div>
-              <p class="insight-card-content">
-                "<span class="insight-highlight">${trigger.label}</span>" è la situazione che più spesso ti mette in difficoltà.
-              </p>
-            </div>
-          `;
-        }
-      }
-      
-      // Time patterns
-      if (state.patterns.times) {
-        const topTime = Object.entries(state.patterns.times)
-          .sort((a, b) => b[1] - a[1])[0];
-        if (topTime && topTime[1] >= 2) {
-          html += `
-            <div class="insight-card">
-              <div class="insight-card-header">
-                <span class="insight-card-emoji">🕐</span>
-                <span class="insight-card-title">Quando succede di più</span>
-              </div>
-              <p class="insight-card-content">
-                I momenti difficili tendono ad arrivare più spesso <span class="insight-highlight">di ${topTime[0]}</span>.
-                Potresti prepararti meglio per quei momenti.
-              </p>
-            </div>
-          `;
-        }
-      }
-      
-      // Helpful strategies
-      const helpfulEntries = state.history.filter(h => h.helpful === true);
-      if (helpfulEntries.length >= 2) {
-        html += `
-          <div class="insight-card">
-            <div class="insight-card-header">
-              <span class="insight-card-emoji">✅</span>
-              <span class="insight-card-title">Le strategie funzionano</span>
-            </div>
-            <p class="insight-card-content">
-              In <span class="insight-highlight">${helpfulEntries.length} occasioni</span> hai detto che i consigli ti sono stati utili.
-              Continua così!
-            </p>
-          </div>
-        `;
-      }
-      
-      container.innerHTML = html || `
-        <div class="empty-state">
-          <div class="emoji">🔍</div>
-          <h3>Ancora pochi dati</h3>
-          <p>Continua a usare l'app per scoprire i tuoi pattern.</p>
-        </div>
-      `;
-    }
-
-    // ===================== HISTORY =====================
-    function renderHistory() {
-      const container = document.getElementById('historyContent');
-      
-      if (state.history.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <div class="emoji">📝</div>
-            <h3>Nessun momento registrato</h3>
-            <p>Quando hai bisogno di aiuto, troverai qui lo storico.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      container.innerHTML = state.history.slice(0, 20).map(entry => {
-        const feeling = feelings.find(f => f.id === entry.feeling);
-        const trigger = triggers.find(t => t.id === entry.trigger);
-        const date = new Date(entry.date);
-        const dateStr = formatDate(date);
-        
-        return `
-          <div class="history-item">
-            <span class="history-item-emoji">${feeling?.emoji || '😶'}</span>
-            <div class="history-item-content">
-              <div class="history-item-feeling">${feeling?.label || 'Sconosciuto'}</div>
-              <div class="history-item-meta">
-                ${dateStr} · ${trigger?.label || ''}
-              </div>
-            </div>
-            <div class="history-item-intensity">
-              ${[1,2,3,4,5].map(i => `
-                <div class="intensity-mini-dot ${i <= entry.intensity ? 'filled' : ''}"></div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function formatDate(date) {
-      const now = new Date();
-      const diff = now - date;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      
-      if (days === 0) {
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        if (hours === 0) {
-          const mins = Math.floor(diff / (1000 * 60));
-          return mins <= 1 ? 'Ora' : `${mins} min fa`;
-        }
-        return hours === 1 ? '1 ora fa' : `${hours} ore fa`;
-      } else if (days === 1) {
-        return 'Ieri';
-      } else if (days < 7) {
-        return `${days} giorni fa`;
-      } else {
-        return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
-      }
-    }
-
-    // ===================== UTILS =====================
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-  </script>
+function loadState(){const s=localStorage.getItem('come-stai-v2');if(s)state=JSON.parse(s);}
+function saveState(){localStorage.setItem('come-stai-v2',JSON.stringify(state));}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();}
+function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
+function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';}
+function startFlow(){currentFlow={feeling:null,intensity:3,trigger:null,notes:''};document.getElementById('intensitySection').style.display='none';document.getElementById('feelingContinue').classList.remove('show');renderFeelings();showScreen('feelingScreen');}
+function renderFeelings(){document.getElementById('feelingsGrid').innerHTML=feelings.map(f=>'<div class="option-card" data-id="'+f.id+'" onclick="selectFeeling(\''+f.id+'\')"><span class="emoji">'+f.emoji+'</span><span class="label">'+f.label+'</span></div>').join('');}
+function selectFeeling(id){currentFlow.feeling=id;document.querySelectorAll('#feelingsGrid .option-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));document.getElementById('intensitySection').style.display='block';document.getElementById('feelingContinue').classList.add('show');}
+function setIntensity(v){currentFlow.intensity=v;document.getElementById('intensityValue').textContent=v;document.querySelectorAll('.intensity-dot').forEach((d,i)=>d.classList.toggle('selected',i+1===v));}
+function goToTrigger(){document.getElementById('triggerContinue').classList.remove('show');renderTriggers();showScreen('triggerScreen');}
+function renderTriggers(){document.getElementById('triggersList').innerHTML=triggers.map(t=>'<div class="trigger-card" data-id="'+t.id+'" onclick="selectTrigger(\''+t.id+'\')"><span class="emoji">'+t.emoji+'</span><span class="label">'+t.label+'</span></div>').join('');}
+function selectTrigger(id){currentFlow.trigger=id;document.querySelectorAll('#triggersList .trigger-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));document.getElementById('triggerContinue').classList.add('show');}
+function generateResponse(){currentFlow.notes=document.getElementById('notesInput').value;const key=currentFlow.feeling+'_'+currentFlow.trigger;const r=responses[key]||responses['default'];const f=feelings.find(x=>x.id===currentFlow.feeling);document.getElementById('responseEmoji').textContent=f.emoji;document.getElementById('responseFeelingText').textContent=f.label.toLowerCase();document.getElementById('understandingText').innerHTML=r.understanding;document.getElementById('guidedActionsList').innerHTML=r.actions.map(aid=>{const a=guidedActions.find(x=>x.id===aid);return'<div class="guided-action-card" onclick="showScreen(\''+a.screen+'\')"><div class="guided-action-icon">'+a.icon+'</div><div class="guided-action-info"><div class="guided-action-name">'+a.name+'</div><div class="guided-action-desc">'+a.desc+'</div></div><span class="guided-action-arrow">→</span></div>';}).join('');document.getElementById('strategiesList').innerHTML=r.strategies.map((s,i)=>'<div class="strategy-card'+(i===1?' secondary':'')+'"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>').join('');state.history.unshift({id:Date.now(),date:new Date().toISOString(),feeling:currentFlow.feeling,trigger:currentFlow.trigger,intensity:currentFlow.intensity,notes:currentFlow.notes});updatePatterns();saveState();showScreen('responseScreen');}
+function giveFeedback(h){if(state.history.length>0)state.history[0].helpful=h;saveState();document.querySelectorAll('.feedback-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');showToast(h?'Grazie! 💚':'Grazie per il feedback');}
+function finishAndGoHome(){screenHistory=['homeScreen'];showScreen('homeScreen');}
+function startTimer(){document.getElementById('timerStartBtn').style.display='none';timerInterval=setInterval(()=>{timerSeconds--;updateTimerDisplay();if(timerSeconds<=0){clearInterval(timerInterval);timerDone();}},1000);}
+function updateTimerDisplay(){const m=Math.floor(timerSeconds/60),s=timerSeconds%60;document.getElementById('timerDisplay').textContent=m+':'+(s<10?'0':'')+s;const offset=565.48*(1-timerSeconds/120);document.getElementById('timerProgress').style.strokeDashoffset=offset;}
+function timerDone(){document.getElementById('timerControls').style.display='none';document.getElementById('timerDone').classList.add('show');showToast('🎉 2 minuti completati!');}
+function resetTimer(){timerSeconds=120;updateTimerDisplay();document.getElementById('timerDone').classList.remove('show');document.getElementById('timerControls').style.display='flex';document.getElementById('timerStartBtn').style.display='block';}
+function stopTimer(){clearInterval(timerInterval);resetTimer();}
+function startBreathing(){document.getElementById('breatheStartBtn').style.display='none';breatheCycles=5;runBreatheCycle();}
+function runBreatheCycle(){if(breatheCycles<=0){breathingDone();return;}const c=document.getElementById('breatheCircle'),i=document.getElementById('breatheInstruction'),n=document.getElementById('breatheCounter');c.classList.add('inhale');c.classList.remove('exhale');i.textContent='Inspira...';n.textContent=breatheCycles+' cicli';setTimeout(()=>{c.classList.remove('inhale');c.classList.add('exhale');i.textContent='Espira...';setTimeout(()=>{breatheCycles--;runBreatheCycle();},4000);},4000);}
+function breathingDone(){document.getElementById('breatheInstruction').textContent='Fatto! 🙏';document.getElementById('breatheCounter').textContent='Come ti senti?';document.getElementById('breatheStartBtn').style.display='block';document.getElementById('breatheStartBtn').textContent='Ripeti';showToast('🌬️ Respirazione completata');}
+function stopBreathing(){breatheCycles=0;document.getElementById('breatheCircle').classList.remove('inhale','exhale');document.getElementById('breatheInstruction').textContent='Pronto?';document.getElementById('breatheCounter').textContent='5 cicli';document.getElementById('breatheStartBtn').style.display='block';document.getElementById('breatheStartBtn').textContent='Inizia';}
+function saveDump(){const t=document.getElementById('dumpTextarea').value;if(t.trim()){state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:'dump',text:t,type:'dump'});saveState();showToast('💭 Pensieri salvati');}document.getElementById('dumpTextarea').value='';showScreen('responseScreen');}
+function initGrounding(){currentGroundStep=0;renderGroundingSteps();}
+function renderGroundingSteps(){document.getElementById('groundingSteps').innerHTML=groundingSteps.map((s,i)=>'<div class="ground-step'+(i===currentGroundStep?' active':'')+(i<currentGroundStep?' done':'')+'"><div class="ground-step-num">'+(i<currentGroundStep?'✓':s.num)+'</div><div class="ground-step-content"><div class="ground-step-title">'+s.sense+'</div><div class="ground-step-desc">'+s.desc+'</div><div class="ground-step-input"><div class="ground-input-row">'+s.placeholders.map(p=>'<input type="text" class="ground-input-item" placeholder="'+p+'">').join('')+'</div><button class="ground-next-btn" onclick="nextGroundStep()">Avanti →</button></div></div></div>').join('');}
+function nextGroundStep(){currentGroundStep++;if(currentGroundStep>=groundingSteps.length){showToast('🌿 Grounding completato!');setTimeout(()=>showScreen('responseScreen'),1500);return;}renderGroundingSteps();}
+function renderDiaryMoods(){document.getElementById('diaryMoodGrid').innerHTML=diaryMoods.map(m=>'<button class="diary-mood-btn" data-id="'+m.id+'" onclick="selectDiaryMood(\''+m.id+'\')"><span class="emoji">'+m.emoji+'</span><span class="label">'+m.label+'</span></button>').join('');}
+function selectDiaryMood(id){diaryMood=id;document.querySelectorAll('.diary-mood-btn').forEach(b=>b.classList.toggle('selected',b.dataset.id===id));}
+function addPrompt(t){const i=document.getElementById('diaryTextInput');i.value=t+' '+i.value;i.focus();}
+function saveDiaryEntry(){const t=document.getElementById('diaryTextInput').value.trim();if(!t){showToast('Scrivi qualcosa');return;}state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:diaryMood||'okay',text:t,type:'entry'});saveState();document.getElementById('diaryTextInput').value='';diaryMood=null;document.querySelectorAll('.diary-mood-btn').forEach(b=>b.classList.remove('selected'));showToast('📝 Nota salvata');showScreen('diaryScreen');}
+function renderDiaryEntries(){const c=document.getElementById('diaryEntries');const e=state.diary.filter(x=>x.type==='entry'||x.type==='dump');if(e.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">📝</div><h3>Nessuna nota</h3><p>Inizia a scrivere</p></div>';return;}c.innerHTML=e.slice(0,20).map(x=>{const m=diaryMoods.find(d=>d.id===x.mood)||{emoji:'💭'};const d=new Date(x.date);return'<div class="diary-entry" onclick="openDiaryEntry('+x.id+')"><div class="diary-entry-header"><span class="diary-entry-emoji">'+m.emoji+'</span><div class="diary-entry-meta"><div class="diary-entry-date">'+formatDate(d)+'</div><div class="diary-entry-time">'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</div></div></div><p class="diary-entry-text">'+x.text+'</p></div>';}).join('');}
+function openDiaryEntry(id){currentDiaryEntry=state.diary.find(x=>x.id===id);if(!currentDiaryEntry)return;const m=diaryMoods.find(x=>x.id===currentDiaryEntry.mood)||{emoji:'💭'};const d=new Date(currentDiaryEntry.date);document.getElementById('diaryDetailHeader').innerHTML='<div class="diary-detail-emoji">'+m.emoji+'</div><div class="diary-detail-date">'+formatDate(d)+'</div><div class="diary-detail-time">'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</div>';document.getElementById('diaryDetailText').textContent=currentDiaryEntry.text;showScreen('diaryDetailScreen');}
+function deleteDiaryEntry(){if(!currentDiaryEntry)return;if(confirm('Eliminare?')){state.diary=state.diary.filter(x=>x.id!==currentDiaryEntry.id);saveState();showToast('Eliminata');showScreen('diaryScreen');}}
+function updatePatterns(){const e=state.history[0];if(!e)return;if(!state.patterns.feelings)state.patterns.feelings={};if(!state.patterns.triggers)state.patterns.triggers={};if(!state.patterns.times)state.patterns.times={};state.patterns.feelings[e.feeling]=(state.patterns.feelings[e.feeling]||0)+1;state.patterns.triggers[e.trigger]=(state.patterns.triggers[e.trigger]||0)+1;const h=new Date(e.date).getHours();const t=h<12?'mattina':h<18?'pomeriggio':'sera';state.patterns.times[t]=(state.patterns.times[t]||0)+1;}
+function renderInsights(){const c=document.getElementById('insightsContent');if(state.history.length<3){c.innerHTML='<div class="empty-state"><div class="emoji">📊</div><h3>Non ho abbastanza dati</h3><p>Usa l\'app qualche volta</p></div>';return;}let h='';if(state.patterns.feelings){const t=Object.entries(state.patterns.feelings).sort((a,b)=>b[1]-a[1])[0];if(t){const f=feelings.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Emozione più frequente</span></div><p class="insight-card-content">Ti senti <span class="insight-highlight">'+f.label.toLowerCase()+'</span> più spesso ('+t[1]+' volte).</p></div>';}}if(state.patterns.triggers){const t=Object.entries(state.patterns.triggers).sort((a,b)=>b[1]-a[1])[0];if(t){const tr=triggers.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+tr.emoji+'</span><span class="insight-card-title">Trigger più comune</span></div><p class="insight-card-content">"<span class="insight-highlight">'+tr.label+'</span>" ti mette in difficoltà più spesso.</p></div>';}}if(state.patterns.times){const t=Object.entries(state.patterns.times).sort((a,b)=>b[1]-a[1])[0];if(t&&t[1]>=2)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">🕐</span><span class="insight-card-title">Momento critico</span></div><p class="insight-card-content">I momenti difficili arrivano più spesso <span class="insight-highlight">di '+t[0]+'</span>.</p></div>';}if(state.diary.length>0)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">📝</span><span class="insight-card-title">Il tuo diario</span></div><p class="insight-card-content">Hai scritto <span class="insight-highlight">'+state.diary.length+' note</span>.</p></div>';c.innerHTML=h||'<div class="empty-state"><div class="emoji">🔍</div><h3>Pochi dati</h3></div>';}
+function renderHistory(){const c=document.getElementById('historyContent');if(state.history.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">📋</div><h3>Nessun momento</h3></div>';return;}c.innerHTML=state.history.slice(0,20).map(e=>{const f=feelings.find(x=>x.id===e.feeling)||{emoji:'😶'};const tr=triggers.find(x=>x.id===e.trigger)||{label:''};const d=new Date(e.date);return'<div class="diary-entry"><div class="diary-entry-header"><span class="diary-entry-emoji">'+f.emoji+'</span><div class="diary-entry-meta"><div class="diary-entry-date">'+formatDate(d)+'</div><div class="diary-entry-time">'+tr.label+'</div></div><div class="diary-entry-intensity">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=e.intensity?' filled':'')+'"></div>').join('')+'</div></div></div>';}).join('');}
+function formatDate(d){const n=new Date(),diff=n-d,days=Math.floor(diff/(1000*60*60*24));if(days===0){const h=Math.floor(diff/(1000*60*60));return h===0?'Ora':h+' ore fa';}if(days===1)return'Ieri';if(days<7)return days+' giorni fa';return d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
 </body>
 </html>
