@@ -3,13 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Il tuo supporto per i momenti difficili. Capisci cosa ti succede e trova strategie per affrontarlo. App per la gestione dell'ADHD.">
+  <meta name="keywords" content="ADHD, supporto, salute mentale, benessere, mindfulness, gestione emozioni">
   <meta name="theme-color" content="#1a1a2e">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Come Stai?">
-  <title>Come Stai?</title>
+  <meta name="application-name" content="Come Stai?">
+  <meta name="format-detection" content="telephone=no">
+  <title>Come Stai? - Supporto ADHD</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -20,16 +29,16 @@
     .app{height:100%;display:flex;flex-direction:column;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
     .screen{display:none;flex-direction:column;height:100%;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
     .screen.active{display:flex}
-    .home-screen{justify-content:center;align-items:center;text-align:center;padding:40px 24px}
-    .home-greeting{font-size:1.1rem;color:var(--text-secondary);margin-bottom:8px}
-    .home-question{font-size:1.9rem;font-weight:800;margin-bottom:35px;line-height:1.2}
-    .home-main-btn{width:160px;height:160px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 20px 60px rgba(126,184,218,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+    .home-screen{justify-content:center;align-items:center;text-align:center;padding:60px 24px 40px;display:flex;flex-direction:column}
+    .home-greeting{font-size:1.1rem;color:var(--text-secondary);margin-bottom:12px}
+    .home-question{font-size:2rem;font-weight:800;margin-bottom:50px;line-height:1.3;max-width:400px}
+    .home-main-btn{width:180px;height:180px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 20px 60px rgba(126,184,218,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:50px}
     .home-main-btn:active{transform:scale(0.95)}
-    .home-main-btn .icon{font-size:2.2rem}
-    .home-actions{margin-top:40px;display:flex;flex-direction:column;gap:12px;width:100%;max-width:280px}
-    .home-action-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 24px;border-radius:var(--radius-lg);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer}
+    .home-main-btn .icon{font-size:2.5rem}
+    .home-actions{display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px;margin-bottom:40px}
+    .home-action-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:18px 24px;border-radius:var(--radius-lg);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer}
     .home-action-btn:active{background:var(--bg-elevated);transform:scale(0.98)}
-    .home-secondary{margin-top:30px;display:flex;gap:12px}
+    .home-secondary{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
     .home-sec-btn{padding:12px 20px;border-radius:var(--radius-full);border:1px solid var(--bg-elevated);background:transparent;color:var(--text-muted);font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer}
     .flow-header{display:flex;align-items:center;gap:16px;margin-bottom:30px;padding-top:10px}
     .back-btn{width:44px;height:44px;border-radius:50%;border:none;background:var(--bg-card);color:var(--text-secondary);font-size:1.25rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -209,7 +218,108 @@
 </head>
 <body>
   <div class="app">
-    <div class="screen active" id="homeScreen">
+    <div class="screen" id="legalScreen">
+      <div class="legal-screen">
+        <div class="legal-header">
+          <div class="legal-icon">⚖️</div>
+          <h1 class="legal-title">Termini e Condizioni</h1>
+          <p class="legal-subtitle">Prima di iniziare, leggi attentamente</p>
+        </div>
+
+        <div class="legal-warning">
+          <div class="legal-warning-title">
+            <span>⚠️</span>
+            <span>DISCLAIMER MEDICO IMPORTANTE</span>
+          </div>
+          <div class="legal-warning-text">
+            <p style="margin-bottom:10px"><strong>Questa app NON è un dispositivo medico</strong> e NON sostituisce la consulenza professionale di medici, psicologi o psichiatri.</p>
+            <p style="margin-bottom:10px">È uno strumento di <strong>auto-aiuto educativo</strong> per il benessere personale.</p>
+            <p><strong>In caso di emergenza, contatta il 112 o il tuo medico.</strong></p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">📱 Cosa fa questa app</div>
+          <div class="legal-section-text">
+            L'app ti aiuta a:
+            <ul>
+              <li>Identificare emozioni e trigger</li>
+              <li>Scoprire strategie di gestione</li>
+              <li>Tenere un diario personale</li>
+              <li>Analizzare pattern comportamentali</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">🔒 Privacy e dati</div>
+          <div class="legal-section-text">
+            I tuoi dati sono <strong>salvati solo sul tuo dispositivo</strong>. Non vengono mai inviati a server esterni. L'autore NON ha accesso ai tuoi dati personali.
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">⚠️ Limitazione di responsabilità</div>
+          <div class="legal-section-text">
+            L'autore declina ogni responsabilità per danni derivanti dall'uso dell'app. L'app è fornita "così com'è" senza garanzie. <strong>Utilizzi a tuo rischio.</strong>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">©️ Copyright</div>
+          <div class="legal-section-text">
+            Tutti i diritti riservati. È concesso solo il diritto di utilizzare l'app per uso personale. <strong>Vietate copia, modifica e distribuzione.</strong>
+          </div>
+        </div>
+
+        <div class="legal-links">
+          <a href="TERMINI.md" target="_blank" class="legal-link-btn">📄 Termini completi</a>
+          <a href="PRIVACY.md" target="_blank" class="legal-link-btn">🔒 Privacy Policy</a>
+        </div>
+
+        <div class="legal-consent">
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox1" onchange="updateAcceptButton()">
+            <label for="consentCheckbox1" class="legal-checkbox-label">
+              Ho letto e <strong>accetto i Termini e Condizioni</strong> d'uso
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox2" onchange="updateAcceptButton()">
+            <label for="consentCheckbox2" class="legal-checkbox-label">
+              Ho letto e compreso la <strong>Privacy Policy</strong>
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox3" onchange="updateAcceptButton()">
+            <label for="consentCheckbox3" class="legal-checkbox-label">
+              Comprendo che questa app <strong>NON è un dispositivo medico</strong> e NON sostituisce la consulenza professionale
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox4" onchange="updateAcceptButton()">
+            <label for="consentCheckbox4" class="legal-checkbox-label">
+              Utilizzo l'app <strong>a mio rischio</strong> e l'autore non è responsabile per conseguenze derivanti dall'uso
+            </label>
+          </div>
+        </div>
+
+        <div class="legal-actions">
+          <button class="legal-accept-btn" id="acceptBtn" disabled onclick="acceptTerms()">
+            ✓ Accetto e Continua
+          </button>
+          <button class="legal-decline-btn" onclick="declineTerms()">
+            Rifiuta
+          </button>
+        </div>
+
+        <div class="legal-footer">
+          © 2024 Alo - Come Stai? - Tutti i diritti riservati<br>
+          Versione 1.0 • Ultimo aggiornamento: 19/12/2024
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="homeScreen">
       <div class="home-screen">
         <p class="home-greeting" id="greeting">Ciao</p>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
@@ -226,6 +336,11 @@
           <button class="home-sec-btn" onclick="showScreen('learnScreen')">💡 Impara</button>
           <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
           <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
+          <button class="home-sec-btn" onclick="showScreen('settingsScreen')">⚙️ Dati</button>
+        </div>
+        <div class="app-footer">
+          © 2024 Alo - Come Stai? - Tutti i diritti riservati<br>
+          <a href="TERMINI.md" target="_blank">Termini</a> • <a href="PRIVACY.md" target="_blank">Privacy</a> • <a href="LICENSE" target="_blank">Licenza</a>
         </div>
       </div>
     </div>
@@ -376,6 +491,53 @@
           <p class="insights-subtitle">Comprendi il tuo ADHD</p>
         </div>
         <div id="learnContent"></div>
+      </div>
+    </div>
+    <div class="screen" id="settingsScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="insights-header">
+          <h1 class="insights-title">⚙️ Gestione Dati</h1>
+          <p class="insights-subtitle">Backup e sicurezza</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">💾 BACKUP</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Esporta i tuoi dati per creare una copia di sicurezza. Potrai reimportarla in qualsiasi momento.
+            </p>
+            <button class="timer-btn primary" onclick="exportData()" style="width:100%">
+              📥 Scarica Backup
+            </button>
+          </div>
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">📤 RIPRISTINO</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Importa un backup precedente per ripristinare i tuoi dati.
+            </p>
+            <button class="timer-btn secondary" onclick="importData()" style="width:100%;background:var(--accent-calm);color:white">
+              📤 Carica Backup
+            </button>
+          </div>
+          <div class="understanding-card" style="background:rgba(224,122,122,0.1);border:1px solid var(--accent-coral)">
+            <div class="understanding-title" style="color:var(--accent-coral)">🗑️ ZONA PERICOLOSA</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Elimina tutti i dati salvati nell'app. Questa azione è irreversibile.
+            </p>
+            <button class="timer-btn secondary" onclick="clearAllData()" style="width:100%;background:var(--accent-coral);color:white">
+              ⚠️ Elimina Tutti i Dati
+            </button>
+          </div>
+          <div class="understanding-card" style="margin-top:20px;background:rgba(126,184,218,0.1)">
+            <div class="understanding-title">ℹ️ INFO STORAGE</div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+              I tuoi dati sono salvati localmente nel browser. Per sicurezza, viene creato automaticamente un backup ad ogni salvataggio. I dati più vecchi di 6 mesi vengono archiviati automaticamente se lo storage si riempie.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
     <div class="screen" id="diaryScreen">
@@ -544,39 +706,39 @@ const contextStrategies={
   ]
 };
 const responses={
-  'blocked_big_task':{understanding:'Quando un compito sembra grande, il cervello ADHD va in <strong>paralisi</strong>. Non è pigrizia.',actions:['timer','dump'],strategies:[{name:'Body doubling',desc:'Lavora accanto a qualcuno.'},{name:'Versione brutta',desc:'Fai prima una versione imperfetta.'}]},
-  'blocked_too_many':{understanding:'Troppe opzioni causano <strong>sovraccarico</strong>. Tutto sembra urgente.',actions:['dump','timer'],strategies:[{name:'Regola dei 3',desc:'Max 3 cose importanti oggi.'},{name:'Domanda magica',desc:'"Se potessi fare solo UNA cosa?"'}]},
-  'blocked_boring_task':{understanding:'Il cervello ADHD <strong>rifiuta i compiti noiosi</strong>. Servono stimoli.',actions:['timer','dump'],strategies:[{name:'Gamification',desc:'Crea una sfida: "quanto veloce?"'},{name:'Ricompensa dopo',desc:'Cosa fai DOPO averlo finito?'}]},
-  'blocked_transition':{understanding:'Il <strong>task switching</strong> è difficile per l\'ADHD.',actions:['breathe','timer'],strategies:[{name:'Ponte mentale',desc:'Finisci con un mini-win, poi stacca 2 min.'},{name:'Nuovo contesto',desc:'Cambia stanza o posizione.'}]},
-  'frustrated_criticized':{understanding:'La <strong>sensibilità al rifiuto</strong> (RSD) è comune con ADHD.',actions:['breathe','ground'],strategies:[{name:'Fatto vs Interpretazione',desc:'Cosa è stato DETTO vs cosa INTERPRETO?'},{name:'Test del tempo',desc:'Tra una settimana sarà ancora grave?'}]},
-  'frustrated_mistake':{understanding:'Gli errori attivano il <strong>critico interiore</strong>.',actions:['breathe','dump'],strategies:[{name:'Zoom out',desc:'Su 100 cose, quante vanno bene?'},{name:'Ripara e vai',desc:'Puoi rimediare? Fallo. Altrimenti lascia andare.'}]},
-  'frustrated_distracted':{understanding:'La distrazione <strong>non è mancanza di volontà</strong>. È il cervello ADHD.',actions:['dump','ground'],strategies:[{name:'Reset ambientale',desc:'Togli stimoli non necessari ora.'},{name:'Compassione',desc:'Accade. Riparti senza giudizio.'}]},
-  'frustrated_interruption':{understanding:'Le interruzioni <strong>rompono l\'iperfocus</strong> e serve tempo per tornare.',actions:['breathe','dump'],strategies:[{name:'Buffer time',desc:'5 minuti per riconnetterti al flusso.'},{name:'Nota rapida',desc:'Scrivi dove eri prima dell\'interruzione.'}]},
-  'overwhelmed_too_many':{understanding:'Il <strong>sovraccarico</strong> è il cervello che dice "troppi input".',actions:['breathe','dump','ground'],strategies:[{name:'Triage brutale',desc:'Cosa succede se NON lo fai?'},{name:'Una cosa alla volta',desc:'Finisci UNA cosa, poi la prossima.'}]},
-  'overwhelmed_noise':{understanding:'Il <strong>sovraccarico sensoriale</strong> consuma energia cognitiva.',actions:['breathe','ground'],strategies:[{name:'Riduzione stimoli',desc:'Cuffie, luce soft, spazio calmo.'},{name:'Break sensoriale',desc:'5 min in un posto tranquillo.'}]},
-  'overwhelmed_decision':{understanding:'Troppe scelte causano <strong>paralisi decisionale</strong>.',actions:['dump','breathe'],strategies:[{name:'Dimezza opzioni',desc:'Elimina metà alternative subito.'},{name:'Flip a coin',desc:'Se non decidi in 2 min, lascia al caso.'}]},
-  'overwhelmed_routine_break':{understanding:'La <strong>routine dà struttura</strong>. Perderla disorienta.',actions:['ground','breathe'],strategies:[{name:'Mini-routine',desc:'Anche solo 3 passaggi ripetibili.'},{name:'Ancora esterna',desc:'Un timer, un posto, un rituale semplice.'}]},
-  'anxious_big_task':{understanding:'L\'ansia è <strong>paura del fallimento</strong> mascherata.',actions:['breathe','timer','ground'],strategies:[{name:'Worst case',desc:'Cosa succederebbe davvero?'},{name:'Ancora al presente',desc:'Cosa devi fare ORA?'}]},
-  'anxious_deadline':{understanding:'L\'ansia da scadenza è il cervello in <strong>modalità allarme</strong>.',actions:['breathe','ground','timer'],strategies:[{name:'Mini-win',desc:'Fai la cosa più piccola. Il progresso calma.'},{name:'Relativizza',desc:'Su scala 1-10, quanto è grave davvero?'}]},
-  'anxious_social_event':{understanding:'L\'<strong>ansia sociale</strong> è comune con ADHD. Temi il giudizio.',actions:['breathe','ground'],strategies:[{name:'Script mentale',desc:'3 frasi pronte per rompere il ghiaccio.'},{name:'Exit strategy',desc:'Sapere che puoi andartene calma.'}]},
-  'anxious_conflict':{understanding:'Il <strong>conflitto attiva RSD</strong>. Il rifiuto fa molto male.',actions:['breathe','ground','dump'],strategies:[{name:'Pausa prima',desc:'Non rispondere subito. Respira 5 volte.'},{name:'Fatti vs Paura',desc:'Cosa è successo vs cosa temo.'}]},
-  'down_criticized':{understanding:'La critica ha toccato un punto dolente.',actions:['breathe','dump'],strategies:[{name:'Contenitore vittorie',desc:'Scrivi 3 cose di cui vai fiero.'},{name:'Questo non sei tu',desc:'Un feedback è su un\'azione, non su di te.'}]},
-  'down_mistake':{understanding:'Gli errori ADHD <strong>attivano la vergogna</strong>.',actions:['dump','breathe'],strategies:[{name:'Normalizza',desc:'Con ADHD gli errori sono più frequenti. OK.'},{name:'Pattern fix',desc:'Quale sistema previene questo errore?'}]},
-  'down_unknown':{understanding:'A volte il <strong>down arriva senza motivo</strong>. Può essere chimico.',actions:['ground','breathe'],strategies:[{name:'Ride the wave',desc:'Non serve spiegarlo. Passa.'},{name:'Check basics',desc:'Hai mangiato? Dormito? Bevuto?'}]},
-  'drained_tired':{understanding:'Sei <strong>svuotato</strong>. L\'ADHD consuma più energia.',actions:['breathe','ground'],strategies:[{name:'Permesso di fermarti',desc:'Riposare non è pigrizia.'},{name:'Check fisico',desc:'Fame? Sete? Sonno?'}]},
-  'drained_too_many':{understanding:'Il <strong>decision fatigue</strong> esaurisce l\'energia mentale.',actions:['ground','breathe'],strategies:[{name:'Modalità autopilota',desc:'Fai solo cose automatiche ora.'},{name:'Power nap',desc:'15-20 minuti possono resettare.'}]},
-  'scattered_distracted':{understanding:'Il cervello ADHD <strong>salta tra stimoli</strong>. È normale.',actions:['dump','ground'],strategies:[{name:'Brain dump totale',desc:'Svuota TUTTI i pensieri. Scegli uno.'},{name:'Focus su uno',desc:'Carta e penna. Un compito. Timer.'}]},
-  'scattered_transition':{understanding:'Il <strong>cambio attività disperde</strong> l\'attenzione.',actions:['breathe','dump'],strategies:[{name:'Chiusura rituale',desc:'Chiudi esplicitamente l\'attività precedente.'},{name:'Reset fisico',desc:'Alzati, cammina, torna.'}]},
-  'scattered_interruption':{understanding:'Le interruzioni <strong>frammentano il flusso</strong> mentale.',actions:['dump','timer'],strategies:[{name:'Cattura pensieri',desc:'Nota veloce di dove eri.'},{name:'Ricostruisci contesto',desc:'Rileggi ultime righe/passi fatti.'}]},
-  'restless_boring_task':{understanding:'Il cervello ADHD <strong>cerca stimoli</strong>. Il noioso è doloroso.',actions:['timer','dump'],strategies:[{name:'Stimolo extra',desc:'Musica, movimento, cambio posizione.'},{name:'Sprint brevi',desc:'10 min sprint, poi break.'}]},
-  'restless_waiting':{understanding:'L\'<strong>attesa è tortura</strong> per l\'ADHD. Serve azione.',actions:['breathe','ground'],strategies:[{name:'Micro-task',desc:'Cosa puoi fare in questo tempo morto?'},{name:'Fidget strategico',desc:'Movimento piccolo per scaricare.'}]},
-  'restless_tired':{understanding:'Il <strong>paradosso ADHD</strong>: stanco ma agitato.',actions:['breathe','ground'],strategies:[{name:'Quiet stillness',desc:'Stare fermi senza dormire. Riposa la mente.'},{name:'Rilascio fisico',desc:'5 min stretching o camminata lenta.'}]},
-  'hyperfocus_interruption':{understanding:'L\'<strong>iperfocus è fragile</strong>. Romperlo causa frustrazione.',actions:['dump','breathe'],strategies:[{name:'Nota stato',desc:'Scrivi velocemente dove sei nel flusso.'},{name:'Bookmark mentale',desc:'Crea un segnalibro per tornare.'}]},
-  'hyperfocus_deadline':{understanding:'L\'iperfocus può essere <strong>sulla cosa sbagliata</strong>.',actions:['timer','dump'],strategies:[{name:'Priority check',desc:'Questa è la cosa più urgente ORA?'},{name:'Redirect gentile',desc:'Timer per chiudere, poi passa.'}]},
-  'shame_distracted':{understanding:'La <strong>vergogna ADHD</strong> dice "dovrei essere diverso".',actions:['dump','breathe'],strategies:[{name:'Self-compassion',desc:'Hai ADHD. Il tuo cervello funziona così.'},{name:'Sistema, non colpa',desc:'Quale supporto esterno serve?'}]},
-  'shame_mistake':{understanding:'Gli errori ADHD attivano <strong>vergogna profonda</strong>.',actions:['breathe','dump'],strategies:[{name:'Separa azione da sé',desc:'Hai fatto un errore. Non SEI un errore.'},{name:'Repair action',desc:'Cosa puoi fare ORA per sistemare?'}]},
-  'shame_criticized':{understanding:'RSD + critica = <strong>vergogna amplificata</strong>.',actions:['breathe','ground','dump'],strategies:[{name:'Fact-check RSD',desc:'La tua reazione è 10x. Il fatto è...?'},{name:'Chi dice cosa',desc:'Da chi viene? È fonte affidabile?'}]},
-  'default':{understanding:'Quello che senti è <strong>valido</strong>.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza?'},{name:'Movimento',desc:'5 minuti possono resettare il cervello.'}]}
+  'blocked_big_task':{understanding:'Quando un compito sembra grande, il cervello ADHD va in <strong>paralisi</strong>. Ecco perché:<br><br>Il tuo cervello produce <strong>meno dopamina</strong> delle persone neurotipiche. La dopamina è il neurotrasmettitore che dà motivazione e "spinta" all\'azione. Per attivarti hai bisogno di:<br>• Interesse forte (iperfocus)<br>• Urgenza/scadenza imminente (adrenalina)<br>• Novità/stimolo (ricerca dopamina)<br><br>Un compito grande non ha nessuna di queste caratteristiche. È lontano, astratto, noioso.<br><strong>Risultato: paralisi.</strong> Non è pigrizia. È neurologia.',actions:['timer','dump'],strategies:[{name:'Body doubling',desc:'Lavora accanto a qualcuno.'},{name:'Versione brutta',desc:'Fai prima una versione imperfetta.'}]},
+  'blocked_too_many':{understanding:'Troppe opzioni causano <strong>sovraccarico cognitivo</strong>. Il cervello ADHD ha difficoltà con le <strong>funzioni esecutive</strong> - quella parte che dovrebbe dire "questa è priorità 1, questa 2, questa 3".<br><br>Per te tutto sembra urgente contemporaneamente perché:<br>• La <strong>cecità temporale</strong> ti fa vedere solo "adesso" e "non adesso"<br>• Il deficit di <strong>working memory</strong> rende difficile tenere in testa più opzioni<br>• La paralisi decisionale blocca l\'azione<br><br>Non è che sei disorganizzato. Il tuo cervello fa fatica a <strong>filtrare le priorità</strong>.',actions:['dump','timer'],strategies:[{name:'Regola dei 3',desc:'Max 3 cose importanti oggi.'},{name:'Domanda magica',desc:'"Se potessi fare solo UNA cosa?"'}]},
+  'blocked_boring_task':{understanding:'Il cervello ADHD <strong>rifiuta attivamente i compiti noiosi</strong>. Non è mancanza di disciplina.<br><br>Ecco cosa succede:<br>• Il tuo cervello cerca costantemente <strong>dopamina</strong> (motivazione)<br>• I compiti noiosi non producono dopamina<br>• Il cervello dice "no, questo fa male" e si blocca<br>• Tu interpreti questo come pigrizia o incapacità<br><br>È lo stesso meccanismo per cui puoi passare ore su cose interessanti (iperfocus) ma non 5 minuti su cose noiose. <strong>Non sei tu. È il deficit di dopamina.</strong>',actions:['timer','dump'],strategies:[{name:'Gamification',desc:'Crea una sfida: "quanto veloce?"'},{name:'Ricompensa dopo',desc:'Cosa fai DOPO averlo finito?'}]},
+  'blocked_transition':{understanding:'Il <strong>task switching</strong> è una delle difficoltà più grandi con ADHD.<br><br>Cambiare attività richiede:<br>• Chiudere il contesto mentale precedente<br>• Caricare il nuovo contesto in memoria<br>• Riorientare l\'attenzione<br><br>Per il cervello ADHD questo costa <strong>energia cognitiva enorme</strong>. È come riavviare un computer ogni volta. Servono rituali di chiusura e apertura per facilitare il passaggio.<br><br>Non è che sei lento. Stai facendo un lavoro invisibile che altri non devono fare.',actions:['breathe','timer'],strategies:[{name:'Ponte mentale',desc:'Finisci con un mini-win, poi stacca 2 min.'},{name:'Nuovo contesto',desc:'Cambia stanza o posizione.'}]},
+  'frustrated_criticized':{understanding:'La <strong>Rejection Sensitive Dysphoria (RSD)</strong> è quando una critica ti colpisce 10 volte più forte.<br><br>Non è ipersensibilità emotiva. È una caratteristica neurologica dell\'ADHD:<br>• Il cervello ADHD ha una <strong>disregolazione emotiva</strong><br>• Le critiche attivano aree del dolore fisico<br>• La risposta è immediata, intensa, travolgente<br><br>Una persona neurotipica sente: "Mi ha criticato, va bene".<br>Tu senti: "Mi ha RIFIUTATO, sono orribile, è la fine".<br><br><strong>Non sei debole. Il tuo cervello amplifica il segnale di rifiuto.</strong>',actions:['breathe','ground'],strategies:[{name:'Fatto vs Interpretazione',desc:'Cosa è stato DETTO vs cosa INTERPRETO?'},{name:'Test del tempo',desc:'Tra una settimana sarà ancora grave?'}]},
+  'frustrated_mistake':{understanding:'Gli errori attivano il <strong>critico interiore</strong> amplificato dall\'ADHD.<br><br>Ecco perché ti colpisce così forte:<br>• Anni di <strong>"perché non ci riesci?"</strong> hanno costruito vergogna interna<br>• Il cervello ADHD tende a generalizzare: un errore = "sono un fallimento"<br>• La disregolazione emotiva amplifica la reazione<br><br>Con ADHD gli errori sono più frequenti (deficit attenzione, impulsività, memoria di lavoro). Non sei incapace. <strong>Stai facendo di più con meno risorse neurologiche.</strong>',actions:['breathe','dump'],strategies:[{name:'Zoom out',desc:'Su 100 cose, quante vanno bene?'},{name:'Ripara e vai',desc:'Puoi rimediare? Fallo. Altrimenti lascia andare.'}]},
+  'frustrated_distracted':{understanding:'La distrazione <strong>non è mancanza di volontà</strong>. È il cervello ADHD che funziona diversamente.<br><br>Cosa succede:<br>• Il tuo cervello ha un <strong>filtro attentivo debole</strong><br>• Non è che "non ti concentri" - ti concentri su TUTTO contemporaneamente<br>• Ogni stimolo (suono, pensiero, notifica) ha lo stesso "peso"<br>• Il risultato: salti continuamente<br><br>Le persone neurotipiche filtrano automaticamente. Tu devi costruire <strong>barriere esterne</strong> (timer, ambiente, body doubling). Non cambiare te stesso. Cambia l\'ambiente.',actions:['dump','ground'],strategies:[{name:'Reset ambientale',desc:'Togli stimoli non necessari ora.'},{name:'Compassione',desc:'Accade. Riparti senza giudizio.'}]},
+  'frustrated_interruption':{understanding:'Le interruzioni <strong>rompono l\'iperfocus</strong> e serve tempo per ricostruire il flusso mentale.<br><br>Con ADHD:<br>• L\'iperfocus è uno stato di <strong>totale immersione</strong><br>• Romperlo è come svegliare qualcuno dal sonno profondo<br>• Serve tempo per ricaricare il contesto in memoria<br>• La frustrazione è amplificata dalla disregolazione emotiva<br><br>Non sei esagerato a sentirti così. <strong>Hai perso uno stato prezioso che costa fatica ricreare.</strong>',actions:['breathe','dump'],strategies:[{name:'Buffer time',desc:'5 minuti per riconnetterti al flusso.'},{name:'Nota rapida',desc:'Scrivi dove eri prima dell\'interruzione.'}]},
+  'overwhelmed_too_many':{understanding:'Il <strong>sovraccarico cognitivo</strong> è il cervello che dice "troppi input, non reggo".<br><br>Il cervello ADHD ha:<br>• <strong>Working memory ridotta</strong> - può tenere meno cose in testa contemporaneamente<br>• Difficoltà a filtrare gli stimoli<br>• Energia cognitiva limitata<br><br>Ogni compito, decisione, stimolo consuma energia. Quando finisce, vai in <strong>overload</strong>. È come un computer che va in crash. Non è debolezza. È un limite fisiologico reale.',actions:['breathe','dump','ground'],strategies:[{name:'Triage brutale',desc:'Cosa succede se NON lo fai?'},{name:'Una cosa alla volta',desc:'Finisci UNA cosa, poi la prossima.'}]},
+  'overwhelmed_noise':{understanding:'Il <strong>sovraccarico sensoriale</strong> consuma energia cognitiva preziosa.<br><br>Il cervello ADHD ha difficoltà a:<br>• Filtrare stimoli non rilevanti<br>• Gestire input multipli<br>• Mantenere focus con disturbi<br><br>Ogni suono, luce, movimento richiede <strong>processamento attivo</strong>. Le persone neurotipiche filtrano automaticamente. Tu devi filtrare consciamente - e questo esaurisce.<br><br><strong>Ridurre gli stimoli non è debolezza. È gestione intelligente dell\'energia.</strong>',actions:['breathe','ground'],strategies:[{name:'Riduzione stimoli',desc:'Cuffie, luce soft, spazio calmo.'},{name:'Break sensoriale',desc:'5 min in un posto tranquillo.'}]},
+  'overwhelmed_decision':{understanding:'Troppe scelte causano <strong>paralisi decisionale</strong> amplificata dall\'ADHD.<br><br>Il problema:<br>• Il cervello ADHD ha deficit nelle <strong>funzioni esecutive</strong><br>• Valutare opzioni richiede working memory (che è ridotta)<br>• Ogni scelta consuma dopamina (che è scarsa)<br>• Risultato: blocco totale<br><br>È chiamato <strong>"paralisi da analisi"</strong>. Non sei indeciso per debolezza. Il tuo cervello va in overload con troppe variabili.',actions:['dump','breathe'],strategies:[{name:'Dimezza opzioni',desc:'Elimina metà alternative subito.'},{name:'Flip a coin',desc:'Se non decidi in 2 min, lascia al caso.'}]},
+  'overwhelmed_routine_break':{understanding:'La <strong>routine dà struttura esterna</strong> che il cervello ADHD non crea da solo.<br><br>Perché perderla disorienta:<br>• Il cervello ADHD ha deficit di <strong>autoregolazione</strong><br>• La routine è un\'ancora esterna che sostituisce il controllo interno<br>• Quando salta, perdi la mappa mentale di "cosa faccio quando"<br><br>Non è rigidità. Le routine sono <strong>protesi cognitive</strong> che compensano il deficit di funzioni esecutive. Perderle è come togliere le stampelle a chi ne ha bisogno.',actions:['ground','breathe'],strategies:[{name:'Mini-routine',desc:'Anche solo 3 passaggi ripetibili.'},{name:'Ancora esterna',desc:'Un timer, un posto, un rituale semplice.'}]},
+  'anxious_big_task':{understanding:'L\'ansia è <strong>paura del fallimento</strong> amplificata dalla storia ADHD.<br><br>Cosa succede:<br>• Hai ricevuto anni di messaggi "perché non ci riesci?"<br>• Il cervello ha imparato: compito grande = probabile fallimento<br>• L\'ansia è una risposta protettiva (evita il dolore)<br>• Ma ti blocca prima ancora di iniziare<br><br>L\'ansia non è realtà. È il cervello che cerca di <strong>proteggerti da un dolore passato</strong>. Ma quel dolore non è qui, ora.',actions:['breathe','timer','ground'],strategies:[{name:'Worst case',desc:'Cosa succederebbe davvero?'},{name:'Ancora al presente',desc:'Cosa devi fare ORA?'}]},
+  'anxious_deadline':{understanding:'L\'ansia da scadenza è il cervello in <strong>modalità allarme</strong> per la cecità temporale.<br><br>Il cervello ADHD:<br>• Non percepisce il tempo in modo lineare<br>• Esiste solo <strong>"adesso" e "non adesso"</strong><br>• Le scadenze lontane non attivano motivazione<br>• Quelle vicine attivano panico<br><br>L\'ansia è il modo in cui il cervello crea <strong>urgenza artificiale</strong> per compensare il deficit di dopamina. È doloroso ma funzionale. Non sei ansioso per debolezza - è il tuo cervello che cerca di attivarti.',actions:['breathe','ground','timer'],strategies:[{name:'Mini-win',desc:'Fai la cosa più piccola. Il progresso calma.'},{name:'Relativizza',desc:'Su scala 1-10, quanto è grave davvero?'}]},
+  'anxious_social_event':{understanding:'L\'<strong>ansia sociale</strong> è amplificata dall\'ADHD per motivi neurologici.<br><br>Le difficoltà:<br>• <strong>RSD</strong>: temi il giudizio/rifiuto in modo amplificato<br>• Gestire conversazioni richiede molta working memory<br>• Rischio di dire cose impulsive o perdere il filo<br>• Il sovraccarico sensoriale (voci, stimoli) esaurisce<br><br>Hai ragione a temere. <strong>Le situazioni sociali sono oggettivamente più difficili per te.</strong> Ma questo non significa che non puoi farcela. Significa che ti serve strategia.',actions:['breathe','ground'],strategies:[{name:'Script mentale',desc:'3 frasi pronte per rompere il ghiaccio.'},{name:'Exit strategy',desc:'Sapere che puoi andartene calma.'}]},
+  'anxious_conflict':{understanding:'Il <strong>conflitto attiva RSD</strong> (Rejection Sensitive Dysphoria). Il rifiuto percepito fa male come dolore fisico.<br><br>Perché è così intenso:<br>• Il cervello ADHD ha <strong>disregolazione emotiva</strong><br>• La critica/conflitto = rifiuto = dolore amplificato 10x<br>• La risposta è immediata, travolgente, difficile da controllare<br><br>Non sei drammatico. Il tuo cervello <strong>processa il rifiuto sociale come una minaccia grave</strong>. È neurologia, non debolezza.',actions:['breathe','ground','dump'],strategies:[{name:'Pausa prima',desc:'Non rispondere subito. Respira 5 volte.'},{name:'Fatti vs Paura',desc:'Cosa è successo vs cosa temo.'}]},
+  'down_criticized':{understanding:'La critica ha toccato la <strong>vergogna accumulata</strong> negli anni di ADHD non compreso.<br><br>Cosa succede:<br>• Hai ricevuto anni di messaggi "perché sei così?"<br>• Questo ha costruito <strong>vergogna interna</strong> ("c\'è qualcosa di sbagliato in me")<br>• Ogni nuova critica conferma quella narrativa<br>• RSD amplifica il dolore 10x<br><br>Non sei fragile. Stai portando il peso di <strong>anni di incomprensione</strong>. La critica non è su di te. È su un comportamento - spesso causato dall\'ADHD che gli altri non vedono.',actions:['breathe','dump'],strategies:[{name:'Contenitore vittorie',desc:'Scrivi 3 cose di cui vai fiero.'},{name:'Questo non sei tu',desc:'Un feedback è su un\'azione, non su di te.'}]},
+  'down_mistake':{understanding:'Gli errori ADHD <strong>attivano vergogna profonda</strong> costruita nel tempo.<br><br>Il meccanismo:<br>• Con ADHD fai più errori (deficit attenzione, impulsività, memoria)<br>• Ogni errore ha ricevuto messaggi "stai più attento!"<br>• Il cervello ha imparato: errore = "sono sbagliato"<br>• La disregolazione emotiva amplifica la vergogna<br><br>Ma la verità: <strong>stai facendo di più con meno risorse</strong>. Errori più frequenti non significano minor valore. Significano che il compito è più difficile per te.',actions:['dump','breathe'],strategies:[{name:'Normalizza',desc:'Con ADHD gli errori sono più frequenti. OK.'},{name:'Pattern fix',desc:'Quale sistema previene questo errore?'}]},
+  'down_unknown':{understanding:'A volte il <strong>down arriva senza motivo apparente</strong>. Può essere chimico.<br><br>Con ADHD:<br>• Le <strong>fluttuazioni di dopamina</strong> influenzano l\'umore<br>• La stanchezza cognitiva accumulata emerge<br>• La disregolazione emotiva causa sbalzi<br><br>Non tutto ha una causa psicologica. A volte è solo <strong>neurologia che fa il suo corso</strong>. Non serve spiegarlo o risolverlo. Può semplicemente passare.',actions:['ground','breathe'],strategies:[{name:'Ride the wave',desc:'Non serve spiegarlo. Passa.'},{name:'Check basics',desc:'Hai mangiato? Dormito? Bevuto?'}]},
+  'drained_tired':{understanding:'Sei <strong>esaurito</strong>. L\'ADHD consuma più energia di quanto gli altri vedano.<br><br>Perché sei più stanco:<br>• Ogni compito richiede <strong>energia cognitiva attiva</strong> (niente autopilota)<br>• Filtri stimoli consciamente (altri lo fanno automaticamente)<br>• Gestisci disregolazione emotiva<br>• Compensi deficit di memoria/attenzione/organizzazione<br><br>Stai facendo un <strong>lavoro invisibile costante</strong>. Non sei pigro. Sei esaurito per ragioni reali.',actions:['breathe','ground'],strategies:[{name:'Permesso di fermarti',desc:'Riposare non è pigrizia.'},{name:'Check fisico',desc:'Fame? Sete? Sonno?'}]},
+  'drained_too_many':{understanding:'Il <strong>decision fatigue</strong> è reale e amplificato dall\'ADHD.<br><br>Ogni decisione consuma:<br>• Dopamina (che è scarsa)<br>• Working memory (che è ridotta)<br>• Energia cognitiva (che è limitata)<br><br>Il cervello ADHD non ha modalità "risparmio energetico". Fa tutto a <strong>intensità massima</strong>. Quando l\'energia finisce, vai in shutdown.<br><br>Non sei debole. Hai esaurito un budget energetico reale.',actions:['ground','breathe'],strategies:[{name:'Modalità autopilota',desc:'Fai solo cose automatiche ora.'},{name:'Power nap',desc:'15-20 minuti possono resettare.'}]},
+  'scattered_distracted':{understanding:'Il cervello ADHD <strong>non riesce a filtrare gli stimoli</strong>. Salta tra tutto.<br><br>Cosa succede:<br>• Il filtro attentivo è debole<br>• Ogni stimolo (interno ed esterno) ha lo stesso peso<br>• Non è deficit di attenzione - è <strong>attenzione su TUTTO</strong><br>• Il risultato: dispersione mentale<br><br>Le persone neurotipiche ignorano automaticamente. Tu devi costruire <strong>barriere fisiche ed esterne</strong>. Non è mancanza di volontà. È architettura cerebrale diversa.',actions:['dump','ground'],strategies:[{name:'Brain dump totale',desc:'Svuota TUTTI i pensieri. Scegli uno.'},{name:'Focus su uno',desc:'Carta e penna. Un compito. Timer.'}]},
+  'scattered_transition':{understanding:'Il <strong>cambio attività disperde</strong> l\'attenzione che già fatica a mantenersi.<br><br>Con ADHD:<br>• Il cervello non "chiude" automaticamente il contesto precedente<br>• I pensieri della vecchia attività continuano a girare<br>• Serve energia per caricare il nuovo contesto<br>• Il risultato: dispersione mentale totale<br><br>Serve un <strong>rituale di chiusura esplicito</strong>. Non è lentezza. È compensazione di un processo che altri fanno automaticamente.',actions:['breathe','dump'],strategies:[{name:'Chiusura rituale',desc:'Chiudi esplicitamente l\'attività precedente.'},{name:'Reset fisico',desc:'Alzati, cammina, torna.'}]},
+  'scattered_interruption':{understanding:'Le interruzioni <strong>frammentano il flusso mentale</strong> che già è fragile.<br><br>Il cervello ADHD:<br>• Fatica a mantenere il contesto in memoria<br>• Ogni interruzione "cancella" parte del lavoro mentale fatto<br>• Ricostruire il flusso richiede energia cognitiva<br>• La frustrazione è amplificata dalla disregolazione emotiva<br><br>Non sei esagerato a sentirti disperso. <strong>Hai perso un lavoro mentale reale e faticoso.</strong>',actions:['dump','timer'],strategies:[{name:'Cattura pensieri',desc:'Nota veloce di dove eri.'},{name:'Ricostruisci contesto',desc:'Rileggi ultime righe/passi fatti.'}]},
+  'restless_boring_task':{understanding:'Il cervello ADHD <strong>cerca attivamente stimoli</strong>. Il noioso è fisicamente doloroso.<br><br>Perché:<br>• Il cervello cerca costantemente <strong>dopamina</strong><br>• I compiti noiosi non la producono<br>• L\'irrequietezza è il cervello che dice "dammi stimoli"<br>• Resistere consuma energia enorme<br><br>Non è mancanza di disciplina. È <strong>fame neurologica di stimoli</strong>. La soluzione: aggiungere stimoli (musica, movimento, gamification) invece di combattere il bisogno.',actions:['timer','dump'],strategies:[{name:'Stimolo extra',desc:'Musica, movimento, cambio posizione.'},{name:'Sprint brevi',desc:'10 min sprint, poi break.'}]},
+  'restless_waiting':{understanding:'L\'<strong>attesa è tortura</strong> per il cervello ADHD che vuole azione costante.<br><br>Il problema:<br>• Il cervello cerca stimoli e dopamina<br>• L\'attesa = assenza di stimoli<br>• La cecità temporale rende l\'attesa "infinita"<br>• L\'irrequietezza è energia che non trova sfogo<br><br>Non sei impaziente per difetto caratteriale. Il tuo cervello <strong>ha bisogno di input costanti</strong> per regolarsi.',actions:['breathe','ground'],strategies:[{name:'Micro-task',desc:'Cosa puoi fare in questo tempo morto?'},{name:'Fidget strategico',desc:'Movimento piccolo per scaricare.'}]},
+  'restless_tired':{understanding:'Il <strong>paradosso ADHD</strong>: esausto fisicamente ma irrequieto mentalmente.<br><br>Cosa succede:<br>• Il corpo è stanco e ha bisogno di riposo<br>• Il cervello cerca dopamina e stimoli<br>• I due sistemi vanno in conflitto<br>• Risultato: agitazione spossata<br><br>Non è contraddizione. Sono <strong>due sistemi neurologici che danno segnali opposti</strong>. Servono tecniche per calmare il cervello senza attivare il corpo.',actions:['breathe','ground'],strategies:[{name:'Quiet stillness',desc:'Stare fermi senza dormire. Riposa la mente.'},{name:'Rilascio fisico',desc:'5 min stretching o camminata lenta.'}]},
+  'hyperfocus_interruption':{understanding:'L\'<strong>iperfocus è uno stato fragile e prezioso</strong>. Romperlo causa frustrazione intensa.<br><br>L\'iperfocus è:<br>• Uno stato di totale assorbimento<br>• Il momento in cui il cervello ADHD funziona al meglio<br>• Difficile da raggiungere e facile da perdere<br>• Quasi impossibile da ricreare a comando<br><br>Perderlo è come <strong>svegliare qualcuno dal sonno profondo</strong>. La frustrazione non è esagerata. Hai perso qualcosa di raro e potente.',actions:['dump','breathe'],strategies:[{name:'Nota stato',desc:'Scrivi velocemente dove sei nel flusso.'},{name:'Bookmark mentale',desc:'Crea un segnalibro per tornare.'}]},
+  'hyperfocus_deadline':{understanding:'L\'iperfocus può essere <strong>sulla cosa sbagliata</strong> mentre il cervello ignora le priorità.<br><br>Il problema:<br>• L\'iperfocus si attiva su ciò che è <strong>interessante</strong>, non importante<br>• Il cervello ADHD non valuta priorità razionalmente<br>• La cecità temporale fa ignorare le scadenze<br>• Interromperlo è difficile (vedi iperfocus fragile)<br><br>Non sei irresponsabile. Il tuo cervello <strong>segue interesse, non priorità</strong>. Serve un\'ancora esterna (timer, persona) per redirigere.',actions:['timer','dump'],strategies:[{name:'Priority check',desc:'Questa è la cosa più urgente ORA?'},{name:'Redirect gentile',desc:'Timer per chiudere, poi passa.'}]},
+  'shame_distracted':{understanding:'La <strong>vergogna ADHD</strong> dice "dovrei essere diverso, dovrei riuscire".<br><br>Questa vergogna viene da:<br>• Anni di messaggi "stai più attento!"<br>• La narrativa interna "gli altri ce la fanno, io no"<br>• Non capire che il problema è <strong>neurologico</strong>, non caratteriale<br><br>Ma la verità: non sei distratto per pigrizia. Il tuo cervello <strong>filtra diversamente</strong>. Servono supporti esterni, non più forza di volontà. La vergogna è bugia. Il bisogno di aiuto è legittimo.',actions:['dump','breathe'],strategies:[{name:'Self-compassion',desc:'Hai ADHD. Il tuo cervello funziona così.'},{name:'Sistema, non colpa',desc:'Quale supporto esterno serve?'}]},
+  'shame_mistake':{understanding:'Gli errori ADHD attivano <strong>vergogna profonda</strong> costruita in anni di incomprensione.<br><br>Il meccanismo:<br>• Gli errori sono più frequenti (deficit attenzione/impulsività)<br>• Ogni errore ha ricevuto "fai più attenzione!"<br>• Il cervello ha imparato: errore = "sono difettoso"<br>• La disregolazione emotiva amplifica la vergogna<br><br>Ma la realtà: <strong>hai fatto un errore, non SEI un errore</strong>. Con ADHD gli errori sono parte del pacchetto, non prova di incapacità. La vergogna è la voce di chi non capiva. Non è verità.',actions:['breathe','dump'],strategies:[{name:'Separa azione da sé',desc:'Hai fatto un errore. Non SEI un errore.'},{name:'Repair action',desc:'Cosa puoi fare ORA per sistemare?'}]},
+  'shame_criticized':{understanding:'RSD + critica = <strong>vergogna amplificata 10x</strong>. È una tempesta neurologica.<br><br>Cosa succede:<br>• La critica attiva <strong>RSD</strong> (sensibilità al rifiuto)<br>• Il cervello interpreta critica = rifiuto totale<br>• La disregolazione emotiva amplifica la risposta<br>• La vergogna accumulata negli anni esplode<br><br>La tua reazione è <strong>10 volte più intensa del fatto oggettivo</strong>. Non è debolezza. È il cervello ADHD che amplifica il segnale di rifiuto come meccanismo protettivo (doloroso ma non volontario).',actions:['breathe','ground','dump'],strategies:[{name:'Fact-check RSD',desc:'La tua reazione è 10x. Il fatto è...?'},{name:'Chi dice cosa',desc:'Da chi viene? È fonte affidabile?'}]},
+  'default':{understanding:'Quello che senti è <strong>valido e reale</strong>.<br><br>Con ADHD:<br>• Le emozioni sono <strong>più intense</strong> (disregolazione emotiva)<br>• I trigger sono più frequenti<br>• Il recupero è più lento<br><br>Non stai esagerando. Il tuo cervello processa le emozioni diversamente. Servono strategie per gestire l\'intensità, non giudizio su ciò che senti.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza?'},{name:'Movimento',desc:'5 minuti possono resettare il cervello.'}]}
 };
 let state={history:[],diary:[],patterns:{}};
 let currentFlow={feeling:null,intensity:3,trigger:null,notes:''};
@@ -588,11 +750,296 @@ let diaryMood=null;
 let currentDiaryEntry=null;
 let reportPeriodDays=7;
 
-document.addEventListener('DOMContentLoaded',()=>{loadState();setGreeting();renderFeelings();renderTriggers();renderDiaryMoods();});
+// Gestione accettazione termini legali
+function checkLegalConsent() {
+  const consent = localStorage.getItem('legal-consent');
+  if (consent === 'accepted') {
+    document.getElementById('legalScreen').classList.remove('active');
+    document.getElementById('homeScreen').classList.add('active');
+  } else {
+    document.getElementById('legalScreen').classList.add('active');
+    document.getElementById('homeScreen').classList.remove('active');
+  }
+}
+
+function updateAcceptButton() {
+  const check1 = document.getElementById('consentCheckbox1').checked;
+  const check2 = document.getElementById('consentCheckbox2').checked;
+  const check3 = document.getElementById('consentCheckbox3').checked;
+  const check4 = document.getElementById('consentCheckbox4').checked;
+  document.getElementById('acceptBtn').disabled = !(check1 && check2 && check3 && check4);
+}
+
+function acceptTerms() {
+  localStorage.setItem('legal-consent', 'accepted');
+  localStorage.setItem('legal-consent-date', new Date().toISOString());
+  document.getElementById('legalScreen').classList.remove('active');
+  document.getElementById('homeScreen').classList.add('active');
+  showToast('✅ Benvenuto!');
+}
+
+function declineTerms() {
+  if (confirm('Se rifiuti i termini non potrai utilizzare l\'app. Sei sicuro?')) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;padding:40px;color:#f0f0f5"><div style="font-size:3rem;margin-bottom:20px">😔</div><h2 style="margin-bottom:10px">Termini rifiutati</h2><p style="color:#a0a0b8">Per utilizzare l\'app devi accettare i Termini e Condizioni.</p><button onclick="location.reload()" style="margin-top:30px;padding:14px 28px;background:#7eb8da;color:#1a1a2e;border:none;border-radius:100px;font-weight:700;cursor:pointer">Riprova</button></div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  checkLegalConsent();
+  loadState();
+  setGreeting();
+  renderFeelings();
+  renderTriggers();
+  renderDiaryMoods();
+});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
 
-function loadState(){const s=localStorage.getItem('come-stai-v2');if(s)state=JSON.parse(s);}
-function saveState(){localStorage.setItem('come-stai-v2',JSON.stringify(state));}
+// Versione schema dati per migrazioni future
+const SCHEMA_VERSION = 1;
+const STORAGE_KEY = 'come-stai-v2';
+
+// Carica stato con gestione errori robusta e validazione
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (!s) return; // Prima installazione, usa stato di default
+
+    const loaded = JSON.parse(s);
+
+    // Validazione base dello schema
+    if (!loaded || typeof loaded !== 'object') {
+      console.warn('Stato non valido, uso default');
+      return;
+    }
+
+    // Migrazione versione se necessario
+    if (!loaded.version || loaded.version < SCHEMA_VERSION) {
+      loaded.version = SCHEMA_VERSION;
+      // Aggiungi qui future migrazioni
+    }
+
+    // Validazione struttura minima
+    state.history = Array.isArray(loaded.history) ? loaded.history : [];
+    state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
+    state.patterns = (loaded.patterns && typeof loaded.patterns === 'object') ? loaded.patterns : {};
+    state.version = SCHEMA_VERSION;
+
+    console.log('Dati caricati:', state.history.length + ' momenti, ' + state.diary.length + ' note');
+  } catch (err) {
+    console.error('Errore caricamento dati:', err);
+    // Tenta backup recovery
+    try {
+      const backup = localStorage.getItem(STORAGE_KEY + '-backup');
+      if (backup) {
+        const loaded = JSON.parse(backup);
+        state.history = Array.isArray(loaded.history) ? loaded.history : [];
+        state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
+        state.patterns = loaded.patterns || {};
+        console.log('Recupero da backup riuscito');
+        showToast('⚠️ Dati recuperati da backup');
+        return;
+      }
+    } catch (backupErr) {
+      console.error('Backup non disponibile:', backupErr);
+    }
+    showToast('⚠️ Errore caricamento dati');
+  }
+}
+
+// Salva stato con gestione errori e backup
+function saveState() {
+  try {
+    state.version = SCHEMA_VERSION;
+    state.lastSaved = new Date().toISOString();
+
+    const data = JSON.stringify(state);
+
+    // Verifica dimensioni (warning se > 4MB)
+    if (data.length > 4 * 1024 * 1024) {
+      console.warn('Storage grande:', (data.length / 1024 / 1024).toFixed(2) + 'MB');
+    }
+
+    // Crea backup prima di salvare
+    try {
+      const current = localStorage.getItem(STORAGE_KEY);
+      if (current) {
+        localStorage.setItem(STORAGE_KEY + '-backup', current);
+      }
+    } catch (backupErr) {
+      // Backup non critico, continua
+      console.warn('Backup non creato:', backupErr);
+    }
+
+    // Salva stato principale
+    localStorage.setItem(STORAGE_KEY, data);
+
+  } catch (err) {
+    console.error('Errore salvataggio:', err);
+
+    // Gestione quota exceeded
+    if (err.name === 'QuotaExceededError' || err.code === 22) {
+      console.warn('Storage pieno, provo cleanup...');
+
+      // Rimuovi dati vecchi (oltre 6 mesi)
+      const sixMonthsAgo = Date.now() - (6 * 30 * 24 * 60 * 60 * 1000);
+      const originalHistoryLength = state.history.length;
+      const originalDiaryLength = state.diary.length;
+
+      state.history = state.history.filter(e => new Date(e.date).getTime() > sixMonthsAgo);
+      state.diary = state.diary.filter(e => new Date(e.date).getTime() > sixMonthsAgo);
+
+      const removedHistory = originalHistoryLength - state.history.length;
+      const removedDiary = originalDiaryLength - state.diary.length;
+
+      if (removedHistory > 0 || removedDiary > 0) {
+        console.log('Rimossi dati vecchi:', removedHistory + ' momenti, ' + removedDiary + ' note');
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          showToast('⚠️ Dati vecchi archiviati (storage pieno)');
+          return;
+        } catch (retryErr) {
+          console.error('Salvataggio fallito dopo cleanup:', retryErr);
+        }
+      }
+
+      showToast('❌ Storage pieno - esporta i dati');
+    } else {
+      showToast('❌ Errore salvataggio dati');
+    }
+  }
+}
+
+// Sincronizzazione automatica tra tab multipli
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY && e.newValue) {
+    try {
+      const newState = JSON.parse(e.newValue);
+      if (newState && typeof newState === 'object') {
+        state.history = Array.isArray(newState.history) ? newState.history : state.history;
+        state.diary = Array.isArray(newState.diary) ? newState.diary : state.diary;
+        state.patterns = newState.patterns || state.patterns;
+
+        // Ricarica vista corrente se necessario
+        const activeScreen = document.querySelector('.screen.active');
+        if (activeScreen) {
+          const id = activeScreen.id;
+          if (id === 'insightsScreen') renderInsights();
+          if (id === 'historyScreen') renderHistory();
+          if (id === 'diaryScreen') renderDiaryEntries();
+        }
+
+        console.log('Dati sincronizzati da altro tab');
+      }
+    } catch (err) {
+      console.error('Errore sincronizzazione tab:', err);
+    }
+  }
+});
+
+// Esporta dati in formato JSON per backup
+function exportData() {
+  try {
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'come-stai-backup-' + new Date().toISOString().split('T')[0] + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('💾 Backup scaricato');
+  } catch (err) {
+    console.error('Errore export:', err);
+    showToast('❌ Errore export');
+  }
+}
+
+// Importa dati da file JSON
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+
+        // Validazione
+        if (!imported || typeof imported !== 'object') {
+          showToast('❌ File non valido');
+          return;
+        }
+
+        // Conferma sovrascrittura
+        const hasData = state.history.length > 0 || state.diary.length > 0;
+        if (hasData) {
+          if (!confirm('Attenzione: questo sovrascriverà i tuoi dati attuali. Continua?')) {
+            return;
+          }
+        }
+
+        // Importa dati validati
+        state.history = Array.isArray(imported.history) ? imported.history : [];
+        state.diary = Array.isArray(imported.diary) ? imported.diary : [];
+        state.patterns = imported.patterns || {};
+
+        saveState();
+
+        // Ricarica vista corrente
+        const activeScreen = document.querySelector('.screen.active');
+        if (activeScreen) {
+          const id = activeScreen.id;
+          if (id === 'insightsScreen') renderInsights();
+          if (id === 'historyScreen') renderHistory();
+          if (id === 'diaryScreen') renderDiaryEntries();
+        }
+
+        showToast('✅ Dati importati (' + state.history.length + ' momenti, ' + state.diary.length + ' note)');
+      } catch (err) {
+        console.error('Errore import:', err);
+        showToast('❌ Errore lettura file');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// Cancella tutti i dati (con conferma)
+function clearAllData() {
+  if (!confirm('Attenzione: questo eliminerà TUTTI i tuoi dati in modo permanente. Sei sicuro?')) {
+    return;
+  }
+  if (!confirm('Ultima conferma: eliminare tutti i dati?')) {
+    return;
+  }
+
+  state.history = [];
+  state.diary = [];
+  state.patterns = {};
+
+  saveState();
+
+  // Pulisci anche backup
+  try {
+    localStorage.removeItem(STORAGE_KEY + '-backup');
+  } catch (err) {
+    console.warn('Errore pulizia backup:', err);
+  }
+
+  showToast('🗑️ Tutti i dati eliminati');
+
+  // Torna alla home
+  screenHistory = ['homeScreen'];
+  showScreen('homeScreen');
+}
+
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
 function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';}
