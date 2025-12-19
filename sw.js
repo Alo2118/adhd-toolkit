@@ -1,11 +1,12 @@
-const CACHE_NAME = 'come-stai-v2';
+const CACHE_NAME = 'come-stai-v3';
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap'
+  '/icon-192.svg',
+  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap'
 ];
 
 self.addEventListener('install', event => {
