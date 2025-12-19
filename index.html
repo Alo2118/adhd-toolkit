@@ -199,11 +199,141 @@
     .empty-state p{color:var(--text-muted);font-size:0.9rem}
     .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-elevated);color:var(--text-primary);padding:16px 28px;border-radius:var(--radius-full);font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.3);opacity:0;transition:all 0.3s;z-index:200}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .legal-screen{padding:30px 24px;padding-bottom:140px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .legal-header{text-align:center;margin-bottom:24px}
+    .legal-icon{font-size:3rem;margin-bottom:12px}
+    .legal-title{font-size:1.5rem;font-weight:800;margin-bottom:8px}
+    .legal-subtitle{color:var(--text-secondary);font-size:0.9rem}
+    .legal-warning{background:rgba(224,122,122,0.15);border:2px solid var(--accent-coral);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+    .legal-warning-title{color:var(--accent-coral);font-weight:700;font-size:1.05rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .legal-warning-text{font-size:0.9rem;line-height:1.6;color:var(--text-secondary)}
+    .legal-warning-text strong{color:var(--text-primary)}
+    .legal-section{background:var(--bg-card);border-radius:var(--radius-lg);padding:18px;margin-bottom:16px}
+    .legal-section-title{font-weight:700;font-size:1rem;margin-bottom:10px;color:var(--accent-calm)}
+    .legal-section-text{font-size:0.85rem;line-height:1.6;color:var(--text-secondary)}
+    .legal-section ul{margin:10px 0;padding-left:20px}
+    .legal-section li{margin:6px 0;font-size:0.85rem;color:var(--text-secondary)}
+    .legal-links{display:flex;gap:10px;margin-bottom:24px}
+    .legal-link-btn{flex:1;padding:12px;background:var(--bg-elevated);border:1px solid var(--bg-elevated);border-radius:var(--radius-md);color:var(--accent-calm);font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px}
+    .legal-link-btn:active{background:var(--bg-card)}
+    .legal-consent{background:var(--bg-card);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px}
+    .legal-checkbox-container{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+    .legal-checkbox-container input[type="checkbox"]{width:22px;height:22px;margin-top:2px;cursor:pointer;accent-color:var(--accent-green)}
+    .legal-checkbox-label{font-size:0.9rem;line-height:1.5;color:var(--text-secondary);flex:1}
+    .legal-checkbox-label strong{color:var(--text-primary)}
+    .legal-actions{position:fixed;bottom:calc(var(--safe-bottom) + 20px);left:20px;right:20px;display:flex;flex-direction:column;gap:12px}
+    .legal-accept-btn{padding:18px;background:var(--accent-green);color:var(--bg-deep);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer}
+    .legal-accept-btn:disabled{opacity:0.4;cursor:not-allowed}
+    .legal-decline-btn{padding:14px;background:transparent;color:var(--text-secondary);border:1px solid var(--bg-elevated);border-radius:var(--radius-lg);font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer}
+    .legal-footer{text-align:center;font-size:0.75rem;color:var(--text-muted);margin-top:20px}
+    .app-footer{text-align:center;padding:20px;font-size:0.7rem;color:var(--text-muted);margin-top:40px}
+    .app-footer a{color:var(--accent-calm);text-decoration:none}
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="screen active" id="homeScreen">
+    <div class="screen" id="legalScreen">
+      <div class="legal-screen">
+        <div class="legal-header">
+          <div class="legal-icon">⚖️</div>
+          <h1 class="legal-title">Termini e Condizioni</h1>
+          <p class="legal-subtitle">Prima di iniziare, leggi attentamente</p>
+        </div>
+
+        <div class="legal-warning">
+          <div class="legal-warning-title">
+            <span>⚠️</span>
+            <span>DISCLAIMER MEDICO IMPORTANTE</span>
+          </div>
+          <div class="legal-warning-text">
+            <p style="margin-bottom:10px"><strong>Questa app NON è un dispositivo medico</strong> e NON sostituisce la consulenza professionale di medici, psicologi o psichiatri.</p>
+            <p style="margin-bottom:10px">È uno strumento di <strong>auto-aiuto educativo</strong> per il benessere personale.</p>
+            <p><strong>In caso di emergenza, contatta il 112 o il tuo medico.</strong></p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">📱 Cosa fa questa app</div>
+          <div class="legal-section-text">
+            L'app ti aiuta a:
+            <ul>
+              <li>Identificare emozioni e trigger</li>
+              <li>Scoprire strategie di gestione</li>
+              <li>Tenere un diario personale</li>
+              <li>Analizzare pattern comportamentali</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">🔒 Privacy e dati</div>
+          <div class="legal-section-text">
+            I tuoi dati sono <strong>salvati solo sul tuo dispositivo</strong>. Non vengono mai inviati a server esterni. L'autore NON ha accesso ai tuoi dati personali.
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">⚠️ Limitazione di responsabilità</div>
+          <div class="legal-section-text">
+            L'autore declina ogni responsabilità per danni derivanti dall'uso dell'app. L'app è fornita "così com'è" senza garanzie. <strong>Utilizzi a tuo rischio.</strong>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">©️ Copyright</div>
+          <div class="legal-section-text">
+            Tutti i diritti riservati. È concesso solo il diritto di utilizzare l'app per uso personale. <strong>Vietate copia, modifica e distribuzione.</strong>
+          </div>
+        </div>
+
+        <div class="legal-links">
+          <a href="TERMINI.md" target="_blank" class="legal-link-btn">📄 Termini completi</a>
+          <a href="PRIVACY.md" target="_blank" class="legal-link-btn">🔒 Privacy Policy</a>
+        </div>
+
+        <div class="legal-consent">
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox1" onchange="updateAcceptButton()">
+            <label for="consentCheckbox1" class="legal-checkbox-label">
+              Ho letto e <strong>accetto i Termini e Condizioni</strong> d'uso
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox2" onchange="updateAcceptButton()">
+            <label for="consentCheckbox2" class="legal-checkbox-label">
+              Ho letto e compreso la <strong>Privacy Policy</strong>
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox3" onchange="updateAcceptButton()">
+            <label for="consentCheckbox3" class="legal-checkbox-label">
+              Comprendo che questa app <strong>NON è un dispositivo medico</strong> e NON sostituisce la consulenza professionale
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox4" onchange="updateAcceptButton()">
+            <label for="consentCheckbox4" class="legal-checkbox-label">
+              Utilizzo l'app <strong>a mio rischio</strong> e l'autore non è responsabile per conseguenze derivanti dall'uso
+            </label>
+          </div>
+        </div>
+
+        <div class="legal-actions">
+          <button class="legal-accept-btn" id="acceptBtn" disabled onclick="acceptTerms()">
+            ✓ Accetto e Continua
+          </button>
+          <button class="legal-decline-btn" onclick="declineTerms()">
+            Rifiuta
+          </button>
+        </div>
+
+        <div class="legal-footer">
+          © 2024 Come Stai? - Tutti i diritti riservati<br>
+          Versione 1.0 • Ultimo aggiornamento: 19/12/2024
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="homeScreen">
       <div class="home-screen">
         <p class="home-greeting" id="greeting">Ciao</p>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
@@ -221,6 +351,10 @@
           <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
           <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
           <button class="home-sec-btn" onclick="showScreen('settingsScreen')">⚙️ Dati</button>
+        </div>
+        <div class="app-footer">
+          © 2024 Come Stai? - Tutti i diritti riservati<br>
+          <a href="TERMINI.md" target="_blank">Termini</a> • <a href="PRIVACY.md" target="_blank">Privacy</a> • <a href="LICENSE" target="_blank">Licenza</a>
         </div>
       </div>
     </div>
@@ -586,7 +720,48 @@ let currentGroundStep=0;
 let diaryMood=null;
 let currentDiaryEntry=null;
 
-document.addEventListener('DOMContentLoaded',()=>{loadState();setGreeting();renderFeelings();renderTriggers();renderDiaryMoods();});
+// Gestione accettazione termini legali
+function checkLegalConsent() {
+  const consent = localStorage.getItem('legal-consent');
+  if (consent === 'accepted') {
+    document.getElementById('legalScreen').classList.remove('active');
+    document.getElementById('homeScreen').classList.add('active');
+  } else {
+    document.getElementById('legalScreen').classList.add('active');
+    document.getElementById('homeScreen').classList.remove('active');
+  }
+}
+
+function updateAcceptButton() {
+  const check1 = document.getElementById('consentCheckbox1').checked;
+  const check2 = document.getElementById('consentCheckbox2').checked;
+  const check3 = document.getElementById('consentCheckbox3').checked;
+  const check4 = document.getElementById('consentCheckbox4').checked;
+  document.getElementById('acceptBtn').disabled = !(check1 && check2 && check3 && check4);
+}
+
+function acceptTerms() {
+  localStorage.setItem('legal-consent', 'accepted');
+  localStorage.setItem('legal-consent-date', new Date().toISOString());
+  document.getElementById('legalScreen').classList.remove('active');
+  document.getElementById('homeScreen').classList.add('active');
+  showToast('✅ Benvenuto!');
+}
+
+function declineTerms() {
+  if (confirm('Se rifiuti i termini non potrai utilizzare l\'app. Sei sicuro?')) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;padding:40px;color:#f0f0f5"><div style="font-size:3rem;margin-bottom:20px">😔</div><h2 style="margin-bottom:10px">Termini rifiutati</h2><p style="color:#a0a0b8">Per utilizzare l\'app devi accettare i Termini e Condizioni.</p><button onclick="location.reload()" style="margin-top:30px;padding:14px 28px;background:#7eb8da;color:#1a1a2e;border:none;border-radius:100px;font-weight:700;cursor:pointer">Riprova</button></div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  checkLegalConsent();
+  loadState();
+  setGreeting();
+  renderFeelings();
+  renderTriggers();
+  renderDiaryMoods();
+});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
 
 // Versione schema dati per migrazioni future
