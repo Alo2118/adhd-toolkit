@@ -208,6 +208,7 @@
           </button>
         </div>
         <div class="home-secondary">
+          <button class="home-sec-btn" onclick="showScreen('learnScreen')">💡 Impara</button>
           <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
           <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
         </div>
@@ -349,6 +350,19 @@
         <div id="groundingSteps"></div>
       </div>
     </div>
+    <div class="screen" id="learnScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="insights-header">
+          <h1 class="insights-title">💡 Impara</h1>
+          <p class="insights-subtitle">Comprendi il tuo ADHD</p>
+        </div>
+        <div id="learnContent"></div>
+      </div>
+    </div>
     <div class="screen" id="diaryScreen">
       <div class="diary-screen">
         <div class="flow-header">
@@ -429,21 +443,81 @@
     <div class="toast" id="toast"></div>
   </div>
 <script>
-const feelings=[{id:'blocked',emoji:'😶',label:'Bloccato'},{id:'frustrated',emoji:'😤',label:'Frustrato'},{id:'overwhelmed',emoji:'🌀',label:'Sovraccarico'},{id:'down',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'drained',emoji:'🥱',label:'Svuotato'}];
-const triggers=[{id:'big_task',emoji:'📋',label:'Devo iniziare un compito importante'},{id:'too_many',emoji:'🗂️',label:'Troppe cose, non so da dove partire'},{id:'criticized',emoji:'💬',label:'Mi hanno criticato'},{id:'mistake',emoji:'❌',label:'Ho fatto un errore'},{id:'distracted',emoji:'📱',label:'Mi sono distratto'},{id:'deadline',emoji:'⏰',label:'Scadenza vicina'},{id:'conflict',emoji:'💢',label:'Conflitto con qualcuno'},{id:'tired',emoji:'😴',label:'Stanchezza fisica'},{id:'unknown',emoji:'❓',label:'Non so, è arrivato così'}];
+const feelings=[{id:'blocked',emoji:'😶',label:'Bloccato'},{id:'frustrated',emoji:'😤',label:'Frustrato'},{id:'overwhelmed',emoji:'🌀',label:'Sovraccarico'},{id:'down',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'drained',emoji:'🥱',label:'Svuotato'},{id:'scattered',emoji:'🌪️',label:'Disperso'},{id:'restless',emoji:'⚡',label:'Irrequieto'},{id:'hyperfocus',emoji:'🎯',label:'Iperfocus'},{id:'shame',emoji:'😞',label:'In colpa'}];
+const triggers=[{id:'big_task',emoji:'📋',label:'Devo iniziare un compito importante'},{id:'too_many',emoji:'🗂️',label:'Troppe cose, non so da dove partire'},{id:'criticized',emoji:'💬',label:'Mi hanno criticato'},{id:'mistake',emoji:'❌',label:'Ho fatto un errore'},{id:'distracted',emoji:'📱',label:'Mi sono distratto'},{id:'deadline',emoji:'⏰',label:'Scadenza vicina'},{id:'conflict',emoji:'💢',label:'Conflitto con qualcuno'},{id:'tired',emoji:'😴',label:'Stanchezza fisica'},{id:'unknown',emoji:'❓',label:'Non so, è arrivato così'},{id:'boring_task',emoji:'😑',label:'Compito noioso ma necessario'},{id:'transition',emoji:'🔄',label:'Devo cambiare attività'},{id:'social_event',emoji:'👥',label:'Evento sociale imminente'},{id:'interruption',emoji:'🔔',label:'Sono stato interrotto'},{id:'waiting',emoji:'⏳',label:'Devo aspettare qualcosa'},{id:'decision',emoji:'🤔',label:'Devo prendere una decisione'},{id:'noise',emoji:'🔊',label:'Troppo rumore/stimoli'},{id:'routine_break',emoji:'💔',label:'La mia routine è saltata'}];
 const diaryMoods=[{id:'great',emoji:'😊',label:'Bene'},{id:'okay',emoji:'😐',label:'Così così'},{id:'low',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'angry',emoji:'😤',label:'Irritato'}];
 const guidedActions=[{id:'timer',icon:'⏱️',name:'Timer 2 minuti',desc:'Inizia per soli 2 minuti',screen:'timerScreen'},{id:'breathe',icon:'🌬️',name:'Respira con me',desc:'5 cicli di respirazione',screen:'breatheScreen'},{id:'dump',icon:'🧠',name:'Svuota la mente',desc:'Scrivi tutto senza filtri',screen:'dumpScreen'},{id:'ground',icon:'🌿',name:'Torna al presente',desc:'Tecnica 5-4-3-2-1',screen:'groundScreen'}];
 const groundingSteps=[{num:5,sense:'VEDI',desc:'5 cose che vedi',placeholders:['lampada','muro','telefono','finestra','mano']},{num:4,sense:'TOCCA',desc:'4 cose che tocchi',placeholders:['tavolo','tessuto','sedia','pelle']},{num:3,sense:'SENTI',desc:'3 cose che senti',placeholders:['respiro','traffico','musica']},{num:2,sense:'ANNUSA',desc:'2 cose che annusi',placeholders:['aria','caffè']},{num:1,sense:'GUSTA',desc:'1 cosa che gusti',placeholders:['saliva']}];
+const learnTopics=[
+  {emoji:'🧠',title:'Cos\'è l\'ADHD',content:'L\'ADHD è una <strong>differenza neurologica</strong> che influenza attenzione, impulsi e regolazione emotiva. Non è pigrizia o mancanza di volontà. Il tuo cervello funziona in modo diverso.',context:'generale'},
+  {emoji:'⚡',title:'Deficit di dopamina',content:'Il cervello ADHD produce <strong>meno dopamina</strong>. Per questo cerchi stimoli forti, ti annoi facilmente e hai bisogno di "urgenza" per attivarti.',context:'generale'},
+  {emoji:'🎯',title:'Iperfocus',content:'L\'iperfocus è quando sei <strong>totalmente assorbito</strong> in un\'attività interessante. È un superpotere ADHD, ma può farti perdere tempo su cose non prioritarie.',context:'lavoro'},
+  {emoji:'💔',title:'RSD - Sensibilità al rifiuto',content:'La <strong>Rejection Sensitive Dysphoria</strong> è quando una critica o un rifiuto ti colpisce 10 volte più forte. È parte dell\'ADHD, non debolezza.',context:'sociale'},
+  {emoji:'⏰',title:'Cecità temporale',content:'Il cervello ADHD non percepisce il tempo come gli altri. Ci sono solo <strong>"adesso" e "non adesso"</strong>. Per questo le scadenze lontane non ti motivano.',context:'lavoro'},
+  {emoji:'🌀',title:'Paralisi da analisi',content:'Troppe opzioni causano <strong>blocco decisionale</strong>. Il cervello ADHD va in overload. Soluzione: riduci le scelte drasticamente.',context:'studio'},
+  {emoji:'🔋',title:'Energy management',content:'Con ADHD l\'energia mentale è <strong>limitata</strong>. Ogni decisione, cambio compito o stimolo la consuma. Gestisci l\'energia, non solo il tempo.',context:'lavoro'},
+  {emoji:'📱',title:'Distraibilità',content:'Non è che "non ti concentri". Il tuo cervello <strong>si concentra su tutto</strong> contemporaneamente. Servono barriere esterne (timer, ambiente, body doubling).',context:'studio'},
+  {emoji:'🎲',title:'Ricerca di novità',content:'Il cervello ADHD <strong>ama il nuovo</strong>. Per questo inizi mille progetti. Non è mancanza di impegno, è bisogno di stimoli freschi.',context:'generale'},
+  {emoji:'🛡️',title:'Strategie vs Forza di volontà',content:'La forza di volontà non basta con ADHD. Servono <strong>sistemi esterni</strong>: timer, checklist, body doubling, environment design.',context:'lavoro'},
+  {emoji:'😴',title:'Paradosso stanco/agitato',content:'Con ADHD puoi essere <strong>esausto ma irrequieto</strong>. Il corpo è stanco, il cervello è agitato. Servono tecniche di grounding e quiet time.',context:'generale'},
+  {emoji:'🔄',title:'Task switching',content:'Cambiare attività <strong>costa molto</strong> al cervello ADHD. Serve un rituale di chiusura e uno di apertura per ogni transizione.',context:'lavoro'},
+  {emoji:'💊',title:'Medication & tools',content:'I farmaci possono aiutare, ma non sono magici. Funzionano meglio <strong>insieme a strategie</strong> comportamentali e sistemi di supporto.',context:'generale'},
+  {emoji:'🎭',title:'Masking',content:'Nascondere l\'ADHD per sembrare "normale" consuma <strong>energia immensa</strong>. Va bene mostrare chi sei. L\'ADHD non è difetto.',context:'sociale'},
+  {emoji:'✅',title:'Sistemi che funzionano',content:'<strong>Timer visivi, body doubling, gamification, chunking, external accountability</strong>. Non cambiare te stesso, cambia l\'ambiente.',context:'studio'}
+];
+const contextStrategies={
+  lavoro:[
+    {name:'Pomodoro modificato',desc:'25 min lavoro, 5 min break. Ma puoi accorciare a 15-3 se serve. L\'importante è il ritmo.'},
+    {name:'Body doubling virtuale',desc:'Lavora in videocall con qualcuno, anche in silenzio. La presenza aiuta.'},
+    {name:'Un compito alla volta',desc:'Chiudi tutte le tab. Un file. Un compito. Finito quello, prossimo.'},
+    {name:'Deadline artificiali',desc:'Crea urgenza falsa. "Devo finire entro le 15:00" anche se la vera deadline è domani.'}
+  ],
+  studio:[
+    {name:'Chunk down',desc:'Spezza tutto in pezzi da 10-15 minuti. Studia un pezzo, break, prossimo.'},
+    {name:'Active recall',desc:'Non rileggere. Chiudi il libro e ripeti. L\'ADHD impara facendo, non guardando.'},
+    {name:'Cambia location',desc:'Studia in posti diversi. Il cervello ADHD ama la novità.'},
+    {name:'Insegna a qualcuno',desc:'Spiega ad alta voce. Anche a un pupazzo. L\'output attivo fissa la memoria.'}
+  ],
+  sociale:[
+    {name:'Prepara frasi',desc:'3 frasi pronte per iniziare conversazioni. Toglie il carico mentale dell\'improvvisazione.'},
+    {name:'Time-box sociale',desc:'"Resto 1 ora". Sapere che finisce aiuta. Puoi sempre restare di più.'},
+    {name:'Safe word',desc:'Con amici fidati, una parola per dire "sono in overload" senza spiegare.'},
+    {name:'Recovery time',desc:'Dopo eventi sociali, blocca tempo per ricaricare. Non è antisociale, è necessità.'}
+  ]
+};
 const responses={
   'blocked_big_task':{understanding:'Quando un compito sembra grande, il cervello ADHD va in <strong>paralisi</strong>. Non è pigrizia.',actions:['timer','dump'],strategies:[{name:'Body doubling',desc:'Lavora accanto a qualcuno.'},{name:'Versione brutta',desc:'Fai prima una versione imperfetta.'}]},
   'blocked_too_many':{understanding:'Troppe opzioni causano <strong>sovraccarico</strong>. Tutto sembra urgente.',actions:['dump','timer'],strategies:[{name:'Regola dei 3',desc:'Max 3 cose importanti oggi.'},{name:'Domanda magica',desc:'"Se potessi fare solo UNA cosa?"'}]},
+  'blocked_boring_task':{understanding:'Il cervello ADHD <strong>rifiuta i compiti noiosi</strong>. Servono stimoli.',actions:['timer','dump'],strategies:[{name:'Gamification',desc:'Crea una sfida: "quanto veloce?"'},{name:'Ricompensa dopo',desc:'Cosa fai DOPO averlo finito?'}]},
+  'blocked_transition':{understanding:'Il <strong>task switching</strong> è difficile per l\'ADHD.',actions:['breathe','timer'],strategies:[{name:'Ponte mentale',desc:'Finisci con un mini-win, poi stacca 2 min.'},{name:'Nuovo contesto',desc:'Cambia stanza o posizione.'}]},
   'frustrated_criticized':{understanding:'La <strong>sensibilità al rifiuto</strong> (RSD) è comune con ADHD.',actions:['breathe','ground'],strategies:[{name:'Fatto vs Interpretazione',desc:'Cosa è stato DETTO vs cosa INTERPRETO?'},{name:'Test del tempo',desc:'Tra una settimana sarà ancora grave?'}]},
   'frustrated_mistake':{understanding:'Gli errori attivano il <strong>critico interiore</strong>.',actions:['breathe','dump'],strategies:[{name:'Zoom out',desc:'Su 100 cose, quante vanno bene?'},{name:'Ripara e vai',desc:'Puoi rimediare? Fallo. Altrimenti lascia andare.'}]},
+  'frustrated_distracted':{understanding:'La distrazione <strong>non è mancanza di volontà</strong>. È il cervello ADHD.',actions:['dump','ground'],strategies:[{name:'Reset ambientale',desc:'Togli stimoli non necessari ora.'},{name:'Compassione',desc:'Accade. Riparti senza giudizio.'}]},
+  'frustrated_interruption':{understanding:'Le interruzioni <strong>rompono l\'iperfocus</strong> e serve tempo per tornare.',actions:['breathe','dump'],strategies:[{name:'Buffer time',desc:'5 minuti per riconnetterti al flusso.'},{name:'Nota rapida',desc:'Scrivi dove eri prima dell\'interruzione.'}]},
   'overwhelmed_too_many':{understanding:'Il <strong>sovraccarico</strong> è il cervello che dice "troppi input".',actions:['breathe','dump','ground'],strategies:[{name:'Triage brutale',desc:'Cosa succede se NON lo fai?'},{name:'Una cosa alla volta',desc:'Finisci UNA cosa, poi la prossima.'}]},
+  'overwhelmed_noise':{understanding:'Il <strong>sovraccarico sensoriale</strong> consuma energia cognitiva.',actions:['breathe','ground'],strategies:[{name:'Riduzione stimoli',desc:'Cuffie, luce soft, spazio calmo.'},{name:'Break sensoriale',desc:'5 min in un posto tranquillo.'}]},
+  'overwhelmed_decision':{understanding:'Troppe scelte causano <strong>paralisi decisionale</strong>.',actions:['dump','breathe'],strategies:[{name:'Dimezza opzioni',desc:'Elimina metà alternative subito.'},{name:'Flip a coin',desc:'Se non decidi in 2 min, lascia al caso.'}]},
+  'overwhelmed_routine_break':{understanding:'La <strong>routine dà struttura</strong>. Perderla disorienta.',actions:['ground','breathe'],strategies:[{name:'Mini-routine',desc:'Anche solo 3 passaggi ripetibili.'},{name:'Ancora esterna',desc:'Un timer, un posto, un rituale semplice.'}]},
   'anxious_big_task':{understanding:'L\'ansia è <strong>paura del fallimento</strong> mascherata.',actions:['breathe','timer','ground'],strategies:[{name:'Worst case',desc:'Cosa succederebbe davvero?'},{name:'Ancora al presente',desc:'Cosa devi fare ORA?'}]},
   'anxious_deadline':{understanding:'L\'ansia da scadenza è il cervello in <strong>modalità allarme</strong>.',actions:['breathe','ground','timer'],strategies:[{name:'Mini-win',desc:'Fai la cosa più piccola. Il progresso calma.'},{name:'Relativizza',desc:'Su scala 1-10, quanto è grave davvero?'}]},
+  'anxious_social_event':{understanding:'L\'<strong>ansia sociale</strong> è comune con ADHD. Temi il giudizio.',actions:['breathe','ground'],strategies:[{name:'Script mentale',desc:'3 frasi pronte per rompere il ghiaccio.'},{name:'Exit strategy',desc:'Sapere che puoi andartene calma.'}]},
+  'anxious_conflict':{understanding:'Il <strong>conflitto attiva RSD</strong>. Il rifiuto fa molto male.',actions:['breathe','ground','dump'],strategies:[{name:'Pausa prima',desc:'Non rispondere subito. Respira 5 volte.'},{name:'Fatti vs Paura',desc:'Cosa è successo vs cosa temo.'}]},
   'down_criticized':{understanding:'La critica ha toccato un punto dolente.',actions:['breathe','dump'],strategies:[{name:'Contenitore vittorie',desc:'Scrivi 3 cose di cui vai fiero.'},{name:'Questo non sei tu',desc:'Un feedback è su un\'azione, non su di te.'}]},
+  'down_mistake':{understanding:'Gli errori ADHD <strong>attivano la vergogna</strong>.',actions:['dump','breathe'],strategies:[{name:'Normalizza',desc:'Con ADHD gli errori sono più frequenti. OK.'},{name:'Pattern fix',desc:'Quale sistema previene questo errore?'}]},
+  'down_unknown':{understanding:'A volte il <strong>down arriva senza motivo</strong>. Può essere chimico.',actions:['ground','breathe'],strategies:[{name:'Ride the wave',desc:'Non serve spiegarlo. Passa.'},{name:'Check basics',desc:'Hai mangiato? Dormito? Bevuto?'}]},
   'drained_tired':{understanding:'Sei <strong>svuotato</strong>. L\'ADHD consuma più energia.',actions:['breathe','ground'],strategies:[{name:'Permesso di fermarti',desc:'Riposare non è pigrizia.'},{name:'Check fisico',desc:'Fame? Sete? Sonno?'}]},
+  'drained_too_many':{understanding:'Il <strong>decision fatigue</strong> esaurisce l\'energia mentale.',actions:['ground','breathe'],strategies:[{name:'Modalità autopilota',desc:'Fai solo cose automatiche ora.'},{name:'Power nap',desc:'15-20 minuti possono resettare.'}]},
+  'scattered_distracted':{understanding:'Il cervello ADHD <strong>salta tra stimoli</strong>. È normale.',actions:['dump','ground'],strategies:[{name:'Brain dump totale',desc:'Svuota TUTTI i pensieri. Scegli uno.'},{name:'Focus su uno',desc:'Carta e penna. Un compito. Timer.'}]},
+  'scattered_transition':{understanding:'Il <strong>cambio attività disperde</strong> l\'attenzione.',actions:['breathe','dump'],strategies:[{name:'Chiusura rituale',desc:'Chiudi esplicitamente l\'attività precedente.'},{name:'Reset fisico',desc:'Alzati, cammina, torna.'}]},
+  'scattered_interruption':{understanding:'Le interruzioni <strong>frammentano il flusso</strong> mentale.',actions:['dump','timer'],strategies:[{name:'Cattura pensieri',desc:'Nota veloce di dove eri.'},{name:'Ricostruisci contesto',desc:'Rileggi ultime righe/passi fatti.'}]},
+  'restless_boring_task':{understanding:'Il cervello ADHD <strong>cerca stimoli</strong>. Il noioso è doloroso.',actions:['timer','dump'],strategies:[{name:'Stimolo extra',desc:'Musica, movimento, cambio posizione.'},{name:'Sprint brevi',desc:'10 min sprint, poi break.'}]},
+  'restless_waiting':{understanding:'L\'<strong>attesa è tortura</strong> per l\'ADHD. Serve azione.',actions:['breathe','ground'],strategies:[{name:'Micro-task',desc:'Cosa puoi fare in questo tempo morto?'},{name:'Fidget strategico',desc:'Movimento piccolo per scaricare.'}]},
+  'restless_tired':{understanding:'Il <strong>paradosso ADHD</strong>: stanco ma agitato.',actions:['breathe','ground'],strategies:[{name:'Quiet stillness',desc:'Stare fermi senza dormire. Riposa la mente.'},{name:'Rilascio fisico',desc:'5 min stretching o camminata lenta.'}]},
+  'hyperfocus_interruption':{understanding:'L\'<strong>iperfocus è fragile</strong>. Romperlo causa frustrazione.',actions:['dump','breathe'],strategies:[{name:'Nota stato',desc:'Scrivi velocemente dove sei nel flusso.'},{name:'Bookmark mentale',desc:'Crea un segnalibro per tornare.'}]},
+  'hyperfocus_deadline':{understanding:'L\'iperfocus può essere <strong>sulla cosa sbagliata</strong>.',actions:['timer','dump'],strategies:[{name:'Priority check',desc:'Questa è la cosa più urgente ORA?'},{name:'Redirect gentile',desc:'Timer per chiudere, poi passa.'}]},
+  'shame_distracted':{understanding:'La <strong>vergogna ADHD</strong> dice "dovrei essere diverso".',actions:['dump','breathe'],strategies:[{name:'Self-compassion',desc:'Hai ADHD. Il tuo cervello funziona così.'},{name:'Sistema, non colpa',desc:'Quale supporto esterno serve?'}]},
+  'shame_mistake':{understanding:'Gli errori ADHD attivano <strong>vergogna profonda</strong>.',actions:['breathe','dump'],strategies:[{name:'Separa azione da sé',desc:'Hai fatto un errore. Non SEI un errore.'},{name:'Repair action',desc:'Cosa puoi fare ORA per sistemare?'}]},
+  'shame_criticized':{understanding:'RSD + critica = <strong>vergogna amplificata</strong>.',actions:['breathe','ground','dump'],strategies:[{name:'Fact-check RSD',desc:'La tua reazione è 10x. Il fatto è...?'},{name:'Chi dice cosa',desc:'Da chi viene? È fonte affidabile?'}]},
   'default':{understanding:'Quello che senti è <strong>valido</strong>.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza?'},{name:'Movimento',desc:'5 minuti possono resettare il cervello.'}]}
 };
 let state={history:[],diary:[],patterns:{}};
@@ -460,7 +534,7 @@ if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(c
 
 function loadState(){const s=localStorage.getItem('come-stai-v2');if(s)state=JSON.parse(s);}
 function saveState(){localStorage.setItem('come-stai-v2',JSON.stringify(state));}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
 function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';}
 function startFlow(){currentFlow={feeling:null,intensity:3,trigger:null,notes:''};document.getElementById('intensitySection').style.display='none';document.getElementById('feelingContinue').classList.remove('show');renderFeelings();showScreen('feelingScreen');}
@@ -497,6 +571,7 @@ function updatePatterns(){const e=state.history[0];if(!e)return;if(!state.patter
 function renderInsights(){const c=document.getElementById('insightsContent');if(state.history.length<3){c.innerHTML='<div class="empty-state"><div class="emoji">📊</div><h3>Non ho abbastanza dati</h3><p>Usa l\'app qualche volta</p></div>';return;}let h='';if(state.patterns.feelings){const t=Object.entries(state.patterns.feelings).sort((a,b)=>b[1]-a[1])[0];if(t){const f=feelings.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Emozione più frequente</span></div><p class="insight-card-content">Ti senti <span class="insight-highlight">'+f.label.toLowerCase()+'</span> più spesso ('+t[1]+' volte).</p></div>';}}if(state.patterns.triggers){const t=Object.entries(state.patterns.triggers).sort((a,b)=>b[1]-a[1])[0];if(t){const tr=triggers.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+tr.emoji+'</span><span class="insight-card-title">Trigger più comune</span></div><p class="insight-card-content">"<span class="insight-highlight">'+tr.label+'</span>" ti mette in difficoltà più spesso.</p></div>';}}if(state.patterns.times){const t=Object.entries(state.patterns.times).sort((a,b)=>b[1]-a[1])[0];if(t&&t[1]>=2)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">🕐</span><span class="insight-card-title">Momento critico</span></div><p class="insight-card-content">I momenti difficili arrivano più spesso <span class="insight-highlight">di '+t[0]+'</span>.</p></div>';}if(state.diary.length>0)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">📝</span><span class="insight-card-title">Il tuo diario</span></div><p class="insight-card-content">Hai scritto <span class="insight-highlight">'+state.diary.length+' note</span>.</p></div>';c.innerHTML=h||'<div class="empty-state"><div class="emoji">🔍</div><h3>Pochi dati</h3></div>';}
 function renderHistory(){const c=document.getElementById('historyContent');if(state.history.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">📋</div><h3>Nessun momento</h3></div>';return;}c.innerHTML=state.history.slice(0,20).map(e=>{const f=feelings.find(x=>x.id===e.feeling)||{emoji:'😶'};const tr=triggers.find(x=>x.id===e.trigger)||{label:''};const d=new Date(e.date);return'<div class="diary-entry"><div class="diary-entry-header"><span class="diary-entry-emoji">'+f.emoji+'</span><div class="diary-entry-meta"><div class="diary-entry-date">'+formatDate(d)+'</div><div class="diary-entry-time">'+tr.label+'</div></div><div class="diary-entry-intensity">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=e.intensity?' filled':'')+'"></div>').join('')+'</div></div></div>';}).join('');}
 function formatDate(d){const n=new Date(),diff=n-d,days=Math.floor(diff/(1000*60*60*24));if(days===0){const h=Math.floor(diff/(1000*60*60));return h===0?'Ora':h+' ore fa';}if(days===1)return'Ieri';if(days<7)return days+' giorni fa';return d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});}
+function renderLearn(){const c=document.getElementById('learnContent');let h='<div class="diary-entries-title">Concetti chiave</div>';learnTopics.forEach(t=>{h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+t.emoji+'</span><span class="insight-card-title">'+t.title+'</span></div><p class="insight-card-content">'+t.content+'</p></div>';});h+='<div class="diary-entries-title" style="margin-top:24px">Strategie per contesto</div>';h+='<div class="understanding-card"><div class="understanding-title">💼 LAVORO</div>';contextStrategies.lavoro.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';h+='<div class="understanding-card" style="margin-top:12px"><div class="understanding-title">📚 STUDIO</div>';contextStrategies.studio.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';h+='<div class="understanding-card" style="margin-top:12px"><div class="understanding-title">👥 SOCIALE</div>';contextStrategies.sociale.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';c.innerHTML=h;}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
 </body>
