@@ -3,14 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Il tuo supporto per i momenti difficili. Capisci cosa ti succede e trova strategie per affrontarlo. App per la gestione dell'ADHD.">
+  <meta name="keywords" content="ADHD, supporto, salute mentale, benessere, mindfulness, gestione emozioni">
   <meta name="theme-color" content="#1a1a2e">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Come Stai?">
-  <title>Come Stai?</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="application-name" content="Come Stai?">
+  <meta name="format-detection" content="telephone=no">
+  <title>Come Stai? - Supporto ADHD</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root{--bg-deep:#1a1a2e;--bg-card:#25253d;--bg-elevated:#2d2d4a;--accent-calm:#7eb8da;--accent-warm:#e8a87c;--accent-soft:#c3aed6;--accent-green:#7dd3a8;--accent-coral:#e07a7a;--text-primary:#f0f0f5;--text-secondary:#a0a0b8;--text-muted:#6a6a82;--radius-sm:12px;--radius-md:16px;--radius-lg:24px;--radius-full:100px;--safe-top:env(safe-area-inset-top,20px);--safe-bottom:env(safe-area-inset-bottom,20px)}
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -190,11 +200,126 @@
     .empty-state p{color:var(--text-muted);font-size:0.9rem}
     .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-elevated);color:var(--text-primary);padding:16px 28px;border-radius:var(--radius-full);font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.3);opacity:0;transition:all 0.3s;z-index:200}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .report-option{margin-bottom:20px}
+    .report-option-label{display:block;font-size:0.9rem;font-weight:700;margin-bottom:12px;color:var(--text-primary)}
+    .report-checkbox{display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius-md);margin-bottom:10px;cursor:pointer;transition:all 0.2s}
+    .report-checkbox:active{transform:scale(0.98)}
+    .report-checkbox.checked{border-color:var(--accent-calm);background:rgba(126,184,218,0.1)}
+    .report-checkbox input{width:22px;height:22px;cursor:pointer;accent-color:var(--accent-calm)}
+    .report-checkbox-label{flex:1;font-size:0.95rem;font-weight:600}
+    .report-period{display:flex;gap:10px;margin-bottom:16px}
+    .report-period-btn{flex:1;padding:14px;background:var(--bg-card);border:2px solid transparent;border-radius:var(--radius-md);color:var(--text-secondary);font-family:inherit;font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+    .report-period-btn:active{transform:scale(0.97)}
+    .report-period-btn.selected{border-color:var(--accent-calm);background:rgba(126,184,218,0.1);color:var(--text-primary)}
+    .report-download-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--accent-soft),var(--accent-calm));color:var(--bg-deep);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:24px}
+    .report-download-btn:active{transform:scale(0.98)}
+    .generate-report-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent-soft),var(--accent-calm));color:var(--bg-deep);border:none;border-radius:var(--radius-lg);font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:10px}
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="screen active" id="homeScreen">
+    <div class="screen" id="legalScreen">
+      <div class="legal-screen">
+        <div class="legal-header">
+          <div class="legal-icon">⚖️</div>
+          <h1 class="legal-title">Termini e Condizioni</h1>
+          <p class="legal-subtitle">Prima di iniziare, leggi attentamente</p>
+        </div>
+
+        <div class="legal-warning">
+          <div class="legal-warning-title">
+            <span>⚠️</span>
+            <span>DISCLAIMER MEDICO IMPORTANTE</span>
+          </div>
+          <div class="legal-warning-text">
+            <p style="margin-bottom:10px"><strong>Questa app NON è un dispositivo medico</strong> e NON sostituisce la consulenza professionale di medici, psicologi o psichiatri.</p>
+            <p style="margin-bottom:10px">È uno strumento di <strong>auto-aiuto educativo</strong> per il benessere personale.</p>
+            <p><strong>In caso di emergenza, contatta il 112 o il tuo medico.</strong></p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">📱 Cosa fa questa app</div>
+          <div class="legal-section-text">
+            L'app ti aiuta a:
+            <ul>
+              <li>Identificare emozioni e trigger</li>
+              <li>Scoprire strategie di gestione</li>
+              <li>Tenere un diario personale</li>
+              <li>Analizzare pattern comportamentali</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">🔒 Privacy e dati</div>
+          <div class="legal-section-text">
+            I tuoi dati sono <strong>salvati solo sul tuo dispositivo</strong>. Non vengono mai inviati a server esterni. L'autore NON ha accesso ai tuoi dati personali.
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">⚠️ Limitazione di responsabilità</div>
+          <div class="legal-section-text">
+            L'autore declina ogni responsabilità per danni derivanti dall'uso dell'app. L'app è fornita "così com'è" senza garanzie. <strong>Utilizzi a tuo rischio.</strong>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">©️ Copyright</div>
+          <div class="legal-section-text">
+            Tutti i diritti riservati. È concesso solo il diritto di utilizzare l'app per uso personale. <strong>Vietate copia, modifica e distribuzione.</strong>
+          </div>
+        </div>
+
+        <div class="legal-links">
+          <a href="TERMINI.md" target="_blank" class="legal-link-btn">📄 Termini completi</a>
+          <a href="PRIVACY.md" target="_blank" class="legal-link-btn">🔒 Privacy Policy</a>
+        </div>
+
+        <div class="legal-consent">
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox1" onchange="updateAcceptButton()">
+            <label for="consentCheckbox1" class="legal-checkbox-label">
+              Ho letto e <strong>accetto i Termini e Condizioni</strong> d'uso
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox2" onchange="updateAcceptButton()">
+            <label for="consentCheckbox2" class="legal-checkbox-label">
+              Ho letto e compreso la <strong>Privacy Policy</strong>
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox3" onchange="updateAcceptButton()">
+            <label for="consentCheckbox3" class="legal-checkbox-label">
+              Comprendo che questa app <strong>NON è un dispositivo medico</strong> e NON sostituisce la consulenza professionale
+            </label>
+          </div>
+          <div class="legal-checkbox-container">
+            <input type="checkbox" id="consentCheckbox4" onchange="updateAcceptButton()">
+            <label for="consentCheckbox4" class="legal-checkbox-label">
+              Utilizzo l'app <strong>a mio rischio</strong> e l'autore non è responsabile per conseguenze derivanti dall'uso
+            </label>
+          </div>
+        </div>
+
+        <div class="legal-actions">
+          <button class="legal-accept-btn" id="acceptBtn" disabled onclick="acceptTerms()">
+            ✓ Accetto e Continua
+          </button>
+          <button class="legal-decline-btn" onclick="declineTerms()">
+            Rifiuta
+          </button>
+        </div>
+
+        <div class="legal-footer">
+          © 2025 Alo - Come Stai? - Tutti i diritti riservati<br>
+          Versione 1.0.2 • Ultimo aggiornamento: 19/12/2025
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="homeScreen">
       <div class="home-screen">
         <p class="home-greeting" id="greeting">Ciao</p>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
@@ -211,6 +336,11 @@
           <button class="home-sec-btn" onclick="showScreen('learnScreen')">💡 Impara</button>
           <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
           <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
+          <button class="home-sec-btn" onclick="showScreen('settingsScreen')">⚙️ Dati</button>
+        </div>
+        <div class="app-footer">
+          © 2025 Alo - Come Stai? - Tutti i diritti riservati<br>
+          <a href="TERMINI.md" target="_blank">Termini</a> • <a href="PRIVACY.md" target="_blank">Privacy</a> • <a href="LICENSE" target="_blank">Licenza</a>
         </div>
       </div>
     </div>
@@ -363,6 +493,53 @@
         <div id="learnContent"></div>
       </div>
     </div>
+    <div class="screen" id="settingsScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="insights-header">
+          <h1 class="insights-title">⚙️ Gestione Dati</h1>
+          <p class="insights-subtitle">Backup e sicurezza</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">💾 BACKUP</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Esporta i tuoi dati per creare una copia di sicurezza. Potrai reimportarla in qualsiasi momento.
+            </p>
+            <button class="timer-btn primary" onclick="exportData()" style="width:100%">
+              📥 Scarica Backup
+            </button>
+          </div>
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">📤 RIPRISTINO</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Importa un backup precedente per ripristinare i tuoi dati.
+            </p>
+            <button class="timer-btn secondary" onclick="importData()" style="width:100%;background:var(--accent-calm);color:white">
+              📤 Carica Backup
+            </button>
+          </div>
+          <div class="understanding-card" style="background:rgba(224,122,122,0.1);border:1px solid var(--accent-coral)">
+            <div class="understanding-title" style="color:var(--accent-coral)">🗑️ ZONA PERICOLOSA</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
+              Elimina tutti i dati salvati nell'app. Questa azione è irreversibile.
+            </p>
+            <button class="timer-btn secondary" onclick="clearAllData()" style="width:100%;background:var(--accent-coral);color:white">
+              ⚠️ Elimina Tutti i Dati
+            </button>
+          </div>
+          <div class="understanding-card" style="margin-top:20px;background:rgba(126,184,218,0.1)">
+            <div class="understanding-title">ℹ️ INFO STORAGE</div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+              I tuoi dati sono salvati localmente nel browser. Per sicurezza, viene creato automaticamente un backup ad ogni salvataggio. I dati più vecchi di 6 mesi vengono archiviati automaticamente se lo storage si riempie.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="screen" id="diaryScreen">
       <div class="diary-screen">
         <div class="flow-header">
@@ -438,6 +615,49 @@
           <h1 class="diary-title">📋 Storico</h1>
         </div>
         <div id="historyContent"></div>
+      </div>
+    </div>
+    <div class="screen" id="reportScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('insightsScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="insights-header">
+          <h1 class="insights-title">📄 Report per terapista</h1>
+          <p class="insights-subtitle">Configura e scarica il report</p>
+        </div>
+        <div class="report-option">
+          <label class="report-option-label">Periodo</label>
+          <div class="report-period">
+            <button class="report-period-btn selected" onclick="selectReportPeriod(7)">7 giorni</button>
+            <button class="report-period-btn" onclick="selectReportPeriod(30)">30 giorni</button>
+            <button class="report-period-btn" onclick="selectReportPeriod(0)">Tutto</button>
+          </div>
+        </div>
+        <div class="report-option">
+          <label class="report-option-label">Contenuti da includere</label>
+          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludePatterns')">
+            <input type="checkbox" id="reportIncludePatterns" checked onclick="event.stopPropagation()">
+            <span class="report-checkbox-label">Pattern emotivi e trigger</span>
+          </label>
+          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeHistory')">
+            <input type="checkbox" id="reportIncludeHistory" checked onclick="event.stopPropagation()">
+            <span class="report-checkbox-label">Storico momenti difficili</span>
+          </label>
+          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeDiary')">
+            <input type="checkbox" id="reportIncludeDiary" onclick="event.stopPropagation()">
+            <span class="report-checkbox-label">Note dal diario</span>
+          </label>
+          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeStrategies')">
+            <input type="checkbox" id="reportIncludeStrategies" checked onclick="event.stopPropagation()">
+            <span class="report-checkbox-label">Strategie utilizzate</span>
+          </label>
+        </div>
+        <button class="report-download-btn" onclick="generatePDFReport()">
+          <span>📥</span>
+          <span>Scarica PDF</span>
+        </button>
       </div>
     </div>
     <div class="toast" id="toast"></div>
@@ -528,12 +748,301 @@ let breatheCycles=5;
 let currentGroundStep=0;
 let diaryMood=null;
 let currentDiaryEntry=null;
+let reportPeriodDays=7;
 
-document.addEventListener('DOMContentLoaded',()=>{loadState();setGreeting();renderFeelings();renderTriggers();renderDiaryMoods();});
+// Gestione accettazione termini legali
+function checkLegalConsent() {
+  const consent = localStorage.getItem('legal-consent');
+  if (consent === 'accepted') {
+    document.getElementById('legalScreen').classList.remove('active');
+    document.getElementById('homeScreen').classList.add('active');
+  } else {
+    document.getElementById('legalScreen').classList.add('active');
+    document.getElementById('homeScreen').classList.remove('active');
+  }
+}
+
+function updateAcceptButton() {
+  const check1 = document.getElementById('consentCheckbox1').checked;
+  const check2 = document.getElementById('consentCheckbox2').checked;
+  const check3 = document.getElementById('consentCheckbox3').checked;
+  const check4 = document.getElementById('consentCheckbox4').checked;
+  document.getElementById('acceptBtn').disabled = !(check1 && check2 && check3 && check4);
+}
+
+function acceptTerms() {
+  localStorage.setItem('legal-consent', 'accepted');
+  localStorage.setItem('legal-consent-date', new Date().toISOString());
+  document.getElementById('legalScreen').classList.remove('active');
+  document.getElementById('homeScreen').classList.add('active');
+  showToast('✅ Benvenuto!');
+}
+
+function declineTerms() {
+  if (confirm('Se rifiuti i termini non potrai utilizzare l\'app. Sei sicuro?')) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;padding:40px;color:#f0f0f5"><div style="font-size:3rem;margin-bottom:20px">😔</div><h2 style="margin-bottom:10px">Termini rifiutati</h2><p style="color:#a0a0b8">Per utilizzare l\'app devi accettare i Termini e Condizioni.</p><button onclick="location.reload()" style="margin-top:30px;padding:14px 28px;background:#7eb8da;color:#1a1a2e;border:none;border-radius:100px;font-weight:700;cursor:pointer">Riprova</button></div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  checkLegalConsent();
+  loadState();
+  setGreeting();
+  renderFeelings();
+  renderTriggers();
+  renderDiaryMoods();
+});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
 
-function loadState(){const s=localStorage.getItem('come-stai-v2');if(s)state=JSON.parse(s);}
-function saveState(){localStorage.setItem('come-stai-v2',JSON.stringify(state));}
+// Versione app - deve corrispondere a sw.js e manifest.json
+const APP_VERSION = '1.0.2';
+
+// Versione schema dati per migrazioni future
+const SCHEMA_VERSION = 1;
+const STORAGE_KEY = 'come-stai-v2';
+
+// Carica stato con gestione errori robusta e validazione
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (!s) return; // Prima installazione, usa stato di default
+
+    const loaded = JSON.parse(s);
+
+    // Validazione base dello schema
+    if (!loaded || typeof loaded !== 'object') {
+      console.warn('Stato non valido, uso default');
+      return;
+    }
+
+    // Migrazione versione se necessario
+    if (!loaded.version || loaded.version < SCHEMA_VERSION) {
+      loaded.version = SCHEMA_VERSION;
+      // Aggiungi qui future migrazioni
+    }
+
+    // Validazione struttura minima
+    state.history = Array.isArray(loaded.history) ? loaded.history : [];
+    state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
+    state.patterns = (loaded.patterns && typeof loaded.patterns === 'object') ? loaded.patterns : {};
+    state.version = SCHEMA_VERSION;
+
+    console.log('Dati caricati:', state.history.length + ' momenti, ' + state.diary.length + ' note');
+  } catch (err) {
+    console.error('Errore caricamento dati:', err);
+    // Tenta backup recovery
+    try {
+      const backup = localStorage.getItem(STORAGE_KEY + '-backup');
+      if (backup) {
+        const loaded = JSON.parse(backup);
+        state.history = Array.isArray(loaded.history) ? loaded.history : [];
+        state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
+        state.patterns = loaded.patterns || {};
+        console.log('Recupero da backup riuscito');
+        showToast('⚠️ Dati recuperati da backup');
+        return;
+      }
+    } catch (backupErr) {
+      console.error('Backup non disponibile:', backupErr);
+    }
+    showToast('⚠️ Errore caricamento dati');
+  }
+}
+
+// Salva stato con gestione errori e backup
+function saveState() {
+  try {
+    state.version = SCHEMA_VERSION;
+    state.lastSaved = new Date().toISOString();
+
+    const data = JSON.stringify(state);
+
+    // Verifica dimensioni (warning se > 4MB)
+    if (data.length > 4 * 1024 * 1024) {
+      console.warn('Storage grande:', (data.length / 1024 / 1024).toFixed(2) + 'MB');
+    }
+
+    // Crea backup prima di salvare
+    try {
+      const current = localStorage.getItem(STORAGE_KEY);
+      if (current) {
+        localStorage.setItem(STORAGE_KEY + '-backup', current);
+      }
+    } catch (backupErr) {
+      // Backup non critico, continua
+      console.warn('Backup non creato:', backupErr);
+    }
+
+    // Salva stato principale
+    localStorage.setItem(STORAGE_KEY, data);
+
+  } catch (err) {
+    console.error('Errore salvataggio:', err);
+
+    // Gestione quota exceeded
+    if (err.name === 'QuotaExceededError' || err.code === 22) {
+      console.warn('Storage pieno, provo cleanup...');
+
+      // Rimuovi dati vecchi (oltre 6 mesi)
+      const sixMonthsAgo = Date.now() - (6 * 30 * 24 * 60 * 60 * 1000);
+      const originalHistoryLength = state.history.length;
+      const originalDiaryLength = state.diary.length;
+
+      state.history = state.history.filter(e => new Date(e.date).getTime() > sixMonthsAgo);
+      state.diary = state.diary.filter(e => new Date(e.date).getTime() > sixMonthsAgo);
+
+      const removedHistory = originalHistoryLength - state.history.length;
+      const removedDiary = originalDiaryLength - state.diary.length;
+
+      if (removedHistory > 0 || removedDiary > 0) {
+        console.log('Rimossi dati vecchi:', removedHistory + ' momenti, ' + removedDiary + ' note');
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          showToast('⚠️ Dati vecchi archiviati (storage pieno)');
+          return;
+        } catch (retryErr) {
+          console.error('Salvataggio fallito dopo cleanup:', retryErr);
+        }
+      }
+
+      showToast('❌ Storage pieno - esporta i dati');
+    } else {
+      showToast('❌ Errore salvataggio dati');
+    }
+  }
+}
+
+// Sincronizzazione automatica tra tab multipli
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY && e.newValue) {
+    try {
+      const newState = JSON.parse(e.newValue);
+      if (newState && typeof newState === 'object') {
+        state.history = Array.isArray(newState.history) ? newState.history : state.history;
+        state.diary = Array.isArray(newState.diary) ? newState.diary : state.diary;
+        state.patterns = newState.patterns || state.patterns;
+
+        // Ricarica vista corrente se necessario
+        const activeScreen = document.querySelector('.screen.active');
+        if (activeScreen) {
+          const id = activeScreen.id;
+          if (id === 'insightsScreen') renderInsights();
+          if (id === 'historyScreen') renderHistory();
+          if (id === 'diaryScreen') renderDiaryEntries();
+        }
+
+        console.log('Dati sincronizzati da altro tab');
+      }
+    } catch (err) {
+      console.error('Errore sincronizzazione tab:', err);
+    }
+  }
+});
+
+// Esporta dati in formato JSON per backup
+function exportData() {
+  try {
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'come-stai-backup-' + new Date().toISOString().split('T')[0] + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('💾 Backup scaricato');
+  } catch (err) {
+    console.error('Errore export:', err);
+    showToast('❌ Errore export');
+  }
+}
+
+// Importa dati da file JSON
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+
+        // Validazione
+        if (!imported || typeof imported !== 'object') {
+          showToast('❌ File non valido');
+          return;
+        }
+
+        // Conferma sovrascrittura
+        const hasData = state.history.length > 0 || state.diary.length > 0;
+        if (hasData) {
+          if (!confirm('Attenzione: questo sovrascriverà i tuoi dati attuali. Continua?')) {
+            return;
+          }
+        }
+
+        // Importa dati validati
+        state.history = Array.isArray(imported.history) ? imported.history : [];
+        state.diary = Array.isArray(imported.diary) ? imported.diary : [];
+        state.patterns = imported.patterns || {};
+
+        saveState();
+
+        // Ricarica vista corrente
+        const activeScreen = document.querySelector('.screen.active');
+        if (activeScreen) {
+          const id = activeScreen.id;
+          if (id === 'insightsScreen') renderInsights();
+          if (id === 'historyScreen') renderHistory();
+          if (id === 'diaryScreen') renderDiaryEntries();
+        }
+
+        showToast('✅ Dati importati (' + state.history.length + ' momenti, ' + state.diary.length + ' note)');
+      } catch (err) {
+        console.error('Errore import:', err);
+        showToast('❌ Errore lettura file');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// Cancella tutti i dati (con conferma)
+function clearAllData() {
+  if (!confirm('Attenzione: questo eliminerà TUTTI i tuoi dati in modo permanente. Sei sicuro?')) {
+    return;
+  }
+  if (!confirm('Ultima conferma: eliminare tutti i dati?')) {
+    return;
+  }
+
+  state.history = [];
+  state.diary = [];
+  state.patterns = {};
+
+  saveState();
+
+  // Pulisci anche backup
+  try {
+    localStorage.removeItem(STORAGE_KEY + '-backup');
+  } catch (err) {
+    console.warn('Errore pulizia backup:', err);
+  }
+
+  showToast('🗑️ Tutti i dati eliminati');
+
+  // Torna alla home
+  screenHistory = ['homeScreen'];
+  showScreen('homeScreen');
+}
+
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
 function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';}
@@ -568,11 +1077,15 @@ function renderDiaryEntries(){const c=document.getElementById('diaryEntries');co
 function openDiaryEntry(id){currentDiaryEntry=state.diary.find(x=>x.id===id);if(!currentDiaryEntry)return;const m=diaryMoods.find(x=>x.id===currentDiaryEntry.mood)||{emoji:'💭'};const d=new Date(currentDiaryEntry.date);document.getElementById('diaryDetailHeader').innerHTML='<div class="diary-detail-emoji">'+m.emoji+'</div><div class="diary-detail-date">'+formatDate(d)+'</div><div class="diary-detail-time">'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</div>';document.getElementById('diaryDetailText').textContent=currentDiaryEntry.text;showScreen('diaryDetailScreen');}
 function deleteDiaryEntry(){if(!currentDiaryEntry)return;if(confirm('Eliminare?')){state.diary=state.diary.filter(x=>x.id!==currentDiaryEntry.id);saveState();showToast('Eliminata');showScreen('diaryScreen');}}
 function updatePatterns(){const e=state.history[0];if(!e)return;if(!state.patterns.feelings)state.patterns.feelings={};if(!state.patterns.triggers)state.patterns.triggers={};if(!state.patterns.times)state.patterns.times={};state.patterns.feelings[e.feeling]=(state.patterns.feelings[e.feeling]||0)+1;state.patterns.triggers[e.trigger]=(state.patterns.triggers[e.trigger]||0)+1;const h=new Date(e.date).getHours();const t=h<12?'mattina':h<18?'pomeriggio':'sera';state.patterns.times[t]=(state.patterns.times[t]||0)+1;}
-function renderInsights(){const c=document.getElementById('insightsContent');if(state.history.length<3){c.innerHTML='<div class="empty-state"><div class="emoji">📊</div><h3>Non ho abbastanza dati</h3><p>Usa l\'app qualche volta</p></div>';return;}let h='';if(state.patterns.feelings){const t=Object.entries(state.patterns.feelings).sort((a,b)=>b[1]-a[1])[0];if(t){const f=feelings.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Emozione più frequente</span></div><p class="insight-card-content">Ti senti <span class="insight-highlight">'+f.label.toLowerCase()+'</span> più spesso ('+t[1]+' volte).</p></div>';}}if(state.patterns.triggers){const t=Object.entries(state.patterns.triggers).sort((a,b)=>b[1]-a[1])[0];if(t){const tr=triggers.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+tr.emoji+'</span><span class="insight-card-title">Trigger più comune</span></div><p class="insight-card-content">"<span class="insight-highlight">'+tr.label+'</span>" ti mette in difficoltà più spesso.</p></div>';}}if(state.patterns.times){const t=Object.entries(state.patterns.times).sort((a,b)=>b[1]-a[1])[0];if(t&&t[1]>=2)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">🕐</span><span class="insight-card-title">Momento critico</span></div><p class="insight-card-content">I momenti difficili arrivano più spesso <span class="insight-highlight">di '+t[0]+'</span>.</p></div>';}if(state.diary.length>0)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">📝</span><span class="insight-card-title">Il tuo diario</span></div><p class="insight-card-content">Hai scritto <span class="insight-highlight">'+state.diary.length+' note</span>.</p></div>';c.innerHTML=h||'<div class="empty-state"><div class="emoji">🔍</div><h3>Pochi dati</h3></div>';}
+function renderInsights(){const c=document.getElementById('insightsContent');let h='<button class="generate-report-btn" onclick="showScreen(\'reportScreen\')"><span>📄</span><span>Genera report per terapista</span></button>';if(state.history.length<3){c.innerHTML=h+'<div class="empty-state"><div class="emoji">📊</div><h3>Non ho abbastanza dati</h3><p>Usa l\'app qualche volta</p></div>';return;}if(state.patterns.feelings){const t=Object.entries(state.patterns.feelings).sort((a,b)=>b[1]-a[1])[0];if(t){const f=feelings.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Emozione più frequente</span></div><p class="insight-card-content">Ti senti <span class="insight-highlight">'+f.label.toLowerCase()+'</span> più spesso ('+t[1]+' volte).</p></div>';}}if(state.patterns.triggers){const t=Object.entries(state.patterns.triggers).sort((a,b)=>b[1]-a[1])[0];if(t){const tr=triggers.find(x=>x.id===t[0]);h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+tr.emoji+'</span><span class="insight-card-title">Trigger più comune</span></div><p class="insight-card-content">"<span class="insight-highlight">'+tr.label+'</span>" ti mette in difficoltà più spesso.</p></div>';}}if(state.patterns.times){const t=Object.entries(state.patterns.times).sort((a,b)=>b[1]-a[1])[0];if(t&&t[1]>=2)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">🕐</span><span class="insight-card-title">Momento critico</span></div><p class="insight-card-content">I momenti difficili arrivano più spesso <span class="insight-highlight">di '+t[0]+'</span>.</p></div>';}if(state.diary.length>0)h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">📝</span><span class="insight-card-title">Il tuo diario</span></div><p class="insight-card-content">Hai scritto <span class="insight-highlight">'+state.diary.length+' note</span>.</p></div>';c.innerHTML=h||'<div class="empty-state"><div class="emoji">🔍</div><h3>Pochi dati</h3></div>';}
 function renderHistory(){const c=document.getElementById('historyContent');if(state.history.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">📋</div><h3>Nessun momento</h3></div>';return;}c.innerHTML=state.history.slice(0,20).map(e=>{const f=feelings.find(x=>x.id===e.feeling)||{emoji:'😶'};const tr=triggers.find(x=>x.id===e.trigger)||{label:''};const d=new Date(e.date);return'<div class="diary-entry"><div class="diary-entry-header"><span class="diary-entry-emoji">'+f.emoji+'</span><div class="diary-entry-meta"><div class="diary-entry-date">'+formatDate(d)+'</div><div class="diary-entry-time">'+tr.label+'</div></div><div class="diary-entry-intensity">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=e.intensity?' filled':'')+'"></div>').join('')+'</div></div></div>';}).join('');}
 function formatDate(d){const n=new Date(),diff=n-d,days=Math.floor(diff/(1000*60*60*24));if(days===0){const h=Math.floor(diff/(1000*60*60));return h===0?'Ora':h+' ore fa';}if(days===1)return'Ieri';if(days<7)return days+' giorni fa';return d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});}
 function renderLearn(){const c=document.getElementById('learnContent');let h='<div class="diary-entries-title">Concetti chiave</div>';learnTopics.forEach(t=>{h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+t.emoji+'</span><span class="insight-card-title">'+t.title+'</span></div><p class="insight-card-content">'+t.content+'</p></div>';});h+='<div class="diary-entries-title" style="margin-top:24px">Strategie per contesto</div>';h+='<div class="understanding-card"><div class="understanding-title">💼 LAVORO</div>';contextStrategies.lavoro.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';h+='<div class="understanding-card" style="margin-top:12px"><div class="understanding-title">📚 STUDIO</div>';contextStrategies.studio.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';h+='<div class="understanding-card" style="margin-top:12px"><div class="understanding-title">👥 SOCIALE</div>';contextStrategies.sociale.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';c.innerHTML=h;}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function toggleCheckbox(id){const checkbox=document.getElementById(id);checkbox.checked=!checkbox.checked;checkbox.parentElement.classList.toggle('checked',checkbox.checked);}
+function selectReportPeriod(days){reportPeriodDays=days;document.querySelectorAll('.report-period-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');}
+function filterDataByPeriod(data){if(reportPeriodDays===0)return data;const cutoff=new Date();cutoff.setDate(cutoff.getDate()-reportPeriodDays);return data.filter(item=>new Date(item.date)>=cutoff);}
+function generatePDFReport(){const{jsPDF}=window.jspdf;const doc=new jsPDF();const includePatterns=document.getElementById('reportIncludePatterns').checked;const includeHistory=document.getElementById('reportIncludeHistory').checked;const includeDiary=document.getElementById('reportIncludeDiary').checked;const includeStrategies=document.getElementById('reportIncludeStrategies').checked;let y=20;doc.setFontSize(18);doc.text('Report ADHD - Come Stai?',20,y);y+=10;doc.setFontSize(10);const today=new Date().toLocaleDateString('it-IT');const periodText=reportPeriodDays===0?'Tutto lo storico':reportPeriodDays===7?'Ultimi 7 giorni':'Ultimi 30 giorni';doc.text('Data: '+today,20,y);y+=6;doc.text('Periodo: '+periodText,20,y);y+=15;const filteredHistory=filterDataByPeriod(state.history);const filteredDiary=filterDataByPeriod(state.diary);if(includePatterns&&filteredHistory.length>0){doc.setFontSize(14);doc.text('Pattern Emotivi',20,y);y+=8;doc.setFontSize(10);const feelingCounts={};const triggerCounts={};filteredHistory.forEach(e=>{feelingCounts[e.feeling]=(feelingCounts[e.feeling]||0)+1;triggerCounts[e.trigger]=(triggerCounts[e.trigger]||0)+1;});const topFeeling=Object.entries(feelingCounts).sort((a,b)=>b[1]-a[1])[0];if(topFeeling){const f=feelings.find(x=>x.id===topFeeling[0]);doc.text('Emozione piu frequente: '+f.label+' ('+topFeeling[1]+' volte)',25,y);y+=6;}const topTrigger=Object.entries(triggerCounts).sort((a,b)=>b[1]-a[1])[0];if(topTrigger){const tr=triggers.find(x=>x.id===topTrigger[0]);doc.text('Trigger piu comune: '+tr.label+' ('+topTrigger[1]+' volte)',25,y);y+=6;}const avgIntensity=(filteredHistory.reduce((sum,e)=>sum+e.intensity,0)/filteredHistory.length).toFixed(1);doc.text('Intensita media: '+avgIntensity+'/5',25,y);y+=10;}if(includeHistory&&filteredHistory.length>0){doc.setFontSize(14);doc.text('Storico Momenti Difficili',20,y);y+=8;doc.setFontSize(9);filteredHistory.slice(0,10).forEach(e=>{if(y>270){doc.addPage();y=20;}const f=feelings.find(x=>x.id===e.feeling)||{label:'Sconosciuto'};const tr=triggers.find(x=>x.id===e.trigger)||{label:'Sconosciuto'};const d=new Date(e.date).toLocaleDateString('it-IT');doc.text(d+' - '+f.label+' ('+e.intensity+'/5) - '+tr.label,25,y);y+=5;});y+=8;}if(includeDiary&&filteredDiary.length>0){if(y>250){doc.addPage();y=20;}doc.setFontSize(14);doc.text('Note dal Diario',20,y);y+=8;doc.setFontSize(9);filteredDiary.slice(0,5).forEach(entry=>{if(y>260){doc.addPage();y=20;}const d=new Date(entry.date).toLocaleDateString('it-IT');doc.text(d+':',25,y);y+=5;const lines=doc.splitTextToSize(entry.text,160);lines.slice(0,3).forEach(line=>{if(y>270){doc.addPage();y=20;}doc.text(line,25,y);y+=5;});y+=3;});}if(includeStrategies){if(y>220){doc.addPage();y=20;}doc.setFontSize(14);doc.text('Strategie Consigliate',20,y);y+=8;doc.setFontSize(9);doc.text('Lavoro:',25,y);y+=5;contextStrategies.lavoro.slice(0,2).forEach(s=>{if(y>270){doc.addPage();y=20;}doc.text('- '+s.name+': '+s.desc,30,y);y+=5;});y+=3;doc.text('Studio:',25,y);y+=5;contextStrategies.studio.slice(0,2).forEach(s=>{if(y>270){doc.addPage();y=20;}doc.text('- '+s.name+': '+s.desc,30,y);y+=5;});y+=3;doc.text('Sociale:',25,y);y+=5;contextStrategies.sociale.slice(0,2).forEach(s=>{if(y>270){doc.addPage();y=20;}doc.text('- '+s.name+': '+s.desc,30,y);y+=5;});}const filename='report-adhd-'+today.replace(/\//g,'-')+'.pdf';doc.save(filename);showScreen('insightsScreen');showToast('📄 Report scaricato!');}
 </script>
 </body>
 </html>

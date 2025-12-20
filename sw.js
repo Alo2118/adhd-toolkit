@@ -1,11 +1,14 @@
-const CACHE_NAME = 'come-stai-v2';
+// Versione app - deve corrispondere a index.html e manifest.json
+const APP_VERSION = '1.0.2';
+const CACHE_NAME = `come-stai-v${APP_VERSION.replace(/\./g, '-')}`;
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
 
 self.addEventListener('install', event => {
@@ -38,13 +41,15 @@ self.addEventListener('fetch', event => {
           return response;
         }
         return fetch(event.request).then(response => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (!response || response.status !== 200) {
             return response;
           }
           const responseToCache = response.clone();
           caches.open(CACHE_NAME)
             .then(cache => cache.put(event.request, responseToCache));
           return response;
+        }).catch(() => {
+          return caches.match('./index.html');
         });
       })
   );
