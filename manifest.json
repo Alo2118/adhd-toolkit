@@ -1,8 +1,8 @@
 {
   "name": "Come Stai? - Supporto ADHD",
   "short_name": "Come Stai?",
-  "version": "1.0.2",
-  "description": "Il tuo supporto per i momenti difficili. Capisci cosa ti succede e trova strategie per affrontarlo.",
+  "version": "1.0.3",
+   "description": "Il tuo supporto per i momenti difficili. Capisci cosa ti succede e trova strategie per affrontarlo.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
