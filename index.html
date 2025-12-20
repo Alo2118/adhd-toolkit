@@ -327,6 +327,7 @@
     <div class="screen" id="homeScreen">
       <div class="home-screen">
         <p class="home-greeting" id="greeting">Ciao</p>
+        <div id="gardenBadge"></div>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
         <button class="home-main-btn" onclick="startFlow()">
           <span class="icon">💭</span>
@@ -798,7 +799,7 @@ const responses={
   'shame_criticized':{understanding:'RSD + critica = <strong>vergogna amplificata 10x</strong>. È una tempesta neurologica.<br><br>Cosa succede:<br>• La critica attiva <strong>RSD</strong> (sensibilità al rifiuto)<br>• Il cervello interpreta critica = rifiuto totale<br>• La disregolazione emotiva amplifica la risposta<br>• La vergogna accumulata negli anni esplode<br><br>La tua reazione è <strong>10 volte più intensa del fatto oggettivo</strong>. Non è debolezza. È il cervello ADHD che amplifica il segnale di rifiuto come meccanismo protettivo (doloroso ma non volontario).',actions:['breathe','ground','dump'],strategies:[{name:'RSD scale-down',desc:'Reazione: 10/10. Fatto oggettivo: scrivi.'},{name:'Fonte check',desc:'Chi critica? Conosce il mio ADHD?'},{name:'24h rule',desc:'Non rispondere ora. Domani l\'onda RSD passa.'},{name:'Vittorie recenti',desc:'Scrivi 3 successi recenti. Bilancia.'}]},
   'default':{understanding:'Quello che senti è <strong>valido e reale</strong>.<br><br>Con ADHD:<br>• Le emozioni sono <strong>più intense</strong> (disregolazione emotiva)<br>• I trigger sono più frequenti<br>• Il recupero è più lento<br><br>Non stai esagerando. Il tuo cervello processa le emozioni diversamente. Servono strategie per gestire l\'intensità, non giudizio su ciò che senti.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza? Sovrastimolazione?'},{name:'Movimento breve',desc:'5 min camminata. Reset neurologico.'},{name:'Respira 5 volte',desc:'Inspira 4 sec, espira 6 sec. Ripeti 5 volte.'},{name:'Scrivi 3 righe',desc:'Cosa senti. Perché. Cosa ti serve ora.'}]}
 };
-let state={history:[],diary:[],patterns:{}};
+let state={history:[],diary:[],patterns:{},garden:{points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null}};
 let currentFlow={feeling:null,intensity:3,trigger:null,notes:''};
 let screenHistory=['homeScreen'];
 let timerInterval=null,timerSeconds=120,timerTotalSeconds=120;
@@ -846,6 +847,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   checkLegalConsent();
   loadState();
   setGreeting();
+  updateGardenBadge();
   renderFeelings();
   renderTriggers();
   renderDiaryMoods();
@@ -883,6 +885,7 @@ function loadState() {
     state.history = Array.isArray(loaded.history) ? loaded.history : [];
     state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
     state.patterns = (loaded.patterns && typeof loaded.patterns === 'object') ? loaded.patterns : {};
+    state.garden = (loaded.garden && typeof loaded.garden === 'object') ? loaded.garden : {points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null};
     state.version = SCHEMA_VERSION;
 
     console.log('Dati caricati:', state.history.length + ' momenti, ' + state.diary.length + ' note');
@@ -896,6 +899,7 @@ function loadState() {
         state.history = Array.isArray(loaded.history) ? loaded.history : [];
         state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
         state.patterns = loaded.patterns || {};
+        state.garden = (loaded.garden && typeof loaded.garden === 'object') ? loaded.garden : {points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null};
         console.log('Recupero da backup riuscito');
         showToast('⚠️ Dati recuperati da backup');
         return;
@@ -970,6 +974,17 @@ function saveState() {
   }
 }
 
+// Sistema Garden - Gamification con pianta
+function getGardenLevel(points){if(points>=500)return 5;if(points>=201)return 4;if(points>=101)return 3;if(points>=51)return 2;if(points>=21)return 1;return 0;}
+function getGardenEmoji(level,withered){const emojis=['🌱','🌿','🪴','🌳','🌲','🌸'];if(withered&&level>0)return'🍂';return emojis[level]||'🌱';}
+function getGardenName(level){const names=['Germoglio','Piantina','Pianta giovane','Albero','Albero maestoso','Albero fiorito'];return names[level]||'Germoglio';}
+function checkGardenDecay(){if(state.garden.isPaused&&state.garden.pauseUntil){if(new Date()>=new Date(state.garden.pauseUntil)){state.garden.isPaused=false;state.garden.pauseUntil=null;saveState();}}if(state.garden.isPaused)return false;if(!state.garden.lastActivityDate)return false;const now=new Date();const lastActivity=new Date(state.garden.lastActivityDate);const hoursSince=(now-lastActivity)/(1000*60*60);if(hoursSince>=72){const daysPassed=Math.floor(hoursSince/24);const levelsToLose=Math.min(2,Math.floor((daysPassed-3)/3)+1);const currentLevel=getGardenLevel(state.garden.points);if(levelsToLose>0&&currentLevel>0){const targetLevel=Math.max(0,currentLevel-levelsToLose);const levelPoints=[0,21,51,101,201,500];state.garden.points=Math.max(levelPoints[targetLevel],0);state.garden.level=targetLevel;saveState();return true;}}return hoursSince>=24;}
+function addGardenPoints(points,activityName){checkGardenDecay();const wasWithered=state.garden.lastActivityDate&&(new Date()-new Date(state.garden.lastActivityDate))/(1000*60*60)>=24;const oldLevel=getGardenLevel(state.garden.points);state.garden.points+=points;state.garden.lastActivityDate=new Date().toISOString();const newLevel=getGardenLevel(state.garden.points);state.garden.level=newLevel;saveState();updateGardenBadge();let message='';if(wasWithered){message='🌱 Pianta riannaffiata! +'+points+' punti';showToast(message);setTimeout(()=>showToast('💚 Bonus recupero: +50% punti per 24h!'),1500);}else if(newLevel>oldLevel){message='🎉 LIVELLO '+newLevel+'! '+getGardenName(newLevel)+' (+'+points+' pt)';showToast(message);}else{message='✨ +'+points+' punti! '+getGardenEmoji(newLevel,false)+' '+state.garden.points+' pt';showToast(message);}}
+function pauseGarden(days){state.garden.isPaused=true;const until=new Date();until.setDate(until.getDate()+days);state.garden.pauseUntil=until.toISOString();saveState();updateGardenBadge();showToast('🌙 Pianta in pausa per '+days+' giorni');}
+function resumeGarden(){state.garden.isPaused=false;state.garden.pauseUntil=null;saveState();updateGardenBadge();showToast('🌱 Pausa terminata! Bentornato!');}
+function updateGardenBadge(){const badge=document.getElementById('gardenBadge');if(!badge)return;const isWithered=checkGardenDecay();const level=getGardenLevel(state.garden.points);const emoji=getGardenEmoji(level,isWithered&&!state.garden.isPaused);const name=getGardenName(level);const points=state.garden.points;let statusText='';if(state.garden.isPaused){statusText='🌙 In pausa';}else if(isWithered){statusText='💧 Ha bisogno di te';}else{statusText=name+' · '+points+' pt';}badge.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(126,184,218,0.15);border:1px solid rgba(126,184,218,0.3);border-radius:12px;margin:20px 0"><span style="font-size:1.8rem">'+emoji+'</span><div style="flex:1;text-align:left"><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Il tuo giardino</div><div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)">'+statusText+'</div></div>'+(state.garden.isPaused?'<button onclick="resumeGarden()" style="padding:6px 12px;background:var(--accent-green);color:white;border:none;border-radius:8px;font-size:0.8rem;cursor:pointer;font-weight:600">Riprendi</button>':'<button onclick="showGardenPauseModal()" style="padding:6px 12px;background:rgba(160,160,184,0.2);color:var(--text-secondary);border:none;border-radius:8px;font-size:0.8rem;cursor:pointer">⏸️</button>')+'</div>';}
+function showGardenPauseModal(){if(confirm('Vuoi mettere in pausa il giardino?\n\nLa tua pianta non appassirà per 7 giorni.\nUtile quando hai bisogno di una pausa dall\'app.')){pauseGarden(7);}}
+
 // Sincronizzazione automatica tra tab multipli
 window.addEventListener('storage', (e) => {
   if (e.key === STORAGE_KEY && e.newValue) {
@@ -979,6 +994,7 @@ window.addEventListener('storage', (e) => {
         state.history = Array.isArray(newState.history) ? newState.history : state.history;
         state.diary = Array.isArray(newState.diary) ? newState.diary : state.diary;
         state.patterns = newState.patterns || state.patterns;
+        state.garden = (newState.garden && typeof newState.garden === 'object') ? newState.garden : state.garden;
 
         // Ricarica vista corrente se necessario
         const activeScreen = document.querySelector('.screen.active');
@@ -987,6 +1003,7 @@ window.addEventListener('storage', (e) => {
           if (id === 'insightsScreen') renderInsights();
           if (id === 'historyScreen') renderHistory();
           if (id === 'diaryScreen') renderDiaryEntries();
+          if (id === 'homeScreen') updateGardenBadge();
         }
 
         console.log('Dati sincronizzati da altro tab');
@@ -1117,29 +1134,29 @@ function startCustomTimer(minutes){timerSeconds=minutes*60;timerTotalSeconds=min
 function showDumpWithPrompt(prompt){showScreen('dumpScreen');document.getElementById('dumpTextarea').value=prompt;document.getElementById('dumpTextarea').focus();}
 function showChecklist(strategyName){const n=strategyName.toLowerCase();let items=[];let emoji='✓';let subtitle='Controlla questi punti';if(n.includes('check')||n.includes('basics')){items=['Ho mangiato?','Ho bevuto acqua?','Ho dormito abbastanza?','Sto sovrastimolato?','Ho preso le medicine?'];emoji='🏥';subtitle='Check fisico - Basics prima di tutto';}else{items=['Punto 1','Punto 2','Punto 3'];}document.getElementById('checklistEmoji').textContent=emoji;document.getElementById('checklistTitle').textContent=strategyName;document.getElementById('checklistSubtitle').textContent=subtitle;let html='';items.forEach((item,i)=>{html+='<div style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--bg-card);border-radius:var(--radius-md);margin-bottom:12px;cursor:pointer" onclick="toggleCheckItem('+i+')"><input type="checkbox" id="check_'+i+'" style="width:20px;height:20px;cursor:pointer"><label for="check_'+i+'" style="flex:1;font-size:0.95rem;cursor:pointer">'+item+'</label></div>';});document.getElementById('checklistItems').innerHTML=html;showScreen('checklistScreen');}
 function toggleCheckItem(i){const cb=document.getElementById('check_'+i);cb.checked=!cb.checked;}
-function completeChecklist(){showScreen('responseScreen');showToast('✓ Checklist completata');}
+function completeChecklist(){addGardenPoints(10,'Checklist completata');showScreen('responseScreen');}
 function showGuidedTip(title,content){document.getElementById('tipEmoji').textContent='💡';document.getElementById('tipTitle').textContent=title;document.getElementById('tipContent').textContent=content;showScreen('guidedTipScreen');}
 function showGuidedQuestion(title,question){document.getElementById('questionEmoji').textContent='💭';document.getElementById('questionTitle').textContent=title;document.getElementById('questionPrompt').textContent=question;document.getElementById('questionAnswer').value='';showScreen('guidedQuestionScreen');}
-function saveGuidedAnswer(){const answer=document.getElementById('questionAnswer').value.trim();if(answer){state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:'reflection',text:answer,type:'reflection'});saveState();showToast('💭 Risposta salvata');showScreen('responseScreen');}else{showToast('Scrivi una risposta');}}
+function saveGuidedAnswer(){const answer=document.getElementById('questionAnswer').value.trim();if(answer){state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:'reflection',text:answer,type:'reflection'});saveState();addGardenPoints(5,'Riflessione salvata');showScreen('responseScreen');}else{showToast('Scrivi una risposta');}}
 function giveFeedback(h){if(state.history.length>0)state.history[0].helpful=h;saveState();document.querySelectorAll('.feedback-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');showToast(h?'Grazie! 💚':'Grazie per il feedback');}
 function finishAndGoHome(){screenHistory=['homeScreen'];showScreen('homeScreen');}
 function startTimer(){document.getElementById('timerStartBtn').style.display='none';timerInterval=setInterval(()=>{timerSeconds--;updateTimerDisplay();if(timerSeconds<=0){clearInterval(timerInterval);timerDone();}},1000);}
 function updateTimerDisplay(){const m=Math.floor(timerSeconds/60),s=timerSeconds%60;document.getElementById('timerDisplay').textContent=m+':'+(s<10?'0':'')+s;const offset=565.48*(1-timerSeconds/timerTotalSeconds);document.getElementById('timerProgress').style.strokeDashoffset=offset;}
-function timerDone(){document.getElementById('timerControls').style.display='none';document.getElementById('timerDone').classList.add('show');showToast('🎉 Completato!');}
+function timerDone(){document.getElementById('timerControls').style.display='none';document.getElementById('timerDone').classList.add('show');addGardenPoints(10,'Timer completato');}
 function resetTimer(){timerSeconds=timerTotalSeconds;updateTimerDisplay();document.getElementById('timerDone').classList.remove('show');document.getElementById('timerControls').style.display='flex';document.getElementById('timerStartBtn').style.display='block';}
 function stopTimer(){clearInterval(timerInterval);resetTimer();}
 function startBreathing(){document.getElementById('breatheStartBtn').style.display='none';breatheCycles=5;runBreatheCycle();}
 function runBreatheCycle(){if(breatheCycles<=0){breathingDone();return;}const c=document.getElementById('breatheCircle'),i=document.getElementById('breatheInstruction'),n=document.getElementById('breatheCounter');c.classList.add('inhale');c.classList.remove('exhale');i.textContent='Inspira...';n.textContent=breatheCycles+' cicli';setTimeout(()=>{c.classList.remove('inhale');c.classList.add('exhale');i.textContent='Espira...';setTimeout(()=>{breatheCycles--;runBreatheCycle();},4000);},4000);}
-function breathingDone(){document.getElementById('breatheInstruction').textContent='Fatto! 🙏';document.getElementById('breatheCounter').textContent='Come ti senti?';document.getElementById('breatheStartBtn').style.display='block';document.getElementById('breatheStartBtn').textContent='Ripeti';showToast('🌬️ Respirazione completata');}
+function breathingDone(){document.getElementById('breatheInstruction').textContent='Fatto! 🙏';document.getElementById('breatheCounter').textContent='Come ti senti?';document.getElementById('breatheStartBtn').style.display='block';document.getElementById('breatheStartBtn').textContent='Ripeti';addGardenPoints(5,'Respirazione completata');}
 function stopBreathing(){breatheCycles=0;document.getElementById('breatheCircle').classList.remove('inhale','exhale');document.getElementById('breatheInstruction').textContent='Pronto?';document.getElementById('breatheCounter').textContent='5 cicli';document.getElementById('breatheStartBtn').style.display='block';document.getElementById('breatheStartBtn').textContent='Inizia';}
-function saveDump(){const t=document.getElementById('dumpTextarea').value;if(t.trim()){state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:'dump',text:t,type:'dump'});saveState();showToast('💭 Pensieri salvati');}document.getElementById('dumpTextarea').value='';showScreen('responseScreen');}
+function saveDump(){const t=document.getElementById('dumpTextarea').value;if(t.trim()){state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:'dump',text:t,type:'dump'});saveState();addGardenPoints(5,'Pensieri salvati');}else{showScreen('responseScreen');}document.getElementById('dumpTextarea').value='';showScreen('responseScreen');}
 function initGrounding(){currentGroundStep=0;renderGroundingSteps();}
 function renderGroundingSteps(){document.getElementById('groundingSteps').innerHTML=groundingSteps.map((s,i)=>'<div class="ground-step'+(i===currentGroundStep?' active':'')+(i<currentGroundStep?' done':'')+'"><div class="ground-step-num">'+(i<currentGroundStep?'✓':s.num)+'</div><div class="ground-step-content"><div class="ground-step-title">'+s.sense+'</div><div class="ground-step-desc">'+s.desc+'</div><div class="ground-step-input"><div class="ground-input-row">'+s.placeholders.map(p=>'<input type="text" class="ground-input-item" placeholder="'+p+'">').join('')+'</div><button class="ground-next-btn" onclick="nextGroundStep()">Avanti →</button></div></div></div>').join('');}
-function nextGroundStep(){currentGroundStep++;if(currentGroundStep>=groundingSteps.length){showToast('🌿 Grounding completato!');setTimeout(()=>showScreen('responseScreen'),1500);return;}renderGroundingSteps();}
+function nextGroundStep(){currentGroundStep++;if(currentGroundStep>=groundingSteps.length){addGardenPoints(5,'Grounding completato');setTimeout(()=>showScreen('responseScreen'),1500);return;}renderGroundingSteps();}
 function renderDiaryMoods(){document.getElementById('diaryMoodGrid').innerHTML=diaryMoods.map(m=>'<button class="diary-mood-btn" data-id="'+m.id+'" onclick="selectDiaryMood(\''+m.id+'\')"><span class="emoji">'+m.emoji+'</span><span class="label">'+m.label+'</span></button>').join('');}
 function selectDiaryMood(id){diaryMood=id;document.querySelectorAll('.diary-mood-btn').forEach(b=>b.classList.toggle('selected',b.dataset.id===id));}
 function addPrompt(t){const i=document.getElementById('diaryTextInput');i.value=t+' '+i.value;i.focus();}
-function saveDiaryEntry(){const t=document.getElementById('diaryTextInput').value.trim();if(!t){showToast('Scrivi qualcosa');return;}state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:diaryMood||'okay',text:t,type:'entry'});saveState();document.getElementById('diaryTextInput').value='';diaryMood=null;document.querySelectorAll('.diary-mood-btn').forEach(b=>b.classList.remove('selected'));showToast('📝 Nota salvata');showScreen('diaryScreen');}
+function saveDiaryEntry(){const t=document.getElementById('diaryTextInput').value.trim();if(!t){showToast('Scrivi qualcosa');return;}state.diary.unshift({id:Date.now(),date:new Date().toISOString(),mood:diaryMood||'okay',text:t,type:'entry'});saveState();document.getElementById('diaryTextInput').value='';diaryMood=null;document.querySelectorAll('.diary-mood-btn').forEach(b=>b.classList.remove('selected'));addGardenPoints(5,'Nota salvata');showScreen('diaryScreen');}
 function renderDiaryEntries(){const c=document.getElementById('diaryEntries');const e=state.diary.filter(x=>x.type==='entry'||x.type==='dump');if(e.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">📝</div><h3>Nessuna nota</h3><p>Inizia a scrivere</p></div>';return;}c.innerHTML=e.slice(0,20).map(x=>{const m=diaryMoods.find(d=>d.id===x.mood)||{emoji:'💭'};const d=new Date(x.date);return'<div class="diary-entry" onclick="openDiaryEntry('+x.id+')"><div class="diary-entry-header"><span class="diary-entry-emoji">'+m.emoji+'</span><div class="diary-entry-meta"><div class="diary-entry-date">'+formatDate(d)+'</div><div class="diary-entry-time">'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</div></div></div><p class="diary-entry-text">'+x.text+'</p></div>';}).join('');}
 function openDiaryEntry(id){currentDiaryEntry=state.diary.find(x=>x.id===id);if(!currentDiaryEntry)return;const m=diaryMoods.find(x=>x.id===currentDiaryEntry.mood)||{emoji:'💭'};const d=new Date(currentDiaryEntry.date);document.getElementById('diaryDetailHeader').innerHTML='<div class="diary-detail-emoji">'+m.emoji+'</div><div class="diary-detail-date">'+formatDate(d)+'</div><div class="diary-detail-time">'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</div>';document.getElementById('diaryDetailText').textContent=currentDiaryEntry.text;showScreen('diaryDetailScreen');}
 function deleteDiaryEntry(){if(!currentDiaryEntry)return;if(confirm('Eliminare?')){state.diary=state.diary.filter(x=>x.id!==currentDiaryEntry.id);saveState();showToast('Eliminata');showScreen('diaryScreen');}}
