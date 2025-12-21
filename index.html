@@ -825,8 +825,6 @@ let currentGroundStep=0;
 let diaryMood=null;
 let currentDiaryEntry=null;
 let reportPeriodDays=7;
-
-// Gestione accettazione termini legali
 function checkLegalConsent() {
   const consent = localStorage.getItem('legal-consent');
   if (consent === 'accepted') {
@@ -869,47 +867,29 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderTriggers();
   renderDiaryMoods();
 });
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(console.error);
-
-// Versione app - deve corrispondere a sw.js e manifest.json
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 const APP_VERSION = '1.0.2';
-
-// Versione schema dati per migrazioni future
 const SCHEMA_VERSION = 1;
 const STORAGE_KEY = 'come-stai-v2';
-
-// Carica stato con gestione errori robusta e validazione
 function loadState() {
   try {
     const s = localStorage.getItem(STORAGE_KEY);
-    if (!s) return; // Prima installazione, usa stato di default
-
+    if (!s) return;
     const loaded = JSON.parse(s);
 
-    // Validazione base dello schema
     if (!loaded || typeof loaded !== 'object') {
-      console.warn('Stato non valido, uso default');
       return;
     }
-
-    // Migrazione versione se necessario
     if (!loaded.version || loaded.version < SCHEMA_VERSION) {
       loaded.version = SCHEMA_VERSION;
-      // Aggiungi qui future migrazioni
     }
-
-    // Validazione struttura minima
     state.history = Array.isArray(loaded.history) ? loaded.history : [];
     state.diary = Array.isArray(loaded.diary) ? loaded.diary : [];
     state.patterns = (loaded.patterns && typeof loaded.patterns === 'object') ? loaded.patterns : {};
     state.garden = (loaded.garden && typeof loaded.garden === 'object') ? loaded.garden : {points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null};
     state.tasks = (loaded.tasks && typeof loaded.tasks === 'object') ? loaded.tasks : {};
     state.version = SCHEMA_VERSION;
-
-    console.log('Dati caricati:', state.history.length + ' momenti, ' + state.diary.length + ' note');
   } catch (err) {
-    console.error('Errore caricamento dati:', err);
-    // Tenta backup recovery
     try {
       const backup = localStorage.getItem(STORAGE_KEY + '-backup');
       if (backup) {
@@ -919,52 +899,30 @@ function loadState() {
         state.patterns = loaded.patterns || {};
         state.garden = (loaded.garden && typeof loaded.garden === 'object') ? loaded.garden : {points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null};
         state.tasks = (loaded.tasks && typeof loaded.tasks === 'object') ? loaded.tasks : {};
-        console.log('Recupero da backup riuscito');
         showToast('⚠️ Dati recuperati da backup');
         return;
       }
     } catch (backupErr) {
-      console.error('Backup non disponibile:', backupErr);
     }
     showToast('⚠️ Errore caricamento dati');
   }
 }
-
-// Salva stato con gestione errori e backup
 function saveState() {
   try {
     state.version = SCHEMA_VERSION;
     state.lastSaved = new Date().toISOString();
 
     const data = JSON.stringify(state);
-
-    // Verifica dimensioni (warning se > 4MB)
-    if (data.length > 4 * 1024 * 1024) {
-      console.warn('Storage grande:', (data.length / 1024 / 1024).toFixed(2) + 'MB');
-    }
-
-    // Crea backup prima di salvare
     try {
       const current = localStorage.getItem(STORAGE_KEY);
       if (current) {
         localStorage.setItem(STORAGE_KEY + '-backup', current);
       }
     } catch (backupErr) {
-      // Backup non critico, continua
-      console.warn('Backup non creato:', backupErr);
     }
-
-    // Salva stato principale
     localStorage.setItem(STORAGE_KEY, data);
-
   } catch (err) {
-    console.error('Errore salvataggio:', err);
-
-    // Gestione quota exceeded
     if (err.name === 'QuotaExceededError' || err.code === 22) {
-      console.warn('Storage pieno, provo cleanup...');
-
-      // Rimuovi dati vecchi (oltre 6 mesi)
       const sixMonthsAgo = Date.now() - (6 * 30 * 24 * 60 * 60 * 1000);
       const originalHistoryLength = state.history.length;
       const originalDiaryLength = state.diary.length;
@@ -974,15 +932,12 @@ function saveState() {
 
       const removedHistory = originalHistoryLength - state.history.length;
       const removedDiary = originalDiaryLength - state.diary.length;
-
       if (removedHistory > 0 || removedDiary > 0) {
-        console.log('Rimossi dati vecchi:', removedHistory + ' momenti, ' + removedDiary + ' note');
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
           showToast('⚠️ Dati vecchi archiviati (storage pieno)');
           return;
         } catch (retryErr) {
-          console.error('Salvataggio fallito dopo cleanup:', retryErr);
         }
       }
 
@@ -992,8 +947,6 @@ function saveState() {
     }
   }
 }
-
-// Sistema Garden - Gamification con pianta
 function getGardenLevel(points){if(points>=500)return 5;if(points>=201)return 4;if(points>=101)return 3;if(points>=51)return 2;if(points>=21)return 1;return 0;}
 function getGardenEmoji(level,withered){const emojis=['🌱','🌿','🪴','🌳','🌲','🌸'];if(withered&&level>0)return'🍂';return emojis[level]||'🌱';}
 function getGardenName(level){const names=['Germoglio','Piantina','Pianta giovane','Albero','Albero maestoso','Albero fiorito'];return names[level]||'Germoglio';}
@@ -1003,8 +956,6 @@ function pauseGarden(days){state.garden.isPaused=true;const until=new Date();unt
 function resumeGarden(){state.garden.isPaused=false;state.garden.pauseUntil=null;saveState();updateGardenBadge();showToast('🌱 Pausa terminata! Bentornato!');}
 function updateGardenBadge(){const badge=document.getElementById('gardenBadge');if(!badge)return;const isWithered=checkGardenDecay();const level=getGardenLevel(state.garden.points);const emoji=getGardenEmoji(level,isWithered&&!state.garden.isPaused);const name=getGardenName(level);const points=state.garden.points;let statusText='';if(state.garden.isPaused){statusText='🌙 In pausa';}else if(isWithered){statusText='💧 Ha bisogno di te';}else{statusText=name+' · '+points+' pt';}badge.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(126,184,218,0.15);border:1px solid rgba(126,184,218,0.3);border-radius:12px;margin:20px 0"><span style="font-size:1.8rem">'+emoji+'</span><div style="flex:1;text-align:left"><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Il tuo giardino</div><div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)">'+statusText+'</div></div>'+(state.garden.isPaused?'<button onclick="resumeGarden()" style="padding:6px 12px;background:var(--accent-green);color:white;border:none;border-radius:8px;font-size:0.8rem;cursor:pointer;font-weight:600">Riprendi</button>':'<button onclick="showGardenPauseModal()" style="padding:6px 12px;background:rgba(160,160,184,0.2);color:var(--text-secondary);border:none;border-radius:8px;font-size:0.8rem;cursor:pointer">⏸️</button>')+'</div>';}
 function showGardenPauseModal(){if(confirm('Vuoi mettere in pausa il giardino?\n\nLa tua pianta non appassirà per 7 giorni.\nUtile quando hai bisogno di una pausa dall\'app.')){pauseGarden(7);}}
-
-// Sistema Task Tracking
 const taskCategories={studio:['studiare','esame','lezione','compiti','tesi','scuola','università','corso','materia','storia','matematica','fisica','chimica'],lavoro:['email','meeting','report','progetto','chiamata','lavoro','riunione','presentazione','deadline','documento','cliente'],casa:['pulizie','pulire','lavare','stirare','cucinare','spesa','casa','cucina','bagno','camera','stanza','piatti','biancheria','bucato'],sociale:['uscire','amici','festa','compleanno','chiamare','sociale','cena','aperitivo','evento','appuntamento'],cura:['doccia','vestirsi','medicine','dentista','sport','palestra','correre','yoga','meditare','dormire'],admin:['bollette','banca','documenti','tasse','prenotare','email','modulo','pratica','appuntamento','telefonata']};
 function detectTaskCategory(taskName){const t=taskName.toLowerCase();for(const[cat,keywords]of Object.entries(taskCategories)){if(keywords.some(k=>t.includes(k)))return cat;}return 'altro';}
 function normalizeTaskName(name){return name.toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');}
@@ -1012,8 +963,6 @@ function updateTaskDatabase(taskName,category,feeling,trigger,intensity,strategy
 function getBestStrategyForTask(taskId){const task=state.tasks[taskId];if(!task||!task.strategies)return null;let best=null;let bestRate=0;for(const[stratName,stats]of Object.entries(task.strategies)){if(stats.used<2)continue;const rate=stats.completed/stats.used;if(rate>bestRate){bestRate=rate;best={name:stratName,rate:rate,used:stats.used};}}return best;}
 function getRecentTasks(limit=5){const tasks=Object.values(state.tasks).sort((a,b)=>new Date(b.lastMentioned)-new Date(a.lastMentioned));return tasks.slice(0,limit);}
 function isTaskRelatedTrigger(trigger){const taskTriggers=['big_task','too_many','boring_task','transition'];return taskTriggers.includes(trigger);}
-
-// Sincronizzazione automatica tra tab multipli
 window.addEventListener('storage', (e) => {
   if (e.key === STORAGE_KEY && e.newValue) {
     try {
@@ -1024,8 +973,6 @@ window.addEventListener('storage', (e) => {
         state.patterns = newState.patterns || state.patterns;
         state.garden = (newState.garden && typeof newState.garden === 'object') ? newState.garden : state.garden;
         state.tasks = (newState.tasks && typeof newState.tasks === 'object') ? newState.tasks : state.tasks;
-
-        // Ricarica vista corrente se necessario
         const activeScreen = document.querySelector('.screen.active');
         if (activeScreen) {
           const id = activeScreen.id;
@@ -1034,16 +981,11 @@ window.addEventListener('storage', (e) => {
           if (id === 'diaryScreen') renderDiaryEntries();
           if (id === 'homeScreen') updateGardenBadge();
         }
-
-        console.log('Dati sincronizzati da altro tab');
       }
     } catch (err) {
-      console.error('Errore sincronizzazione tab:', err);
     }
   }
 });
-
-// Esporta dati in formato JSON per backup
 function exportData() {
   try {
     const dataStr = JSON.stringify(state, null, 2);
@@ -1058,12 +1000,9 @@ function exportData() {
     URL.revokeObjectURL(url);
     showToast('💾 Backup scaricato');
   } catch (err) {
-    console.error('Errore export:', err);
     showToast('❌ Errore export');
   }
 }
-
-// Importa dati da file JSON
 function importData() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -1076,29 +1015,20 @@ function importData() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result);
-
-        // Validazione
         if (!imported || typeof imported !== 'object') {
           showToast('❌ File non valido');
           return;
         }
-
-        // Conferma sovrascrittura
         const hasData = state.history.length > 0 || state.diary.length > 0;
         if (hasData) {
           if (!confirm('Attenzione: questo sovrascriverà i tuoi dati attuali. Continua?')) {
             return;
           }
         }
-
-        // Importa dati validati
         state.history = Array.isArray(imported.history) ? imported.history : [];
         state.diary = Array.isArray(imported.diary) ? imported.diary : [];
         state.patterns = imported.patterns || {};
-
         saveState();
-
-        // Ricarica vista corrente
         const activeScreen = document.querySelector('.screen.active');
         if (activeScreen) {
           const id = activeScreen.id;
@@ -1109,7 +1039,6 @@ function importData() {
 
         showToast('✅ Dati importati (' + state.history.length + ' momenti, ' + state.diary.length + ' note)');
       } catch (err) {
-        console.error('Errore import:', err);
         showToast('❌ Errore lettura file');
       }
     };
@@ -1117,8 +1046,6 @@ function importData() {
   };
   input.click();
 }
-
-// Cancella tutti i dati (con conferma)
 function clearAllData() {
   if (!confirm('Attenzione: questo eliminerà TUTTI i tuoi dati in modo permanente. Sei sicuro?')) {
     return;
@@ -1132,17 +1059,11 @@ function clearAllData() {
   state.patterns = {};
 
   saveState();
-
-  // Pulisci anche backup
   try {
     localStorage.removeItem(STORAGE_KEY + '-backup');
   } catch (err) {
-    console.warn('Errore pulizia backup:', err);
   }
-
   showToast('🗑️ Tutti i dati eliminati');
-
-  // Torna alla home
   screenHistory = ['homeScreen'];
   showScreen('homeScreen');
 }
