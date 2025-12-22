@@ -349,7 +349,7 @@
         <div id="gardenBadge" style="display:none"></div>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
         <button class="home-main-btn" onclick="startFlow()">
-          <button class="garden-pause-btn" id="gardenPauseBtn" onclick="event.stopPropagation();showGardenPauseModal()">⏸️</button>
+          <div class="garden-pause-btn" id="gardenPauseBtn" onclick="event.stopPropagation();showGardenPauseModal()" role="button" tabindex="0">⏸️</div>
           <span class="garden-emoji" id="mainGardenEmoji">🌱</span>
           <span class="garden-level" id="mainGardenLevel">Lv 0</span>
           <span class="garden-points" id="mainGardenPoints">0 punti</span>
