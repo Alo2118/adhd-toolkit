@@ -32,9 +32,15 @@
     .home-screen{justify-content:center;align-items:center;text-align:center;padding:60px 24px 40px;display:flex;flex-direction:column;width:100%}
     .home-greeting{font-size:1.1rem;color:var(--text-secondary);margin-bottom:12px}
     .home-question{font-size:2rem;font-weight:800;margin-bottom:50px;line-height:1.3;max-width:400px}
-    .home-main-btn{width:180px;height:180px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 20px 60px rgba(126,184,218,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-bottom:50px}
+    .home-main-btn{position:relative;width:240px;height:240px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;box-shadow:0 20px 60px rgba(126,184,218,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin-bottom:50px;padding:20px}
     .home-main-btn:active{transform:scale(0.95)}
-    .home-main-btn .icon{font-size:2.5rem}
+    .garden-pause-btn{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,0.9);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:all 0.2s;z-index:10}
+    .garden-pause-btn:hover{transform:scale(1.1);background:white}
+    .garden-pause-btn:active{transform:scale(0.95)}
+    .garden-emoji{font-size:3rem;line-height:1}
+    .garden-level{font-size:0.75rem;font-weight:600;opacity:0.8;letter-spacing:0.5px}
+    .garden-points{font-size:0.85rem;font-weight:600;opacity:0.9}
+    .main-btn-text{font-size:1rem;margin-top:4px}
     .home-actions{display:flex;flex-direction:column;gap:12px;width:300px;margin-bottom:40px}
     .home-action-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:18px 24px;border-radius:var(--radius-lg);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;width:100%}
     .home-action-btn:active{background:var(--bg-elevated);transform:scale(0.98)}
@@ -340,11 +346,14 @@
     <div class="screen" id="homeScreen">
       <div class="home-screen">
         <p class="home-greeting" id="greeting">Ciao</p>
-        <div id="gardenBadge"></div>
+        <div id="gardenBadge" style="display:none"></div>
         <h1 class="home-question">Come stai<br>in questo momento?</h1>
         <button class="home-main-btn" onclick="startFlow()">
-          <span class="icon">💭</span>
-          <span>Ho bisogno<br>di aiuto</span>
+          <button class="garden-pause-btn" id="gardenPauseBtn" onclick="event.stopPropagation();showGardenPauseModal()">⏸️</button>
+          <span class="garden-emoji" id="mainGardenEmoji">🌱</span>
+          <span class="garden-level" id="mainGardenLevel">Lv 0</span>
+          <span class="garden-points" id="mainGardenPoints">0 punti</span>
+          <span class="main-btn-text">Ho bisogno<br>di aiuto</span>
         </button>
         <div class="home-actions">
           <button class="home-action-btn" onclick="showScreen('diaryScreen')">
@@ -1135,7 +1144,8 @@ function checkGardenDecay(){if(state.garden.isPaused&&state.garden.pauseUntil){i
 function addGardenPoints(points,activityName){checkGardenDecay();const wasWithered=state.garden.lastActivityDate&&(new Date()-new Date(state.garden.lastActivityDate))/(1000*60*60)>=24;const oldLevel=getGardenLevel(state.garden.points);state.garden.points+=points;state.garden.lastActivityDate=new Date().toISOString();const newLevel=getGardenLevel(state.garden.points);state.garden.level=newLevel;saveState();updateGardenBadge();let message='';if(wasWithered){message='🌱 Pianta riannaffiata! +'+points+' punti';showToast(message);setTimeout(()=>showToast('💚 Bonus recupero: +50% punti per 24h!'),1500);}else if(newLevel>oldLevel){message='🎉 LIVELLO '+newLevel+'! '+getGardenName(newLevel)+' (+'+points+' pt)';showToast(message);}else{message='✨ +'+points+' punti! '+getGardenEmoji(newLevel,false)+' '+state.garden.points+' pt';showToast(message);}}
 function pauseGarden(days){state.garden.isPaused=true;const until=new Date();until.setDate(until.getDate()+days);state.garden.pauseUntil=until.toISOString();saveState();updateGardenBadge();showToast('🌙 Pianta in pausa per '+days+' giorni');}
 function resumeGarden(){state.garden.isPaused=false;state.garden.pauseUntil=null;saveState();updateGardenBadge();showToast('🌱 Pausa terminata! Bentornato!');}
-function updateGardenBadge(){const badge=document.getElementById('gardenBadge');if(!badge)return;const isWithered=checkGardenDecay();const level=getGardenLevel(state.garden.points);const emoji=getGardenEmoji(level,isWithered&&!state.garden.isPaused);const name=getGardenName(level);const points=state.garden.points;let statusText='';if(state.garden.isPaused){statusText='🌙 In pausa';}else if(isWithered){statusText='💧 Ha bisogno di te';}else{statusText=name+' · '+points+' pt';}badge.innerHTML='<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(126,184,218,0.15);border:1px solid rgba(126,184,218,0.3);border-radius:12px;margin:20px 0"><span style="font-size:1.8rem">'+emoji+'</span><div style="flex:1;text-align:left"><div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Il tuo giardino</div><div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)">'+statusText+'</div></div>'+(state.garden.isPaused?'<button onclick="resumeGarden()" style="padding:6px 12px;background:var(--accent-green);color:white;border:none;border-radius:8px;font-size:0.8rem;cursor:pointer;font-weight:600">Riprendi</button>':'<button onclick="showGardenPauseModal()" style="padding:6px 12px;background:rgba(160,160,184,0.2);color:var(--text-secondary);border:none;border-radius:8px;font-size:0.8rem;cursor:pointer">⏸️</button>')+'</div>';}
+function updateGardenBadge(){updateMainButton();}
+function updateMainButton(){const emojiEl=document.getElementById('mainGardenEmoji');const levelEl=document.getElementById('mainGardenLevel');const pointsEl=document.getElementById('mainGardenPoints');const pauseBtn=document.getElementById('gardenPauseBtn');if(!emojiEl||!levelEl||!pointsEl||!pauseBtn)return;const isWithered=checkGardenDecay();const level=getGardenLevel(state.garden.points);const emoji=getGardenEmoji(level,isWithered&&!state.garden.isPaused);const name=getGardenName(level);const points=state.garden.points;emojiEl.textContent=emoji;levelEl.textContent='Lv '+level;pointsEl.textContent=points+' punti';if(state.garden.isPaused){pauseBtn.textContent='▶️';pauseBtn.onclick=(e)=>{e.stopPropagation();resumeGarden();};}else{pauseBtn.textContent='⏸️';pauseBtn.onclick=(e)=>{e.stopPropagation();showGardenPauseModal();};}}
 function showGardenPauseModal(){if(confirm('Vuoi mettere in pausa il giardino?\n\nLa tua pianta non appassirà per 7 giorni.\nUtile quando hai bisogno di una pausa dall\'app.')){pauseGarden(7);}}
 const taskCategories={studio:['studiare','esame','lezione','compiti','tesi','scuola','università','corso','materia','storia','matematica','fisica','chimica'],lavoro:['email','meeting','report','progetto','chiamata','lavoro','riunione','presentazione','deadline','documento','cliente'],casa:['pulizie','pulire','lavare','stirare','cucinare','spesa','casa','cucina','bagno','camera','stanza','piatti','biancheria','bucato'],sociale:['uscire','amici','festa','compleanno','chiamare','sociale','cena','aperitivo','evento','appuntamento'],cura:['doccia','vestirsi','medicine','dentista','sport','palestra','correre','yoga','meditare','dormire'],admin:['bollette','banca','documenti','tasse','prenotare','email','modulo','pratica','appuntamento','telefonata']};
 function detectTaskCategory(taskName){const t=taskName.toLowerCase();for(const[cat,keywords]of Object.entries(taskCategories)){if(keywords.some(k=>t.includes(k)))return cat;}return 'altro';}
