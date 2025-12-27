@@ -258,6 +258,50 @@
     .delete-btn{background:rgba(224,122,122,0.15);color:var(--accent-coral)}
     .delete-btn:hover{background:var(--accent-coral);color:white;transform:scale(1.05)}
     .delete-btn:active{transform:scale(0.95)}
+    .modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+    .modal-backdrop{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)}
+    .modal-content{position:relative;background:var(--bg-elevated);border-radius:var(--radius-lg);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:24px 24px 16px;border-bottom:1px solid rgba(160,160,184,0.15)}
+    .modal-title{font-size:1.3rem;font-weight:700;color:var(--text-primary)}
+    .modal-close{width:36px;height:36px;border:none;background:rgba(160,160,184,0.1);color:var(--text-secondary);border-radius:50%;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-family:inherit;line-height:1}
+    .modal-close:hover{background:rgba(160,160,184,0.2)}
+    .modal-close:active{transform:scale(0.95)}
+    .modal-body{padding:24px}
+    .modal-footer{display:flex;gap:12px;padding:16px 24px;border-top:1px solid rgba(160,160,184,0.15)}
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;font-size:0.9rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px}
+    .form-input{width:100%;padding:12px 16px;background:var(--bg-card);border:2px solid rgba(160,160,184,0.15);border-radius:var(--radius-md);font-family:inherit;font-size:1rem;color:var(--text-primary);transition:all 0.2s}
+    .form-input:focus{outline:none;border-color:var(--accent-calm);background:var(--bg-elevated)}
+    .form-input::placeholder{color:var(--text-muted)}
+    .primary-btn{padding:12px 24px;background:var(--accent-calm);color:white;border:none;border-radius:var(--radius-md);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s;flex:1}
+    .primary-btn:hover{background:var(--accent-soft);transform:translateY(-1px)}
+    .primary-btn:active{transform:scale(0.98)}
+    .secondary-btn{padding:12px 24px;background:rgba(160,160,184,0.1);color:var(--text-secondary);border:none;border-radius:var(--radius-md);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .secondary-btn:hover{background:rgba(160,160,184,0.15)}
+    .secondary-btn:active{transform:scale(0.98)}
+    .task-card{background:var(--card-bg);border:1px solid rgba(160,160,184,0.15);border-left:4px solid var(--accent-calm);border-radius:12px;padding:16px;margin-bottom:12px;position:relative}
+    .task-card.overdue{border-left-color:var(--accent-coral)}
+    .task-card.near-deadline{border-left-color:var(--accent-warm)}
+    .task-card.completed{opacity:0.6;border-left-color:var(--accent-green)}
+    .task-card.paused{opacity:0.7;border-left-color:var(--text-muted)}
+    .task-card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px}
+    .task-card-checkbox{width:24px;height:24px;border:2px solid var(--accent-calm);border-radius:6px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:var(--accent-calm)}
+    .task-card-main{flex:1}
+    .task-card-name{font-weight:700;font-size:1.05rem;color:var(--text-primary);margin-bottom:6px}
+    .task-card-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:0.85rem;color:var(--text-muted)}
+    .task-card-deadline{display:flex;align-items:center;gap:4px}
+    .task-card-deadline.urgent{color:var(--accent-coral);font-weight:600}
+    .task-card-deadline.soon{color:var(--accent-warm);font-weight:600}
+    .task-card-category{display:flex;align-items:center;gap:4px}
+    .task-card-notes{margin-top:8px;font-size:0.9rem;color:var(--text-secondary);font-style:italic}
+    .task-card-actions{position:absolute;top:16px;right:16px;display:flex;gap:6px}
+    .task-card-action-btn{width:32px;height:32px;border:none;background:rgba(160,160,184,0.1);border-radius:6px;font-size:1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+    .task-card-action-btn:hover{background:rgba(160,160,184,0.2);transform:scale(1.05)}
+    .task-card-action-btn:active{transform:scale(0.95)}
+    .task-empty-state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+    .task-empty-state-emoji{font-size:4rem;margin-bottom:16px}
+    .task-empty-state-text{font-size:1.1rem;margin-bottom:8px}
+    .task-empty-state-hint{font-size:0.9rem}
   </style>
 </head>
 <body>
@@ -378,6 +422,9 @@
         <div class="home-actions">
           <button class="home-action-btn" onclick="showScreen('diaryScreen')">
             <span>📝</span><span>Scrivi nel diario</span>
+          </button>
+          <button class="home-action-btn" onclick="showScreen('activeTasksScreen')">
+            <span>✓</span><span>I miei compiti</span>
           </button>
         </div>
         <div class="home-secondary">
@@ -744,6 +791,31 @@
         <div id="historyContent"></div>
       </div>
     </div>
+    <div class="screen" id="activeTasksScreen">
+      <div class="diary-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="diary-header">
+          <h1 class="diary-title">✓ I miei compiti</h1>
+          <p class="diary-subtitle" id="activeTasksCount">Attività attive</p>
+        </div>
+        <div style="padding:0 20px 16px">
+          <button class="primary-btn" onclick="showAddTaskModal()" style="width:100%;margin-bottom:16px">+ Nuovo compito</button>
+          <div style="margin-bottom:12px">
+            <label style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;display:block;margin-bottom:8px">Filtro</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="filter-chip selected" data-status="all" onclick="setTaskStatusFilter('all')">Tutti</button>
+              <button class="filter-chip" data-status="active" onclick="setTaskStatusFilter('active')">Attivi</button>
+              <button class="filter-chip" data-status="paused" onclick="setTaskStatusFilter('paused')">In pausa</button>
+              <button class="filter-chip" data-status="completed" onclick="setTaskStatusFilter('completed')">Completati</button>
+            </div>
+          </div>
+        </div>
+        <div id="activeTasksContent"></div>
+      </div>
+    </div>
     <div class="screen" id="reportScreen">
       <div class="diary-screen">
         <div class="flow-header">
@@ -838,6 +910,46 @@
       </div>
       <div class="dump-actions">
         <button class="btn primary" onclick="showScreen('responseScreen')" style="width:100%">Ho capito ✓</button>
+      </div>
+    </div>
+    <div class="modal" id="taskModal" style="display:none">
+      <div class="modal-backdrop" onclick="closeTaskModal()"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="taskModalTitle">Nuovo compito</h2>
+          <button class="modal-close" onclick="closeTaskModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nome del compito</label>
+            <input type="text" id="taskNameInput" class="form-input" placeholder="es. studiare storia, fare la spesa...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categoria</label>
+            <select id="taskCategoryInput" class="form-input">
+              <option value="">Scegli categoria</option>
+              <option value="studio">📚 Studio</option>
+              <option value="lavoro">💼 Lavoro</option>
+              <option value="casa">🏠 Casa</option>
+              <option value="sociale">👥 Sociale</option>
+              <option value="cura">💚 Cura di sé</option>
+              <option value="admin">📋 Amministrativo</option>
+              <option value="altro">📌 Altro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Scadenza (opzionale)</label>
+            <input type="date" id="taskDeadlineInput" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Note (opzionale)</label>
+            <textarea id="taskNotesInput" class="form-input" rows="3" placeholder="Aggiungi dettagli..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" onclick="closeTaskModal()">Annulla</button>
+          <button class="primary-btn" onclick="saveTask()">Salva</button>
+        </div>
       </div>
     </div>
     <div class="toast" id="toast"></div>
@@ -1081,7 +1193,7 @@ const responses={
   'shame_criticized':{tldr:'RSD amplifica la critica 10x. La reazione è neurologica, non debolezza.',understanding:'RSD + critica = <strong>vergogna amplificata 10x</strong>. È una tempesta neurologica.<br><br>Cosa succede:<br>• La critica attiva <strong>RSD</strong> (sensibilità al rifiuto)<br>• Il cervello interpreta critica = rifiuto totale<br>• La disregolazione emotiva amplifica la risposta<br>• La vergogna accumulata negli anni esplode<br><br>La tua reazione è <strong>10 volte più intensa del fatto oggettivo</strong>. Non è debolezza. È il cervello ADHD che amplifica il segnale di rifiuto come meccanismo protettivo (doloroso ma non volontario).',actions:['breathe','ground','dump'],strategies:[{name:'RSD scale-down',desc:'Reazione: 10/10. Fatto oggettivo: scrivi.'},{name:'Fonte check',desc:'Chi critica? Conosce il mio ADHD?'},{name:'24h rule',desc:'Non rispondere ora. Domani l\'onda RSD passa.'},{name:'Vittorie recenti',desc:'Scrivi 3 successi recenti. Bilancia.'}]},
   'default':{tldr:'Quello che senti è valido. Il cervello ADHD processa emozioni più intensamente.',understanding:'Quello che senti è <strong>valido e reale</strong>.<br><br>Con ADHD:<br>• Le emozioni sono <strong>più intense</strong> (disregolazione emotiva)<br>• I trigger sono più frequenti<br>• Il recupero è più lento<br><br>Non stai esagerando. Il tuo cervello processa le emozioni diversamente. Servono strategie per gestire l\'intensità, non giudizio su ciò che senti.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza? Sovrastimolazione?'},{name:'Movimento breve',desc:'5 min camminata. Reset neurologico.'},{name:'Respira 5 volte',desc:'Inspira 4 sec, espira 6 sec. Ripeti 5 volte.'},{name:'Scrivi 3 righe',desc:'Cosa senti. Perché. Cosa ti serve ora.'}]}
 };
-let state={history:[],diary:[],patterns:{},garden:{points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null},tasks:{}};
+let state={history:[],diary:[],patterns:{},garden:{points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null},tasks:{},activeTasks:[],notificationSettings:{enabled:false,taskStuckDays:3,deadlineWarningDays:2}};
 let currentFlow={feeling:null,intensity:3,trigger:null,taskName:'',notes:''};
 let screenHistory=['homeScreen'];
 let timerInterval=null,timerSeconds=120,timerTotalSeconds=120;
@@ -1092,6 +1204,8 @@ let currentDiaryEntry=null;
 let reportPeriodDays=7;
 let historyPeriodFilter='all';
 let historyFeelingFilter=null;
+let taskStatusFilter='all';
+let currentEditingTaskId=null;
 function checkLegalConsent() {
   const consent = localStorage.getItem('legal-consent');
   if (consent === 'accepted') {
