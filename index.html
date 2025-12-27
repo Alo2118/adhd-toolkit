@@ -302,6 +302,12 @@
     .task-empty-state-emoji{font-size:4rem;margin-bottom:16px}
     .task-empty-state-text{font-size:1.1rem;margin-bottom:8px}
     .task-empty-state-hint{font-size:0.9rem}
+    .day-checkbox{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:var(--bg-card);border:2px solid rgba(160,160,184,0.2);border-radius:8px;cursor:pointer;transition:all 0.2s;user-select:none}
+    .day-checkbox:hover{background:rgba(126,184,218,0.1);border-color:var(--accent-calm)}
+    .day-checkbox input{display:none}
+    .day-checkbox input:checked + span{color:var(--accent-calm);font-weight:700}
+    .day-checkbox:has(input:checked){background:rgba(126,184,218,0.15);border-color:var(--accent-calm)}
+    .day-checkbox span{font-size:0.9rem;font-weight:600;color:var(--text-secondary)}
   </style>
 </head>
 <body>
@@ -962,6 +968,36 @@
             <input type="date" id="taskDeadlineInput" class="form-input">
           </div>
           <div class="form-group">
+            <label class="form-label" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="taskRecurringInput" onclick="toggleRecurringSection()" style="width:18px;height:18px;cursor:pointer">
+              <span>🔄 Compito ricorrente</span>
+            </label>
+          </div>
+          <div id="recurringSection" style="display:none">
+            <div class="form-group">
+              <label class="form-label">Frequenza</label>
+              <select id="taskRecurringPatternInput" class="form-input" onchange="updateRecurringDaysVisibility()">
+                <option value="daily">Giornaliero</option>
+                <option value="weekly">Settimanale</option>
+                <option value="biweekly">Bisettimanale (ogni 2 settimane)</option>
+                <option value="monthly">Mensile</option>
+              </select>
+            </div>
+            <div class="form-group" id="recurringDaysGroup">
+              <label class="form-label">Giorni della settimana</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <label class="day-checkbox"><input type="checkbox" value="1" id="dayMon" onchange="updateNextOccurrencePreview()"><span>Lun</span></label>
+                <label class="day-checkbox"><input type="checkbox" value="2" id="dayTue" onchange="updateNextOccurrencePreview()"><span>Mar</span></label>
+                <label class="day-checkbox"><input type="checkbox" value="3" id="dayWed" onchange="updateNextOccurrencePreview()"><span>Mer</span></label>
+                <label class="day-checkbox"><input type="checkbox" value="4" id="dayThu" onchange="updateNextOccurrencePreview()"><span>Gio</span></label>
+                <label class="day-checkbox"><input type="checkbox" value="5" id="dayFri" onchange="updateNextOccurrencePreview()"><span>Ven</span></label>
+                <label class="day-checkbox"><input type="checkbox" value="6" id="daySat" onchange="updateNextOccurrencePreview()"><span>Sab</span></label>
+                <label class="day-checkbox"><input type="checkbox" value="0" id="daySun" onchange="updateNextOccurrencePreview()"><span>Dom</span></label>
+              </div>
+            </div>
+            <div id="nextOccurrencePreview" style="margin-top:12px;padding:12px;background:rgba(126,184,218,0.1);border-radius:8px;font-size:0.9rem;color:var(--text-secondary)"></div>
+          </div>
+          <div class="form-group">
             <label class="form-label">Note (opzionale)</label>
             <textarea id="taskNotesInput" class="form-input" rows="3" placeholder="Aggiungi dettagli..."></textarea>
           </div>
@@ -1558,6 +1594,14 @@ function showAddTaskModal(){
   document.getElementById('taskCategoryInput').value='';
   document.getElementById('taskDeadlineInput').value='';
   document.getElementById('taskNotesInput').value='';
+  document.getElementById('taskRecurringInput').checked=false;
+  document.getElementById('taskDeadlineInput').disabled=false;
+  document.getElementById('recurringSection').style.display='none';
+  document.getElementById('taskRecurringPatternInput').value='weekly';
+  ['daySun','dayMon','dayTue','dayWed','dayThu','dayFri','daySat'].forEach(id=>{
+    const checkbox=document.getElementById(id);
+    if(checkbox)checkbox.checked=false;
+  });
   document.getElementById('taskModal').style.display='flex';
 }
 
@@ -1570,6 +1614,26 @@ function showEditTaskModal(id){
   document.getElementById('taskCategoryInput').value=task.category||'';
   document.getElementById('taskDeadlineInput').value=task.deadline||'';
   document.getElementById('taskNotesInput').value=task.notes||'';
+
+  if(task.isRecurring){
+    document.getElementById('taskRecurringInput').checked=true;
+    document.getElementById('taskDeadlineInput').disabled=true;
+    document.getElementById('recurringSection').style.display='block';
+    document.getElementById('taskRecurringPatternInput').value=task.recurringPattern.type;
+
+    ['daySun','dayMon','dayTue','dayWed','dayThu','dayFri','daySat'].forEach((id,index)=>{
+      const checkbox=document.getElementById(id);
+      if(checkbox){
+        checkbox.checked=task.recurringPattern.days&&task.recurringPattern.days.includes(index);
+      }
+    });
+    updateRecurringDaysVisibility();
+    updateNextOccurrencePreview();
+  }else{
+    document.getElementById('taskRecurringInput').checked=false;
+    document.getElementById('recurringSection').style.display='none';
+  }
+
   document.getElementById('taskModal').style.display='flex';
 }
 
@@ -1584,10 +1648,35 @@ function saveTask(){
   const category=document.getElementById('taskCategoryInput').value;
   const deadline=document.getElementById('taskDeadlineInput').value;
   const notes=document.getElementById('taskNotesInput').value.trim();
+  const isRecurring=document.getElementById('taskRecurringInput').checked;
 
   if(!name){
     showToast('❌ Inserisci un nome per il compito');
     return;
+  }
+
+  let recurringData=null;
+  if(isRecurring){
+    const pattern=document.getElementById('taskRecurringPatternInput').value;
+    const selectedDays=getSelectedDays();
+
+    if((pattern==='weekly'||pattern==='biweekly')&&selectedDays.length===0){
+      showToast('❌ Seleziona almeno un giorno della settimana');
+      return;
+    }
+
+    const nextOccurrence=calculateNextOccurrence(pattern,selectedDays);
+    if(!nextOccurrence){
+      showToast('❌ Errore nel calcolo della prossima occorrenza');
+      return;
+    }
+
+    recurringData={
+      isRecurring:true,
+      recurringPattern:{type:pattern,days:selectedDays},
+      nextOccurrence:nextOccurrence.toISOString(),
+      completionHistory:[]
+    };
   }
 
   const now=new Date().toISOString();
@@ -1597,9 +1686,23 @@ function saveTask(){
     if(task){
       task.name=name;
       task.category=category;
-      task.deadline=deadline||null;
       task.notes=notes;
       task.lastUpdatedAt=now;
+
+      if(isRecurring){
+        task.isRecurring=recurringData.isRecurring;
+        task.recurringPattern=recurringData.recurringPattern;
+        task.nextOccurrence=recurringData.nextOccurrence;
+        task.deadline=null;
+        if(!task.completionHistory)task.completionHistory=[];
+      }else{
+        task.isRecurring=false;
+        task.recurringPattern=null;
+        task.nextOccurrence=null;
+        task.completionHistory=null;
+        task.deadline=deadline||null;
+      }
+
       saveState();
       renderActiveTasks();
       closeTaskModal();
@@ -1610,12 +1713,16 @@ function saveTask(){
       id:Date.now(),
       name:name,
       category:category,
-      deadline:deadline||null,
       notes:notes,
       status:'active',
       createdAt:now,
       lastUpdatedAt:now,
-      relatedHistoryIds:[]
+      relatedHistoryIds:[],
+      isRecurring:isRecurring,
+      recurringPattern:isRecurring?recurringData.recurringPattern:null,
+      nextOccurrence:isRecurring?recurringData.nextOccurrence:null,
+      deadline:isRecurring?null:(deadline||null),
+      completionHistory:isRecurring?[]:null
     };
     state.activeTasks.push(newTask);
     saveState();
@@ -1685,7 +1792,8 @@ function renderActiveTasks(){
 
   let h='<div style="padding:0 20px">';
   filtered.forEach(task=>{
-    const daysUntil=getDaysUntilDeadline(task.deadline);
+    const effectiveDeadline=task.isRecurring?task.nextOccurrence:task.deadline;
+    const daysUntil=getDaysUntilDeadline(effectiveDeadline);
     const daysSince=getDaysSinceUpdate(task.lastUpdatedAt);
     let cardClass='task-card';
     let deadlineClass='';
@@ -1694,24 +1802,25 @@ function renderActiveTasks(){
     if(task.status==='completed')cardClass+=' completed';
     else if(task.status==='paused')cardClass+=' paused';
     else if(daysUntil!==null){
+      const prefix=task.isRecurring?'🔄 Prossima':'';
       if(daysUntil<0){
         cardClass+=' overdue';
         deadlineClass='urgent';
-        deadlineText='⚠️ Scaduto '+Math.abs(daysUntil)+' giorni fa';
+        deadlineText=(task.isRecurring?prefix+': ':'')+'⚠️ '+(task.isRecurring?'Mancata':' Scaduto')+' '+Math.abs(daysUntil)+' giorni fa';
       }else if(daysUntil===0){
         cardClass+=' near-deadline';
         deadlineClass='urgent';
-        deadlineText='⏰ Scade oggi';
+        deadlineText=(task.isRecurring?prefix+': ':'')+'⏰ '+formatRecurringDate(new Date(effectiveDeadline));
       }else if(daysUntil===1){
         cardClass+=' near-deadline';
         deadlineClass='soon';
-        deadlineText='⏰ Scade domani';
+        deadlineText=(task.isRecurring?prefix+': ':'')+'⏰ Domani';
       }else if(daysUntil<=state.notificationSettings.deadlineWarningDays){
         cardClass+=' near-deadline';
         deadlineClass='soon';
-        deadlineText='⏰ Scade tra '+daysUntil+' giorni';
+        deadlineText=(task.isRecurring?prefix+': ':'')+'⏰ '+daysUntil+' giorni';
       }else{
-        deadlineText='📅 Scade tra '+daysUntil+' giorni';
+        deadlineText=(task.isRecurring?prefix+': ':'')+'📅 '+formatRecurringDate(new Date(effectiveDeadline));
       }
     }
 
@@ -1719,7 +1828,11 @@ function renderActiveTasks(){
     h+='<div class="task-card-header">';
     h+='<input type="checkbox" class="task-card-checkbox" '+(task.status==='completed'?'checked':'')+' onclick="toggleTaskComplete('+task.id+')">';
     h+='<div class="task-card-main">';
-    h+='<div class="task-card-name">'+task.name+'</div>';
+    h+='<div class="task-card-name">';
+    if(task.isRecurring){
+      h+='🔄 ';
+    }
+    h+=task.name+'</div>';
     h+='<div class="task-card-meta">';
     if(task.category){
       const emoji=getCategoryEmoji(task.category);
@@ -1728,12 +1841,19 @@ function renderActiveTasks(){
     if(deadlineText){
       h+='<span class="task-card-deadline '+deadlineClass+'">'+deadlineText+'</span>';
     }
-    if(daysSince>=state.notificationSettings.taskStuckDays&&task.status==='active'){
+    if(daysSince>=state.notificationSettings.taskStuckDays&&task.status==='active'&&!task.isRecurring){
       h+='<span style="color:var(--accent-warm)">💭 Fermo da '+daysSince+' giorni</span>';
     }
     h+='</div>';
     h+='</div>';
     h+='</div>';
+    if(task.isRecurring&&task.completionHistory&&task.completionHistory.length>0){
+      const last30Days=task.completionHistory.filter(c=>{
+        const diff=new Date()-new Date(c.date);
+        return diff<=(30*24*60*60*1000);
+      });
+      h+='<div style="margin-top:8px;padding:8px;background:rgba(152,195,121,0.1);border-radius:6px;font-size:0.85rem;color:var(--accent-green)">✓ Completato '+last30Days.length+(last30Days.length===1?' volta':' volte')+' negli ultimi 30 giorni</div>';
+    }
     if(task.notes){
       h+='<div class="task-card-notes">'+task.notes+'</div>';
     }
@@ -1756,7 +1876,27 @@ function renderActiveTasks(){
 function toggleTaskComplete(id){
   const task=state.activeTasks.find(t=>t.id===id);
   if(!task)return;
-  if(task.status==='completed'){
+
+  if(task.isRecurring&&task.status!=='completed'){
+    const now=new Date().toISOString();
+    if(!task.completionHistory)task.completionHistory=[];
+    task.completionHistory.push({date:now,completed:true});
+    task.lastUpdatedAt=now;
+
+    const nextOccurrence=calculateNextOccurrence(
+      task.recurringPattern.type,
+      task.recurringPattern.days,
+      new Date(task.nextOccurrence)
+    );
+
+    if(nextOccurrence){
+      task.nextOccurrence=nextOccurrence.toISOString();
+      addGardenPoints(10,'Compito completato');
+      showToast('✓ Completato! +10 punti • Prossima: '+formatRecurringDate(nextOccurrence));
+    }else{
+      showToast('⚠️ Errore nel calcolare la prossima occorrenza');
+    }
+  }else if(task.status==='completed'){
     task.status='active';
     task.lastUpdatedAt=new Date().toISOString();
     showToast('▶️ Compito riattivato');
@@ -1766,6 +1906,7 @@ function toggleTaskComplete(id){
     addGardenPoints(10,'Compito completato');
     showToast('✓ Compito completato! +10 punti');
   }
+
   saveState();
   renderActiveTasks();
   checkAndScheduleNotifications();
@@ -1831,22 +1972,31 @@ function checkAndScheduleNotifications(){
   if(!state.notificationSettings.enabled||!('Notification' in window)||Notification.permission!=='granted')return;
 
   state.activeTasks.filter(t=>t.status==='active').forEach(task=>{
-    const daysSince=getDaysSinceUpdate(task.lastUpdatedAt);
-    const daysUntil=getDaysUntilDeadline(task.deadline);
+    const effectiveDeadline=task.isRecurring?task.nextOccurrence:task.deadline;
+    const daysUntil=getDaysUntilDeadline(effectiveDeadline);
 
-    if(daysSince>=state.notificationSettings.taskStuckDays){
-      scheduleNotification(task.id,'stuck',{
-        title:'💭 '+task.name,
-        body:'Questo compito è fermo da '+daysSince+' giorni. Va bene se non sei pronto, ma volevo ricordartelo.',
-        tag:'task-stuck-'+task.id
-      });
+    if(!task.isRecurring){
+      const daysSince=getDaysSinceUpdate(task.lastUpdatedAt);
+      if(daysSince>=state.notificationSettings.taskStuckDays){
+        scheduleNotification(task.id,'stuck',{
+          title:'💭 '+task.name,
+          body:'Questo compito è fermo da '+daysSince+' giorni. Va bene se non sei pronto, ma volevo ricordartelo.',
+          tag:'task-stuck-'+task.id
+        });
+      }
     }
 
     if(daysUntil!==null&&daysUntil<=state.notificationSettings.deadlineWarningDays&&daysUntil>=0){
       let body='';
-      if(daysUntil===0)body='La scadenza è oggi. Respira, puoi farcela.';
-      else if(daysUntil===1)body='La scadenza è domani. Un passo alla volta.';
-      else body='La scadenza è tra '+daysUntil+' giorni.';
+      if(task.isRecurring){
+        if(daysUntil===0)body='🔄 Programmato per oggi. Quando sei pronto!';
+        else if(daysUntil===1)body='🔄 Programmato per domani.';
+        else body='🔄 Prossima occorrenza tra '+daysUntil+' giorni.';
+      }else{
+        if(daysUntil===0)body='La scadenza è oggi. Respira, puoi farcela.';
+        else if(daysUntil===1)body='La scadenza è domani. Un passo alla volta.';
+        else body='La scadenza è tra '+daysUntil+' giorni.';
+      }
 
       scheduleNotification(task.id,'deadline',{
         title:'⏰ '+task.name,
@@ -1885,6 +2035,117 @@ function linkTaskToHistory(taskId,historyId){
     task.lastUpdatedAt=new Date().toISOString();
     saveState();
   }
+}
+
+// Recurring Tasks Functions
+function toggleRecurringSection(){
+  const checkbox=document.getElementById('taskRecurringInput');
+  const section=document.getElementById('recurringSection');
+  const deadlineInput=document.getElementById('taskDeadlineInput');
+  if(checkbox.checked){
+    section.style.display='block';
+    deadlineInput.disabled=true;
+    deadlineInput.value='';
+    updateRecurringDaysVisibility();
+    updateNextOccurrencePreview();
+  }else{
+    section.style.display='none';
+    deadlineInput.disabled=false;
+  }
+}
+
+function updateRecurringDaysVisibility(){
+  const pattern=document.getElementById('taskRecurringPatternInput').value;
+  const daysGroup=document.getElementById('recurringDaysGroup');
+  if(pattern==='daily'||pattern==='monthly'){
+    daysGroup.style.display='none';
+  }else{
+    daysGroup.style.display='block';
+  }
+  updateNextOccurrencePreview();
+}
+
+function getSelectedDays(){
+  const days=[];
+  ['daySun','dayMon','dayTue','dayWed','dayThu','dayFri','daySat'].forEach((id,index)=>{
+    const checkbox=document.getElementById(id);
+    if(checkbox&&checkbox.checked){
+      days.push(index);
+    }
+  });
+  return days.sort((a,b)=>a-b);
+}
+
+function calculateNextOccurrence(pattern,selectedDays,fromDate=new Date()){
+  const now=new Date(fromDate);
+  now.setHours(23,59,59,999);
+
+  if(pattern==='daily'){
+    now.setDate(now.getDate()+1);
+    return now;
+  }
+
+  if(pattern==='monthly'){
+    const next=new Date(now);
+    next.setMonth(next.getMonth()+1);
+    return next;
+  }
+
+  if(pattern==='weekly'||pattern==='biweekly'){
+    if(!selectedDays||selectedDays.length===0)return null;
+
+    const currentDay=now.getDay();
+    let daysToAdd=null;
+
+    for(let day of selectedDays){
+      let diff=day-currentDay;
+      if(diff<=0)diff+=7;
+      if(daysToAdd===null||diff<daysToAdd){
+        daysToAdd=diff;
+      }
+    }
+
+    if(daysToAdd!==null){
+      now.setDate(now.getDate()+daysToAdd);
+      if(pattern==='biweekly'&&daysToAdd===7){
+        now.setDate(now.getDate()+7);
+      }
+      return now;
+    }
+  }
+
+  return null;
+}
+
+function updateNextOccurrencePreview(){
+  const pattern=document.getElementById('taskRecurringPatternInput').value;
+  const selectedDays=getSelectedDays();
+  const next=calculateNextOccurrence(pattern,selectedDays);
+  const preview=document.getElementById('nextOccurrencePreview');
+
+  if(next){
+    const dayNames=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+    const dayName=dayNames[next.getDay()];
+    const dateStr=next.toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+    preview.innerHTML='📅 Prossima occorrenza: <strong>'+dayName+' '+dateStr+'</strong>';
+    preview.style.display='block';
+  }else{
+    if(pattern==='weekly'||pattern==='biweekly'){
+      preview.innerHTML='⚠️ Seleziona almeno un giorno della settimana';
+      preview.style.display='block';
+    }else{
+      preview.style.display='none';
+    }
+  }
+}
+
+function formatRecurringDate(date){
+  const dayNames=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+  const d=new Date(date);
+  const dayName=dayNames[d.getDay()];
+  const day=d.getDate();
+  const month=d.getMonth()+1;
+  return dayName+' '+day+'/'+month;
 }
 
 </script>
