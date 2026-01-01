@@ -1769,9 +1769,11 @@ function renderActiveTasks(){
       const order={'active':0,'paused':1,'completed':2};
       return order[a.status]-order[b.status];
     }
-    if(a.deadline&&b.deadline)return new Date(a.deadline)-new Date(b.deadline);
-    if(a.deadline)return -1;
-    if(b.deadline)return 1;
+    const aDate=a.isRecurring?a.nextOccurrence:a.deadline;
+    const bDate=b.isRecurring?b.nextOccurrence:b.deadline;
+    if(aDate&&bDate)return new Date(aDate)-new Date(bDate);
+    if(aDate)return -1;
+    if(bDate)return 1;
     return new Date(b.createdAt)-new Date(a.createdAt);
   });
 
@@ -2025,6 +2027,51 @@ function scheduleNotification(taskId,type,options){
   });
 
   localStorage.setItem(notifKey,now.toString());
+}
+
+function saveCurrentTaskToList(){
+  if(!currentFlow.taskName)return;
+
+  const taskName=currentFlow.taskName.trim();
+  const taskCategory=currentFlow.taskCategory||'altro';
+
+  const exists=state.activeTasks.find(t=>
+    t.name.toLowerCase()===taskName.toLowerCase()&&t.status==='active'
+  );
+
+  if(exists){
+    showToast('⚠️ Questo compito esiste già nella lista');
+    return;
+  }
+
+  const now=new Date().toISOString();
+  const newTask={
+    id:Date.now(),
+    name:taskName,
+    category:taskCategory,
+    notes:'',
+    status:'active',
+    createdAt:now,
+    lastUpdatedAt:now,
+    relatedHistoryIds:[],
+    isRecurring:false,
+    recurringPattern:null,
+    nextOccurrence:null,
+    deadline:null,
+    completionHistory:null
+  };
+
+  state.activeTasks.push(newTask);
+
+  if(state.history.length>0){
+    const historyId=state.history[0].id;
+    newTask.relatedHistoryIds.push(historyId);
+  }
+
+  saveState();
+  document.getElementById('saveTaskPrompt').style.display='none';
+  showToast('✓ Compito salvato nella lista');
+  checkAndScheduleNotifications();
 }
 
 function linkTaskToHistory(taskId,historyId){
