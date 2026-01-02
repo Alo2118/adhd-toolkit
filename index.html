@@ -1573,7 +1573,62 @@ function setHistoryPeriod(period){historyPeriodFilter=period;document.querySelec
 function setHistoryFeeling(feelingId){historyFeelingFilter=historyFeelingFilter===feelingId?null:feelingId;renderHistory();}
 function initHistoryFilters(){const container=document.getElementById('historyFeelingFilters');if(!container)return;let h='<button class="filter-chip'+(historyFeelingFilter===null?' selected':'')+'" data-feeling="all" onclick="setHistoryFeeling(null)">Tutte</button>';feelings.forEach(f=>{h+='<button class="filter-chip'+(historyFeelingFilter===f.id?' selected':'')+'" data-feeling="'+f.id+'" onclick="setHistoryFeeling(\''+f.id+'\')">'+f.emoji+' '+f.label+'</button>';});container.innerHTML=h;}
 function filterHistory(){let filtered=[...state.history];if(historyPeriodFilter!=='all'){const now=new Date();const cutoff=new Date();if(historyPeriodFilter==='today')cutoff.setHours(0,0,0,0);else if(historyPeriodFilter==='week')cutoff.setDate(now.getDate()-7);else if(historyPeriodFilter==='month')cutoff.setMonth(now.getMonth()-1);filtered=filtered.filter(e=>new Date(e.date)>=cutoff);}if(historyFeelingFilter){filtered=filtered.filter(e=>e.feeling===historyFeelingFilter);}return filtered;}
-function renderHistory(){initHistoryFilters();const filtered=filterHistory();const c=document.getElementById('historyContent');const counter=document.getElementById('historyCount');if(state.history.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">📋</div><h3>Nessun momento</h3></div>';counter.textContent='I tuoi momenti';return;}counter.textContent=filtered.length+(filtered.length===1?' momento':' momenti')+(filtered.length<state.history.length?' (filtrati)':'');if(filtered.length===0){c.innerHTML='<div class="empty-state"><div class="emoji">🔍</div><h3>Nessun risultato</h3><p>Prova altri filtri</p></div>';return;}c.innerHTML='<div style="padding:0 20px">'+filtered.slice(0,50).map(e=>{const f=feelings.find(x=>x.id===e.feeling)||{emoji:'😶',label:'Sconosciuto'};const tr=triggers.find(x=>x.id===e.trigger)||{label:'Sconosciuto'};const d=new Date(e.date);let h='<div class="history-card">';h+='<div class="history-card-actions"><button class="edit-btn" onclick="editHistoryItem('+e.id+')">✏️</button><button class="delete-btn" onclick="deleteHistoryItem('+e.id+')">🗑️</button></div>';h+='<div class="history-card-header">';h+='<div class="history-card-emoji">'+f.emoji+'</div>';h+='<div class="history-card-main">';h+='<div class="history-card-feeling">'+f.label+'</div>';h+='<div class="history-card-meta">';h+='<span>'+formatDate(d)+'</span>';h+='<span>•</span>';h+='<span>'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</span>';h+='</div>';h+='</div>';h+='<div class="diary-entry-intensity" style="margin-top:4px">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=e.intensity?' filled':'')+'"></div>').join('')+'</div>';h+='</div>';h+='<div class="history-card-trigger">📋 '+tr.label+'</div>';if(e.taskName){const emoji=getCategoryEmoji(e.taskCategory||'altro');h+='<div class="history-card-task">'+emoji+' <strong>'+e.taskName+'</strong></div>';}if(e.strategyUsed){const completed=e.strategyCompleted;h+='<div class="history-card-strategy'+(completed?'':' incomplete')+'"><span>'+(completed?'✓':'○')+'</span><span>'+e.strategyUsed+'</span></div>';}if(e.notes){h+='<div style="margin-top:8px;padding:8px;background:rgba(160,160,184,0.1);border-radius:6px;font-size:0.85rem;color:var(--text-secondary)">'+e.notes+'</div>';}h+='</div>';return h;}).join('')+'</div>';}
+function renderHistory(){
+  initHistoryFilters();
+  const filtered=filterHistory();
+  const c=document.getElementById('historyContent');
+  const counter=document.getElementById('historyCount');
+
+  if(state.history.length===0){
+    c.innerHTML='<div class="empty-state"><div class="emoji">📋</div><h3>Nessun momento</h3></div>';
+    counter.textContent='I tuoi momenti';
+    return;
+  }
+
+  counter.textContent=filtered.length+(filtered.length===1?' momento':' momenti')+(filtered.length<state.history.length?' (filtrati)':'');
+
+  if(filtered.length===0){
+    c.innerHTML='<div class="empty-state"><div class="emoji">🔍</div><h3>Nessun risultato</h3><p>Prova altri filtri</p></div>';
+    return;
+  }
+
+  const cards=filtered.slice(0,50).map(e=>{
+    if(!e||!e.feeling||!e.trigger||!e.date)return '';
+    const f=feelings.find(x=>x.id===e.feeling)||{emoji:'😶',label:'Sconosciuto'};
+    const tr=triggers.find(x=>x.id===e.trigger)||{label:'Sconosciuto'};
+    const d=new Date(e.date);
+    let h='<div class="history-card">';
+    h+='<div class="history-card-actions"><button class="edit-btn" onclick="editHistoryItem('+e.id+')">✏️</button><button class="delete-btn" onclick="deleteHistoryItem('+e.id+')">🗑️</button></div>';
+    h+='<div class="history-card-header">';
+    h+='<div class="history-card-emoji">'+f.emoji+'</div>';
+    h+='<div class="history-card-main">';
+    h+='<div class="history-card-feeling">'+f.label+'</div>';
+    h+='<div class="history-card-meta">';
+    h+='<span>'+formatDate(d)+'</span>';
+    h+='<span>•</span>';
+    h+='<span>'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</span>';
+    h+='</div>';
+    h+='</div>';
+    h+='<div class="diary-entry-intensity" style="margin-top:4px">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=e.intensity?' filled':'')+'"></div>').join('')+'</div>';
+    h+='</div>';
+    h+='<div class="history-card-trigger">📋 '+tr.label+'</div>';
+    if(e.taskName){
+      const emoji=getCategoryEmoji(e.taskCategory||'altro');
+      h+='<div class="history-card-task">'+emoji+' <strong>'+e.taskName+'</strong></div>';
+    }
+    if(e.strategyUsed){
+      const completed=e.strategyCompleted;
+      h+='<div class="history-card-strategy'+(completed?'':' incomplete')+'"><span>'+(completed?'✓':'○')+'</span><span>'+e.strategyUsed+'</span></div>';
+    }
+    if(e.notes){
+      h+='<div style="margin-top:8px;padding:8px;background:rgba(160,160,184,0.1);border-radius:6px;font-size:0.85rem;color:var(--text-secondary)">'+e.notes+'</div>';
+    }
+    h+='</div>';
+    return h;
+  }).filter(Boolean).join('');
+
+  c.innerHTML='<div style="padding:0 20px">'+cards+'</div>';
+}
 function formatDate(d){const n=new Date(),diff=n-d,days=Math.floor(diff/(1000*60*60*24));if(days===0){const h=Math.floor(diff/(1000*60*60));return h===0?'Ora':h+' ore fa';}if(days===1)return'Ieri';if(days<7)return days+' giorni fa';return d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});}
 function deleteHistoryItem(id){if(!confirm('Vuoi davvero eliminare questo momento?\n\nQuesta azione non può essere annullata.'))return;state.history=state.history.filter(e=>e.id!==id);saveState();renderHistory();showToast('🗑️ Momento eliminato');}
 function editHistoryItem(id){const item=state.history.find(e=>e.id===id);if(!item)return;if(item.taskName){const newTaskName=prompt('Modifica il nome dell\'attività:',item.taskName);if(newTaskName===null)return;if(newTaskName.trim())item.taskName=newTaskName.trim();}const newNotes=prompt('Modifica le note:',item.notes||'');if(newNotes===null)return;item.notes=newNotes;saveState();renderHistory();showToast('✏️ Modificato');}
