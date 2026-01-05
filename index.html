@@ -2226,9 +2226,10 @@ function renderActiveTasks(){
       sortedHistory.forEach((c,index)=>{
         const d=new Date(c.date);
         const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-        h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;'+(index>0?'border-top:1px solid rgba(160,160,184,0.1)':')+'">';
+        const borderStyle=index>0?'border-top:1px solid rgba(160,160,184,0.1);':'';
+        h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;'+borderStyle+'">';
         h+='<span style="color:var(--text-secondary)">'+dateStr+'</span>';
-        h+='<button class="delete-btn" onclick="event.stopPropagation();deleteCompletion('+task.id+',\''+c.date+'\')" style="font-size:0.8rem;padding:4px 8px" title="Elimina questo completamento">🗑️</button>';
+        h+='<button class="delete-btn" onclick="event.stopPropagation();deleteCompletion('+task.id+','+index+')" style="font-size:0.8rem;padding:4px 8px" title="Elimina questo completamento">🗑️</button>';
         h+='</div>';
       });
       h+='</div>';
@@ -2330,13 +2331,18 @@ function toggleCompletionHistory(taskId){
   }
 }
 
-function deleteCompletion(taskId,dateStr){
+function deleteCompletion(taskId,completionIndex){
   const task=state.activeTasks.find(t=>t.id===taskId);
   if(!task||!task.completionHistory)return;
 
-  if(!confirm('Eliminare questo completamento?\n\n'+new Date(dateStr).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})))return;
+  const sortedHistory=[...task.completionHistory].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const completion=sortedHistory[completionIndex];
+  if(!completion)return;
 
-  task.completionHistory=task.completionHistory.filter(c=>c.date!==dateStr);
+  const dateStr=new Date(completion.date).toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  if(!confirm('Eliminare questo completamento?\n\n'+dateStr))return;
+
+  task.completionHistory=task.completionHistory.filter(c=>c.date!==completion.date);
   task.lastUpdatedAt=new Date().toISOString();
 
   saveState();
