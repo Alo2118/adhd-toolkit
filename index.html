@@ -1593,10 +1593,10 @@ function renderHistory(){
   }
 
   const cards=filtered.slice(0,50).map(e=>{
-    if(!e||!e.feeling||!e.trigger||!e.date)return '';
+    if(!e||!e.id)return '';
     const f=feelings.find(x=>x.id===e.feeling)||{emoji:'😶',label:'Sconosciuto'};
-    const tr=triggers.find(x=>x.id===e.trigger)||{label:'Sconosciuto'};
-    const d=new Date(e.date);
+    const tr=triggers.find(x=>x.id===e.trigger)||{label:'Sconosciuto',emoji:'📋'};
+    const d=e.date?new Date(e.date):new Date();
     let h='<div class="history-card">';
     h+='<div class="history-card-actions"><button class="edit-btn" onclick="editHistoryItem('+e.id+')">✏️</button><button class="delete-btn" onclick="deleteHistoryItem('+e.id+')">🗑️</button></div>';
     h+='<div class="history-card-header">';
@@ -1609,9 +1609,9 @@ function renderHistory(){
     h+='<span>'+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})+'</span>';
     h+='</div>';
     h+='</div>';
-    h+='<div class="diary-entry-intensity" style="margin-top:4px">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=e.intensity?' filled':'')+'"></div>').join('')+'</div>';
+    h+='<div class="diary-entry-intensity" style="margin-top:4px">'+ [1,2,3,4,5].map(i=>'<div class="diary-intensity-dot'+(i<=(e.intensity||0)?' filled':'')+'"></div>').join('')+'</div>';
     h+='</div>';
-    h+='<div class="history-card-trigger">📋 '+tr.label+'</div>';
+    h+='<div class="history-card-trigger">'+(tr.emoji||'📋')+' '+tr.label+'</div>';
     if(e.taskName){
       const emoji=getCategoryEmoji(e.taskCategory||'altro');
       h+='<div class="history-card-task">'+emoji+' <strong>'+e.taskName+'</strong></div>';
