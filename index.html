@@ -1063,6 +1063,7 @@ const triggerCategories=[
   ]
 }
 ];
+const triggers=triggerCategories.flatMap(cat=>cat.triggers);
 const diaryMoods=[{id:'great',emoji:'😊',label:'Bene'},{id:'okay',emoji:'😐',label:'Così così'},{id:'low',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'angry',emoji:'😤',label:'Irritato'}];
 const guidedActions=[{id:'timer',icon:'⏱️',name:'Timer 2 minuti',desc:'Inizia per soli 2 minuti',screen:'timerScreen'},{id:'breathe',icon:'🌬️',name:'Respira con me',desc:'5 cicli di respirazione',screen:'breatheScreen'},{id:'dump',icon:'🧠',name:'Svuota la mente',desc:'Scrivi tutto senza filtri',screen:'dumpScreen'},{id:'ground',icon:'🌿',name:'Torna al presente',desc:'Tecnica 5-4-3-2-1',screen:'groundScreen'},{id:'microstep',icon:'🎯',name:'Micro-step',desc:'Solo il primissimo passo',screen:'microStepScreen'}];
 const strategyExplanations={
