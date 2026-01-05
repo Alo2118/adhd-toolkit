@@ -1345,6 +1345,8 @@ function loadState() {
     state.patterns = (loaded.patterns && typeof loaded.patterns === 'object') ? loaded.patterns : {};
     state.garden = (loaded.garden && typeof loaded.garden === 'object') ? loaded.garden : {points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null};
     state.tasks = (loaded.tasks && typeof loaded.tasks === 'object') ? loaded.tasks : {};
+    state.activeTasks = Array.isArray(loaded.activeTasks) ? loaded.activeTasks : [];
+    state.notificationSettings = (loaded.notificationSettings && typeof loaded.notificationSettings === 'object') ? loaded.notificationSettings : {enabled:false,taskStuckDays:3,deadlineWarningDays:2};
     state.version = SCHEMA_VERSION;
   } catch (err) {
     try {
@@ -1356,6 +1358,8 @@ function loadState() {
         state.patterns = loaded.patterns || {};
         state.garden = (loaded.garden && typeof loaded.garden === 'object') ? loaded.garden : {points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null};
         state.tasks = (loaded.tasks && typeof loaded.tasks === 'object') ? loaded.tasks : {};
+        state.activeTasks = Array.isArray(loaded.activeTasks) ? loaded.activeTasks : [];
+        state.notificationSettings = (loaded.notificationSettings && typeof loaded.notificationSettings === 'object') ? loaded.notificationSettings : {enabled:false,taskStuckDays:3,deadlineWarningDays:2};
         showToast('⚠️ Dati recuperati da backup');
         return;
       }
