@@ -1208,11 +1208,29 @@ const contextStrategies={
     {name:'Cambia location',desc:'Studia in posti diversi. Il cervello ADHD ama la novità.'},
     {name:'Insegna a qualcuno',desc:'Spiega ad alta voce. Anche a un pupazzo. L\'output attivo fissa la memoria.'}
   ],
+  casa:[
+    {name:'Timer visibile',desc:'Cucina/pulizie con timer da cucina fisico. Vedere il tempo aiuta.'},
+    {name:'Playlist pulizie',desc:'3-4 canzoni = tempo per pulire una stanza. La musica da ritmo.'},
+    {name:'Body doubling casalingo',desc:'Chiama un amico mentre fai le faccende. La compagnia motiva.'},
+    {name:'Checklist fisica',desc:'Post-it per ogni stanza. Togli quando fatto. Visivo e soddisfacente.'}
+  ],
   sociale:[
     {name:'Prepara frasi',desc:'3 frasi pronte per iniziare conversazioni. Toglie il carico mentale dell\'improvvisazione.'},
     {name:'Time-box sociale',desc:'"Resto 1 ora". Sapere che finisce aiuta. Puoi sempre restare di più.'},
     {name:'Safe word',desc:'Con amici fidati, una parola per dire "sono in overload" senza spiegare.'},
     {name:'Recovery time',desc:'Dopo eventi sociali, blocca tempo per ricaricare. Non è antisociale, è necessità.'}
+  ],
+  cura:[
+    {name:'Stack abitudini',desc:'Aggancia nuova abitudine a una esistente. "Dopo caffè → vitamine".'},
+    {name:'Allarmi multipli',desc:'Non solo sveglia. Allarmi per pasti, acqua, farmaci. Reminders esterni.'},
+    {name:'Kit pronti',desc:'Borsa palestra sempre pronta. Kit farmaci in borsa. Meno decisioni.'},
+    {name:'Celebra micro-win',desc:'Hai mangiato? Bevuto acqua? Fatto doccia? Celebra. Non scontato con ADHD.'}
+  ],
+  admin:[
+    {name:'Inbox zero',desc:'Email 2 volte al giorno. Leggi, rispondi/archivia/elimina. Non lasciare "in sospeso".'},
+    {name:'Scadenze in calendario',desc:'Tutto in un unico posto. Con reminder 1 settimana e 1 giorno prima.'},
+    {name:'Body doubling admin',desc:'Fai burocrazia in videocall con amico. La noia condivisa è più sopportabile.'},
+    {name:'Reward sandwich',desc:'Cosa vuoi fare DOPO? Tienilo in mente mentre fai admin noioso.'}
   ]
 };
 const responses={
@@ -1633,7 +1651,38 @@ function renderHistory(){
 function formatDate(d){const n=new Date(),diff=n-d,days=Math.floor(diff/(1000*60*60*24));if(days===0){const h=Math.floor(diff/(1000*60*60));return h===0?'Ora':h+' ore fa';}if(days===1)return'Ieri';if(days<7)return days+' giorni fa';return d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});}
 function deleteHistoryItem(id){if(!confirm('Vuoi davvero eliminare questo momento?\n\nQuesta azione non può essere annullata.'))return;state.history=state.history.filter(e=>e.id!==id);saveState();renderHistory();showToast('🗑️ Momento eliminato');}
 function editHistoryItem(id){const item=state.history.find(e=>e.id===id);if(!item)return;if(item.taskName){const newTaskName=prompt('Modifica il nome dell\'attività:',item.taskName);if(newTaskName===null)return;if(newTaskName.trim())item.taskName=newTaskName.trim();}const newNotes=prompt('Modifica le note:',item.notes||'');if(newNotes===null)return;item.notes=newNotes;saveState();renderHistory();showToast('✏️ Modificato');}
-function renderLearn(){const c=document.getElementById('learnContent');let h='<div class="diary-entries-title">Concetti chiave</div>';learnTopics.forEach(t=>{h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+t.emoji+'</span><span class="insight-card-title">'+t.title+'</span></div><p class="insight-card-content">'+t.content+'</p></div>';});h+='<div class="diary-entries-title" style="margin-top:24px">Strategie per contesto</div>';h+='<div class="understanding-card"><div class="understanding-title">💼 LAVORO</div>';contextStrategies.lavoro.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';h+='<div class="understanding-card" style="margin-top:12px"><div class="understanding-title">📚 STUDIO</div>';contextStrategies.studio.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';h+='<div class="understanding-card" style="margin-top:12px"><div class="understanding-title">👥 SOCIALE</div>';contextStrategies.sociale.forEach(s=>{h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';});h+='</div>';c.innerHTML=h;}
+function renderLearn(){
+  const c=document.getElementById('learnContent');
+  if(!c)return;
+
+  let h='<div class="diary-entries-title">Concetti chiave</div>';
+  learnTopics.forEach(t=>{
+    h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+t.emoji+'</span><span class="insight-card-title">'+t.title+'</span></div><p class="insight-card-content">'+t.content+'</p></div>';
+  });
+
+  h+='<div class="diary-entries-title" style="margin-top:24px">Strategie per contesto</div>';
+
+  const contexts=[
+    {key:'lavoro',icon:'💼',label:'LAVORO'},
+    {key:'studio',icon:'📚',label:'STUDIO'},
+    {key:'casa',icon:'🏠',label:'CASA'},
+    {key:'sociale',icon:'👥',label:'SOCIALE'},
+    {key:'cura',icon:'💚',label:'CURA PERSONALE'},
+    {key:'admin',icon:'📋',label:'BUROCRAZIA'}
+  ];
+
+  contexts.forEach((ctx,index)=>{
+    if(contextStrategies[ctx.key]){
+      h+='<div class="understanding-card" style="margin-top:'+(index===0?'0':'12')+'px"><div class="understanding-title">'+ctx.icon+' '+ctx.label+'</div>';
+      contextStrategies[ctx.key].forEach(s=>{
+        h+='<div class="strategy-card" style="margin-top:10px"><div class="strategy-name">'+s.name+'</div><div class="strategy-desc">'+s.desc+'</div></div>';
+      });
+      h+='</div>';
+    }
+  });
+
+  c.innerHTML=h;
+}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function toggleCheckbox(id){const checkbox=document.getElementById(id);checkbox.checked=!checkbox.checked;checkbox.parentElement.classList.toggle('checked',checkbox.checked);}
 function selectReportPeriod(days){reportPeriodDays=days;document.querySelectorAll('.report-period-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');}
