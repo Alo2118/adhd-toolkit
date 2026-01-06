@@ -4,7 +4,7 @@ import { state } from './state.js';
 export const STORAGE_KEY = 'come-stai-v2';
 export const SCHEMA_VERSION = 1;
 
-function saveState() {
+export function saveState() {
   try {
     state.version = SCHEMA_VERSION;
     state.lastSaved = new Date().toISOString();
@@ -18,6 +18,7 @@ function saveState() {
     } catch (backupErr) {
     }
     localStorage.setItem(STORAGE_KEY, data);
+    return { success: true };
   } catch (err) {
     if (err.name === 'QuotaExceededError' || err.code === 22) {
       const sixMonthsAgo = Date.now() - (6 * 30 * 24 * 60 * 60 * 1000);
@@ -32,27 +33,26 @@ function saveState() {
       if (removedHistory > 0 || removedDiary > 0) {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          showToast('⚠️ Dati vecchi archiviati (storage pieno)');
-          return;
+          return { success: true, archived: true };
         } catch (retryErr) {
         }
       }
 
-      showToast('❌ Storage pieno - esporta i dati');
+      return { success: false, error: 'quota_exceeded' };
     } else {
-      showToast('❌ Errore salvataggio dati');
+      return { success: false, error: 'save_error' };
     }
   }
 }
 
-function loadState() {
+export function loadState() {
   try {
     const s = localStorage.getItem(STORAGE_KEY);
-    if (!s) return;
+    if (!s) return { success: true };
     const loaded = JSON.parse(s);
 
     if (!loaded || typeof loaded !== 'object') {
-      return;
+      return { success: true };
     }
     if (!loaded.version || loaded.version < SCHEMA_VERSION) {
       loaded.version = SCHEMA_VERSION;
@@ -66,6 +66,7 @@ function loadState() {
     state.notificationSettings = (loaded.notificationSettings && typeof loaded.notificationSettings === 'object') ? loaded.notificationSettings : {enabled:false,taskStuckDays:3,deadlineWarningDays:2};
     state.userName = (loaded.userName && typeof loaded.userName === 'string') ? loaded.userName : 'Bentornato';
     state.version = SCHEMA_VERSION;
+    return { success: true };
   } catch (err) {
     try {
       const backup = localStorage.getItem(STORAGE_KEY + '-backup');
@@ -79,16 +80,15 @@ function loadState() {
         state.activeTasks = Array.isArray(loaded.activeTasks) ? loaded.activeTasks : [];
         state.notificationSettings = (loaded.notificationSettings && typeof loaded.notificationSettings === 'object') ? loaded.notificationSettings : {enabled:false,taskStuckDays:3,deadlineWarningDays:2};
         state.userName = (loaded.userName && typeof loaded.userName === 'string') ? loaded.userName : 'Bentornato';
-        showToast('⚠️ Dati recuperati da backup');
-        return;
+        return { success: true, fromBackup: true };
       }
     } catch (backupErr) {
     }
-    showToast('⚠️ Errore caricamento dati');
+    return { success: false, error: 'load_error' };
   }
 }
 
-function exportData() {
+export function exportData() {
   try {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -100,13 +100,13 @@ function exportData() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('💾 Backup scaricato');
+    return { success: true };
   } catch (err) {
-    showToast('❌ Errore export');
+    return { success: false, error: 'export_error' };
   }
 }
 
-function importData() {
+export function importData(callback) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'application/json';
@@ -119,12 +119,13 @@ function importData() {
       try {
         const imported = JSON.parse(event.target.result);
         if (!imported || typeof imported !== 'object') {
-          showToast('❌ File non valido');
+          if (callback) callback({ success: false, error: 'invalid_file' });
           return;
         }
         const hasData = state.history.length > 0 || state.diary.length > 0;
         if (hasData) {
           if (!confirm('Attenzione: questo sovrascriverà i tuoi dati attuali. Continua?')) {
+            if (callback) callback({ success: false, error: 'cancelled' });
             return;
           }
         }
@@ -132,17 +133,10 @@ function importData() {
         state.diary = Array.isArray(imported.diary) ? imported.diary : [];
         state.patterns = imported.patterns || {};
         saveState();
-        const activeScreen = document.querySelector('.screen.active');
-        if (activeScreen) {
-          const id = activeScreen.id;
-          if (id === 'insightsScreen') renderInsights();
-          if (id === 'historyScreen') renderHistory();
-          if (id === 'diaryScreen') renderDiaryEntries();
-        }
 
-        showToast('✅ Dati importati (' + state.history.length + ' momenti, ' + state.diary.length + ' note)');
+        if (callback) callback({ success: true, count: { history: state.history.length, diary: state.diary.length } });
       } catch (err) {
-        showToast('❌ Errore lettura file');
+        if (callback) callback({ success: false, error: 'read_error' });
       }
     };
     reader.readAsText(file);
@@ -150,12 +144,12 @@ function importData() {
   input.click();
 }
 
-function clearAllData() {
+export function clearAllData() {
   if (!confirm('Attenzione: questo eliminerà TUTTI i tuoi dati in modo permanente. Sei sicuro?')) {
-    return;
+    return { success: false, error: 'cancelled' };
   }
   if (!confirm('Ultima conferma: eliminare tutti i dati?')) {
-    return;
+    return { success: false, error: 'cancelled' };
   }
 
   state.history = [];
@@ -167,9 +161,6 @@ function clearAllData() {
     localStorage.removeItem(STORAGE_KEY + '-backup');
   } catch (err) {
   }
-  showToast('🗑️ Tutti i dati eliminati');
-  screenHistory = ['homeScreen'];
-  showScreen('homeScreen');
-}
 
-export { saveState, loadState, exportData, importData, clearAllData };
+  return { success: true };
+}
