@@ -7,6 +7,25 @@ const urlsToCache = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  // Modular CSS
+  './src/styles/variables.css',
+  './src/styles/base.css',
+  './src/styles/animations.css',
+  './src/styles/components.css',
+  // Modular JavaScript
+  './src/main.js',
+  './src/data/feelings.js',
+  './src/data/triggers.js',
+  './src/data/moods.js',
+  './src/data/learn.js',
+  './src/data/strategies.js',
+  './src/data/responses.js',
+  './src/utils/state.js',
+  './src/utils/storage.js',
+  './src/utils/helpers.js',
+  './src/components/garden.js',
+  './src/report/pdf-generator.js',
+  // External resources
   'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
