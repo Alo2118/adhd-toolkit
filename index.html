@@ -452,7 +452,7 @@
 
         <div class="legal-footer">
           © 2025 Alo - Come Stai? - Tutti i diritti riservati<br>
-          Versione 1.1.0 • Ultimo aggiornamento: 06/01/2026
+          Versione 1.2.0 • Ultimo aggiornamento: 06/01/2026
         </div>
       </div>
     </div>
@@ -1454,7 +1454,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   checkAndScheduleNotifications();
 });
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-const APP_VERSION = '1.1.0';
+const APP_VERSION = '1.2.0';
 const SCHEMA_VERSION = 1;
 const STORAGE_KEY = 'come-stai-v2';
 function loadState() {
@@ -2110,7 +2110,506 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 function toggleCheckbox(id){const checkbox=document.getElementById(id);checkbox.checked=!checkbox.checked;checkbox.parentElement.classList.toggle('checked',checkbox.checked);}
 function selectReportPeriod(days){reportPeriodDays=days;document.querySelectorAll('.report-period-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');}
 function filterDataByPeriod(data){if(reportPeriodDays===0)return data;const cutoff=new Date();cutoff.setDate(cutoff.getDate()-reportPeriodDays);return data.filter(item=>new Date(item.date)>=cutoff);}
-function generatePDFReport(){const{jsPDF}=window.jspdf;const doc=new jsPDF();const includePatterns=document.getElementById('reportIncludePatterns').checked;const includeHistory=document.getElementById('reportIncludeHistory').checked;const includeDiary=document.getElementById('reportIncludeDiary').checked;const includeStrategies=document.getElementById('reportIncludeStrategies').checked;let y=20;doc.setFontSize(20);doc.setFont(undefined,'bold');doc.text('Il Mio Percorso con l\'ADHD',20,y);y+=10;doc.setFontSize(11);doc.setFont(undefined,'normal');const today=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});const periodText=reportPeriodDays===0?'dall\'inizio':reportPeriodDays===7?'nell\'ultima settimana':'nell\'ultimo mese';doc.text(today,20,y);y+=5;doc.setTextColor(100);doc.text('Questo documento racconta il mio viaggio '+periodText+'.',20,y);doc.setTextColor(0);y+=12;const filteredHistory=filterDataByPeriod(state.history);const filteredDiary=filterDataByPeriod(state.diary);if(filteredHistory.length>0){const intro=doc.splitTextToSize('Ho chiesto aiuto '+filteredHistory.length+(filteredHistory.length===1?' volta':' volte')+' in questo periodo. Ogni momento e\' stato un passo verso la comprensione di me stesso.',170);intro.forEach(line=>{doc.text(line,20,y);y+=5;});y+=5;}if(includePatterns&&filteredHistory.length>0){doc.setFontSize(14);doc.setFont(undefined,'bold');doc.text('Come Mi Sono Sentito',20,y);doc.setFont(undefined,'normal');y+=8;doc.setFontSize(10);const feelingCounts={};const triggerCounts={};filteredHistory.forEach(e=>{feelingCounts[e.feeling]=(feelingCounts[e.feeling]||0)+1;triggerCounts[e.trigger]=(triggerCounts[e.trigger]||0)+1;});const topFeeling=Object.entries(feelingCounts).sort((a,b)=>b[1]-a[1])[0];if(topFeeling){const f=feelings.find(x=>x.id===topFeeling[0]);const lines=doc.splitTextToSize('Molto spesso mi sono sentito '+f.label.toLowerCase()+'. E\' successo '+topFeeling[1]+(topFeeling[1]===1?' volta':' volte')+', e va bene cosi. Riconoscere questa emozione e\' gia\' un grande passo.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=3;}const topTrigger=Object.entries(triggerCounts).sort((a,b)=>b[1]-a[1])[0];if(topTrigger){const tr=triggers.find(x=>x.id===topTrigger[0]);const lines=doc.splitTextToSize('Quello che mi mette piu\' in difficolta\': "'+tr.label+'". Lo so ora, e questa consapevolezza mi da\' potere.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=3;}const avgIntensity=(filteredHistory.reduce((sum,e)=>sum+e.intensity,0)/filteredHistory.length).toFixed(1);const intensityText=avgIntensity<3?'gestibile':'intensa';doc.text('L\'intensita\' media di quello che provo e\' '+intensityText+' ('+avgIntensity+'/5).',20,y);y+=10;}if(includeHistory&&filteredHistory.length>0){if(y>240){doc.addPage();y=20;}doc.setFontSize(14);doc.setFont(undefined,'bold');doc.text('I Momenti in Cui Ho Chiesto Aiuto',20,y);doc.setFont(undefined,'normal');y+=8;doc.setFontSize(10);const lines=doc.splitTextToSize('Questi sono i momenti in cui ho deciso di non affrontare tutto da solo. Ogni volta che ho usato questa app, ho fatto una scelta coraggiosa.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=5;doc.setFontSize(9);filteredHistory.slice(0,10).forEach(e=>{if(y>270){doc.addPage();y=20;}const f=feelings.find(x=>x.id===e.feeling)||{label:'Sconosciuto'};const tr=triggers.find(x=>x.id===e.trigger)||{label:'Sconosciuto'};const d=new Date(e.date).toLocaleDateString('it-IT',{day:'numeric',month:'short'});const intensityStars='*'.repeat(e.intensity);doc.text(d+' ['+intensityStars+'] '+f.label+' - '+tr.label,23,y);y+=5;});y+=8;}if(includeDiary&&filteredDiary.length>0){if(y>240){doc.addPage();y=20;}doc.setFontSize(14);doc.setFont(undefined,'bold');doc.text('Le Mie Riflessioni',20,y);doc.setFont(undefined,'normal');y+=8;doc.setFontSize(10);const lines=doc.splitTextToSize('Ho scritto queste note per me stesso. Sono pensieri veri, senza filtri.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=5;doc.setFontSize(9);filteredDiary.slice(0,5).forEach(entry=>{if(y>260){doc.addPage();y=20;}const d=new Date(entry.date).toLocaleDateString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});doc.setFont(undefined,'bold');doc.text(d,23,y);doc.setFont(undefined,'normal');y+=5;const lines=doc.splitTextToSize(entry.text,165);lines.slice(0,3).forEach(line=>{if(y>270){doc.addPage();y=20;}doc.text(line,23,y);y+=5;});y+=3;});}const difficultTasks=getTopDifficultTasks(5);if(difficultTasks.length>0){if(y>210){doc.addPage();y=20;}doc.setFontSize(14);doc.setFont(undefined,'bold');doc.text('Le Cose Che Trovo Difficili',20,y);doc.setFont(undefined,'normal');y+=8;doc.setFontSize(10);const lines=doc.splitTextToSize('Questi task mi bloccano piu\' spesso. Non e\' colpa mia - il mio cervello ADHD li trova piu\' difficili. E va bene.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=5;doc.setFontSize(9);difficultTasks.forEach(task=>{if(y>265){doc.addPage();y=20;}const rate=task.timesResolved>0?Math.round((task.timesResolved/task.timesBlocked)*100):0;const catLabel={'studio':'Studio','lavoro':'Lavoro','casa':'Casa','sociale':'Sociale','cura':'Cura','admin':'Admin','altro':'Altro'}[task.category]||'Altro';doc.setFont(undefined,'bold');doc.text('['+catLabel+'] '+task.name,23,y);doc.setFont(undefined,'normal');y+=5;doc.text('   Mi ha bloccato '+task.timesBlocked+(task.timesBlocked===1?' volta':' volte')+'. Ho superato il blocco nel '+rate+'% dei casi.',23,y);y+=5;const best=getBestStrategyForTask(normalizeTaskName(task.name));if(best){doc.setTextColor(80,150,100);doc.text('   -> Funziona: '+best.name+' ('+Math.round(best.rate*100)+'% successo)',23,y);doc.setTextColor(0);y+=5;}y+=3;});y+=3;}const tasksWithStrat=getTasksWithBestStrategies(5);if(tasksWithStrat.length>0){if(y>210){doc.addPage();y=20;}doc.setFontSize(14);doc.setFont(undefined,'bold');doc.text('Ho Scoperto Cosa Funziona Per Me',20,y);doc.setFont(undefined,'normal');y+=8;doc.setFontSize(10);const lines=doc.splitTextToSize('Queste strategie hanno funzionato davvero. Sono la mia cassetta degli attrezzi personale.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=5;doc.setFontSize(9);tasksWithStrat.forEach(item=>{if(y>270){doc.addPage();y=20;}const catLabel={'studio':'Studio','lavoro':'Lavoro','casa':'Casa','sociale':'Sociale','cura':'Cura','admin':'Admin','altro':'Altro'}[item.task.category]||'Altro';doc.text('['+catLabel+'] Per "'+item.task.name+'"',23,y);y+=5;doc.setTextColor(80,150,100);doc.text('   OK '+item.strategy.name+' funziona nel '+Math.round(item.strategy.rate*100)+'% dei casi',23,y);doc.setTextColor(0);y+=7;});}if(includeStrategies){if(y>200){doc.addPage();y=20;}doc.setFontSize(14);doc.setFont(undefined,'bold');doc.text('Altre Strategie Da Provare',20,y);doc.setFont(undefined,'normal');y+=8;doc.setFontSize(10);const lines=doc.splitTextToSize('Queste strategie potrebbero aiutarmi in diversi contesti. Posso provarle quando serve.',170);lines.forEach(line=>{doc.text(line,20,y);y+=5;});y+=5;doc.setFontSize(9);doc.setFont(undefined,'bold');doc.text('Al lavoro:',23,y);doc.setFont(undefined,'normal');y+=5;contextStrategies.lavoro.slice(0,2).forEach(s=>{if(y>270){doc.addPage();y=20;}const lines=doc.splitTextToSize('- '+s.name+' - '+s.desc,165);lines.forEach(line=>{doc.text(line,25,y);y+=4;});y+=2;});y+=3;doc.setFont(undefined,'bold');doc.text('Nello studio:',23,y);doc.setFont(undefined,'normal');y+=5;contextStrategies.studio.slice(0,2).forEach(s=>{if(y>270){doc.addPage();y=20;}const lines=doc.splitTextToSize('- '+s.name+' - '+s.desc,165);lines.forEach(line=>{doc.text(line,25,y);y+=4;});y+=2;});y+=3;doc.setFont(undefined,'bold');doc.text('Nelle situazioni sociali:',23,y);doc.setFont(undefined,'normal');y+=5;contextStrategies.sociale.slice(0,2).forEach(s=>{if(y>270){doc.addPage();y=20;}const lines=doc.splitTextToSize('- '+s.name+' - '+s.desc,165);lines.forEach(line=>{doc.text(line,25,y);y+=4;});y+=2;});}if(y>230){doc.addPage();y=20;}doc.setFontSize(12);doc.setFont(undefined,'bold');doc.text('Riflessione Finale',20,y);doc.setFont(undefined,'normal');y+=10;doc.setFontSize(10);doc.setTextColor(60);const conclusion=doc.splitTextToSize('Questo documento racconta il mio viaggio. Non e\' perfetto, e non deve esserlo. Ogni momento di difficolta\' che ho affrontato, ogni strategia che ho provato, ogni nota che ho scritto - tutto questo fa parte della mia crescita.\n\nConvivere con l\'ADHD e\' una sfida quotidiana, ma sto imparando a conoscermi meglio. Sto costruendo la mia cassetta degli attrezzi. Sto diventando piu\' consapevole.\n\nQuesto non e\' un fallimento. E\' il mio percorso.',170);conclusion.forEach(line=>{if(y>270){doc.addPage();y=20;}doc.text(line,20,y);y+=5;});doc.setTextColor(0);const filename='il-mio-percorso-adhd-'+today.replace(/\//g,'-')+'.pdf';doc.save(filename);showScreen('insightsScreen');showToast('📖 Percorso salvato!');}
+function generatePDFReport(){
+const{jsPDF}=window.jspdf;
+const doc=new jsPDF();
+const includePatterns=document.getElementById('reportIncludePatterns').checked;
+const includeHistory=document.getElementById('reportIncludeHistory').checked;
+const includeDiary=document.getElementById('reportIncludeDiary').checked;
+const includeStrategies=document.getElementById('reportIncludeStrategies').checked;
+
+const today=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+const periodText=reportPeriodDays===0?'dall\'inizio':reportPeriodDays===7?'nell\'ultima settimana':'nell\'ultimo mese';
+
+const filteredHistory=filterDataByPeriod(state.history);
+const filteredDiary=filterDataByPeriod(state.diary);
+
+// Helper functions for visual elements
+function drawStatBox(x,y,w,h,value,label,color){
+  doc.setFillColor(color[0],color[1],color[2]);
+  doc.setDrawColor(color[0],color[1],color[2]);
+  doc.setLineWidth(1);
+  doc.roundedRect(x,y,w,h,2,2,'FD');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(20);
+  doc.setFont(undefined,'bold');
+  doc.text(value.toString(),x+w/2,y+h/2-1,{align:'center'});
+  doc.setFontSize(8);
+  doc.setFont(undefined,'normal');
+  doc.text(label,x+w/2,y+h/2+5,{align:'center',maxWidth:w-4});
+  doc.setTextColor(0);
+}
+
+function drawProgressBar(x,y,w,percent,color){
+  doc.setFillColor(230,230,230);
+  doc.roundedRect(x,y,w,5,2,2,'F');
+  if(percent>0){
+    doc.setFillColor(color[0],color[1],color[2]);
+    doc.roundedRect(x,y,w*(percent/100),5,2,2,'F');
+  }
+}
+
+function drawBarChart(x,y,w,h,data,maxValue){
+  const barWidth=(w/data.length)-3;
+  data.forEach((item,i)=>{
+    const barHeight=Math.max((item.value/maxValue)*h,2);
+    doc.setFillColor(item.color[0],item.color[1],item.color[2]);
+    doc.roundedRect(x+(i*(barWidth+3)),y+h-barHeight,barWidth,barHeight,1,1,'F');
+    doc.setFontSize(7);
+    doc.setTextColor(80);
+    const labelLines=doc.splitTextToSize(item.label,barWidth);
+    doc.text(labelLines[0]||'',x+(i*(barWidth+3))+barWidth/2,y+h+4,{align:'center'});
+    doc.setTextColor(0);
+  });
+}
+
+function drawCard(x,y,w,h,title,content,color){
+  doc.setFillColor(color[0],color[1],color[2]);
+  doc.setDrawColor(color[0]-20,color[1]-20,color[2]-20);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(x,y,w,h,2,2,'FD');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(9);
+  doc.setFont(undefined,'bold');
+  doc.text(title,x+3,y+5);
+  doc.setFontSize(8);
+  doc.setFont(undefined,'normal');
+  const lines=doc.splitTextToSize(content,w-6);
+  lines.slice(0,2).forEach((line,i)=>{
+    doc.text(line,x+3,y+11+(i*4));
+  });
+  doc.setTextColor(0);
+}
+
+// COVER PAGE with gradient effect
+doc.setFillColor(103,126,234);
+doc.rect(0,0,210,65,'F');
+doc.setFillColor(118,142,218);
+doc.rect(0,40,210,25,'F');
+
+doc.setTextColor(255,255,255);
+doc.setFontSize(32);
+doc.setFont(undefined,'bold');
+doc.text('IL MIO PERCORSO',105,28,{align:'center'});
+doc.setFontSize(36);
+doc.text('ADHD',105,43,{align:'center'});
+doc.setFontSize(11);
+doc.setFont(undefined,'normal');
+doc.text(today+' • '+periodText,105,55,{align:'center'});
+doc.setTextColor(0);
+
+let y=75;
+
+// STATS BOXES
+if(filteredHistory.length>0){
+  const streak=calculateStreak();
+  const totalMoments=filteredHistory.length;
+  const successRate=filteredHistory.filter(e=>e.strategyCompleted).length;
+  const successPercent=totalMoments>0?Math.round((successRate/totalMoments)*100):0;
+
+  drawStatBox(15,y,38,22,totalMoments,totalMoments===1?'momento':'momenti',[103,126,234]);
+  drawStatBox(56,y,38,22,successPercent+'%','successo',[125,211,168]);
+  drawStatBox(97,y,38,22,streak,streak===1?'giorno':'giorni',[232,168,124]);
+
+  const avgIntensity=(filteredHistory.reduce((sum,e)=>sum+e.intensity,0)/filteredHistory.length).toFixed(1);
+  drawStatBox(138,y,38,22,avgIntensity+'/5','intensità media',[195,174,214]);
+
+  y+=30;
+}
+
+// PATTERNS SECTION
+if(includePatterns&&filteredHistory.length>0){
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('📊  COME MI SONO SENTITO',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=12;
+
+  const feelingCounts={};
+  const triggerCounts={};
+  filteredHistory.forEach(e=>{
+    feelingCounts[e.feeling]=(feelingCounts[e.feeling]||0)+1;
+    triggerCounts[e.trigger]=(triggerCounts[e.trigger]||0)+1;
+  });
+
+  // Feelings bar chart
+  const feelingData=Object.entries(feelingCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5)
+    .map(([id,count])=>{
+      const f=feelings.find(x=>x.id===id)||{label:'?'};
+      return{
+        label:f.label,
+        value:count,
+        color:[103,126,234]
+      };
+    });
+
+  if(feelingData.length>0){
+    const maxFeeling=Math.max(...feelingData.map(d=>d.value));
+    drawBarChart(20,y,80,30,feelingData,maxFeeling);
+    y+=40;
+  }
+
+  // Top feeling text
+  const topFeeling=Object.entries(feelingCounts).sort((a,b)=>b[1]-a[1])[0];
+  if(topFeeling){
+    const f=feelings.find(x=>x.id===topFeeling[0]);
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    const text='Più spesso: '+f.label.toLowerCase()+' ('+topFeeling[1]+(topFeeling[1]===1?' volta':' volte')+')';
+    doc.text(text,20,y);
+    y+=8;
+    doc.setTextColor(0);
+  }
+
+  // TRIGGERS SECTION
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('⚠️  TRIGGER PRINCIPALI',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=12;
+
+  const triggerData=Object.entries(triggerCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5)
+    .map(([id,count])=>{
+      const tr=triggers.find(x=>x.id===id)||{label:'?'};
+      return{
+        label:tr.label.length>15?tr.label.substring(0,13)+'..':tr.label,
+        value:count,
+        color:[232,168,124]
+      };
+    });
+
+  if(triggerData.length>0){
+    const maxTrigger=Math.max(...triggerData.map(d=>d.value));
+    drawBarChart(20,y,80,30,triggerData,maxTrigger);
+    y+=40;
+  }
+
+  // Top trigger text
+  const topTrigger=Object.entries(triggerCounts).sort((a,b)=>b[1]-a[1])[0];
+  if(topTrigger){
+    const tr=triggers.find(x=>x.id===topTrigger[0]);
+    doc.setFontSize(9);
+    doc.setTextColor(80);
+    const text='Più frequente: '+tr.label+' ('+topTrigger[1]+(topTrigger[1]===1?' volta':' volte')+')';
+    doc.text(text,20,y);
+    y+=8;
+    doc.setTextColor(0);
+  }
+}
+
+// TIMELINE VISUAL
+if(includeHistory&&filteredHistory.length>0){
+  if(y>240){
+    doc.addPage();
+    y=20;
+  }
+
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('📅  TIMELINE DEI MOMENTI',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=12;
+
+  doc.setFontSize(8);
+  const recentMoments=filteredHistory.slice(0,8);
+  recentMoments.forEach((e,i)=>{
+    if(y>270){
+      doc.addPage();
+      y=20;
+    }
+    const f=feelings.find(x=>x.id===e.feeling)||{label:'?',emoji:'•'};
+    const d=new Date(e.date);
+    const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
+    const timeStr=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+
+    // Timeline dot
+    doc.setFillColor(103,126,234);
+    doc.circle(20,y,1,'F');
+    if(i<recentMoments.length-1){
+      doc.setDrawColor(200);
+      doc.setLineWidth(0.5);
+      doc.line(20,y+1,20,y+6);
+    }
+
+    doc.setFont(undefined,'bold');
+    doc.setTextColor(0);
+    doc.text(f.emoji+' '+dateStr+' '+timeStr,25,y+1);
+    doc.setFont(undefined,'normal');
+    doc.setTextColor(100);
+    doc.text(f.label,50,y+1);
+    doc.setTextColor(0);
+
+    y+=7;
+  });
+  y+=5;
+}
+
+// WEEK HEATMAP
+if(includePatterns&&filteredHistory.length>=3){
+  if(y>230){
+    doc.addPage();
+    y=20;
+  }
+
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('📆  MAPPA SETTIMANALE',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=12;
+
+  const dayNames=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+  const dayCounts=[0,0,0,0,0,0,0];
+  filteredHistory.forEach(e=>{
+    const day=new Date(e.date).getDay();
+    dayCounts[day]++;
+  });
+
+  const maxDay=Math.max(...dayCounts);
+  const cellSize=10;
+
+  dayNames.forEach((name,i)=>{
+    const intensity=maxDay>0?dayCounts[i]/maxDay:0;
+    const x=20+(i*20);
+
+    // Draw cell with intensity
+    if(intensity>0.7){
+      doc.setFillColor(103,126,234);
+    }else if(intensity>0.4){
+      doc.setFillColor(150,170,220);
+    }else if(intensity>0){
+      doc.setFillColor(200,210,235);
+    }else{
+      doc.setFillColor(240,240,240);
+    }
+    doc.roundedRect(x,y,cellSize,cellSize,1,1,'F');
+
+    // Day label
+    doc.setFontSize(7);
+    doc.setTextColor(80);
+    doc.text(name,x+cellSize/2,y+cellSize+4,{align:'center'});
+
+    // Count
+    if(dayCounts[i]>0){
+      doc.setFontSize(7);
+      doc.setTextColor(intensity>0.7?255:0);
+      doc.text(dayCounts[i].toString(),x+cellSize/2,y+cellSize/2+1,{align:'center'});
+    }
+    doc.setTextColor(0);
+  });
+
+  y+=20;
+}
+
+// NEW PAGE for strategies and insights
+doc.addPage();
+y=20;
+
+// DIFFICULT TASKS cards
+const difficultTasks=getTopDifficultTasks(3);
+if(difficultTasks.length>0){
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('⚡  SFIDE PRINCIPALI',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=14;
+
+  difficultTasks.forEach(task=>{
+    if(y>260){
+      doc.addPage();
+      y=20;
+    }
+    const rate=task.timesResolved>0?Math.round((task.timesResolved/task.timesBlocked)*100):0;
+    const title=task.name.length>25?task.name.substring(0,23)+'..':task.name;
+    const content='Bloccato '+task.timesBlocked+(task.timesBlocked===1?' volta':' volte')+' • Risolto '+rate+'%';
+
+    drawCard(20,y,85,18,title,content,[224,122,122]);
+
+    const best=getBestStrategyForTask(normalizeTaskName(task.name));
+    if(best){
+      doc.setFontSize(7);
+      doc.setTextColor(80,150,100);
+      const stratText='✓ '+best.name+' funziona '+Math.round(best.rate*100)+'%';
+      doc.text(stratText,22,y+14);
+      doc.setTextColor(0);
+    }
+
+    y+=20;
+  });
+}
+
+// WORKING STRATEGIES cards
+const tasksWithStrat=getTasksWithBestStrategies(3);
+if(tasksWithStrat.length>0){
+  if(y>220){
+    doc.addPage();
+    y=20;
+  }
+
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('✨  COSA FUNZIONA PER ME',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=14;
+
+  tasksWithStrat.forEach(item=>{
+    if(y>260){
+      doc.addPage();
+      y=20;
+    }
+    const title=item.task.name.length>25?item.task.name.substring(0,23)+'..':item.task.name;
+    const content=item.strategy.name+' • '+Math.round(item.strategy.rate*100)+'% successo';
+
+    drawCard(20,y,85,15,title,content,[125,211,168]);
+    y+=17;
+  });
+}
+
+// DIARY ENTRIES
+if(includeDiary&&filteredDiary.length>0){
+  if(y>210){
+    doc.addPage();
+    y=20;
+  }
+
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('📝  LE MIE RIFLESSIONI',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=14;
+
+  doc.setFontSize(8);
+  filteredDiary.slice(0,5).forEach(entry=>{
+    if(y>250){
+      doc.addPage();
+      y=20;
+    }
+    const d=new Date(entry.date);
+    const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+
+    doc.setFont(undefined,'bold');
+    doc.setTextColor(103,126,234);
+    doc.text(dateStr,20,y);
+    doc.setFont(undefined,'normal');
+    doc.setTextColor(80);
+    y+=5;
+
+    const lines=doc.splitTextToSize(entry.text,170);
+    lines.slice(0,3).forEach(line=>{
+      if(y>270){
+        doc.addPage();
+        y=20;
+      }
+      doc.text(line,20,y);
+      y+=4;
+    });
+    y+=3;
+  });
+  doc.setTextColor(0);
+}
+
+// STRATEGIES TO TRY
+if(includeStrategies){
+  if(y>200){
+    doc.addPage();
+    y=20;
+  }
+
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,8,1,1,'F');
+  doc.setFontSize(12);
+  doc.setFont(undefined,'bold');
+  doc.text('🛠️  STRATEGIE DA PROVARE',18,y+5.5);
+  doc.setFont(undefined,'normal');
+  y+=14;
+
+  const contexts=[
+    {key:'lavoro',label:'💼 Al lavoro',strategies:contextStrategies.lavoro.slice(0,2)},
+    {key:'studio',label:'📚 Nello studio',strategies:contextStrategies.studio.slice(0,2)},
+    {key:'casa',label:'🏠 A casa',strategies:contextStrategies.casa.slice(0,2)}
+  ];
+
+  contexts.forEach(ctx=>{
+    if(y>250){
+      doc.addPage();
+      y=20;
+    }
+    doc.setFontSize(10);
+    doc.setFont(undefined,'bold');
+    doc.text(ctx.label,20,y);
+    doc.setFont(undefined,'normal');
+    y+=6;
+
+    doc.setFontSize(8);
+    ctx.strategies.forEach(s=>{
+      if(y>270){
+        doc.addPage();
+        y=20;
+      }
+      doc.setTextColor(0);
+      doc.text('• '+s.name,22,y);
+      doc.setTextColor(100);
+      const descLines=doc.splitTextToSize(s.desc,160);
+      doc.text(descLines[0]||'',28,y+4);
+      doc.setTextColor(0);
+      y+=9;
+    });
+    y+=3;
+  });
+}
+
+// FINAL PAGE
+doc.addPage();
+y=40;
+
+doc.setFillColor(195,174,214);
+doc.rect(0,0,210,60,'F');
+
+doc.setTextColor(255,255,255);
+doc.setFontSize(18);
+doc.setFont(undefined,'bold');
+doc.text('RIFLESSIONE FINALE',105,25,{align:'center'});
+doc.setTextColor(0);
+
+y=75;
+doc.setFontSize(10);
+doc.setTextColor(60);
+const conclusion=doc.splitTextToSize('Questo documento racconta il mio viaggio. Non è perfetto, e non deve esserlo. Ogni momento di difficoltà che ho affrontato, ogni strategia che ho provato, ogni nota che ho scritto - tutto questo fa parte della mia crescita.\n\nConvivere con l\'ADHD è una sfida quotidiana, ma sto imparando a conoscermi meglio. Sto costruendo la mia cassetta degli attrezzi. Sto diventando più consapevole.\n\nQuesto non è un fallimento. È il mio percorso.',170);
+
+conclusion.forEach(line=>{
+  if(y>270){
+    doc.addPage();
+    y=20;
+  }
+  doc.text(line,20,y);
+  y+=5;
+});
+
+doc.setTextColor(0);
+
+// Save
+const filename='il-mio-percorso-adhd-'+today.replace(/\s/g,'-').replace(/,/g,'')+'.pdf';
+doc.save(filename);
+showScreen('insightsScreen');
+showToast('📊 Report infografico creato!');
+}
 
 // Active Tasks Management Functions
 
