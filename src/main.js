@@ -6,7 +6,7 @@ import { learnTopics } from './data/learn.js';
 import { contextStrategies } from './data/strategies.js';
 import { responses } from './data/responses.js';
 import { state } from './utils/state.js';
-import { loadState, saveState, exportData, importData, clearAllData } from './utils/storage.js';
+import { loadState, saveState, exportData, importData, clearAllData, STORAGE_KEY, SCHEMA_VERSION } from './utils/storage.js';
 import { showToast, toggleCheckbox, filterDataByPeriod, detectTaskCategory, normalizeTaskName, getCategoryEmoji } from './utils/helpers.js';
 import { 
   checkGardenDecay, getGardenLevel, getGardenEmoji, getGardenName, 
@@ -88,9 +88,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   checkAndScheduleNotifications();
 });
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-const SCHEMA_VERSION = 1;
-const STORAGE_KEY = 'come-stai-v2';
-
 
 
 
@@ -240,6 +237,76 @@ function loadUserNameInSettings(){
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='homeScreen')updateHomeScreen();if(id==='settingsScreen')loadUserNameInSettings();if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();if(id==='activeTasksScreen')renderActiveTasks();const fabContainer=document.getElementById('fabContainer');if(fabContainer){fabContainer.style.display=(id==='homeScreen'||id==='diaryScreen'||id==='activeTasksScreen')?'block':'none';}}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
 function setGreeting(){const h=new Date().getHours();const greetingEl=document.getElementById('greeting');const userNameEl=document.getElementById('userName');if(greetingEl)greetingEl.textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';if(userNameEl){const userName=state.userName||'Bentornato';userNameEl.textContent=userName;}}
+
+function calculateStreak() {
+  if (state.history.length === 0) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Sort history by date descending
+  const sortedHistory = [...state.history].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  let streak = 0;
+  let currentDate = new Date(today);
+
+  for (const entry of sortedHistory) {
+    const entryDate = new Date(entry.date);
+    entryDate.setHours(0, 0, 0, 0);
+
+    if (entryDate.getTime() === currentDate.getTime()) {
+      streak++;
+      currentDate.setDate(currentDate.getDate() - 1);
+    } else if (entryDate.getTime() < currentDate.getTime()) {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+function updateHomeScreen() {
+  setGreeting();
+  updateGardenBadge();
+
+  // Update stats if home stats element exists
+  const homeStats = document.getElementById('homeStats');
+  if (homeStats && state.history.length > 0) {
+    const streak = calculateStreak();
+    const totalMoments = state.history.length;
+    const recentMoments = filterDataByPeriod(state.history, 7).length;
+
+    homeStats.innerHTML = `
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <div style="flex:1;background:var(--bg-card);padding:12px;border-radius:var(--radius-md);text-align:center">
+          <div style="font-size:1.5rem;font-weight:700;color:var(--accent-energy)">${streak}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">giorni di fila</div>
+        </div>
+        <div style="flex:1;background:var(--bg-card);padding:12px;border-radius:var(--radius-md);text-align:center">
+          <div style="font-size:1.5rem;font-weight:700;color:var(--accent-calm)">${recentMoments}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">questa settimana</div>
+        </div>
+        <div style="flex:1;background:var(--bg-card);padding:12px;border-radius:var(--radius-md);text-align:center">
+          <div style="font-size:1.5rem;font-weight:700;color:var(--accent-focus)">${totalMoments}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">momenti totali</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function toggleFabMenu() {
+  const fabMenu = document.querySelector('.fab-menu');
+  const fabButton = document.querySelector('.fab-button');
+
+  if (fabMenu && fabButton) {
+    const isOpen = fabMenu.classList.contains('open');
+    fabMenu.classList.toggle('open');
+    fabButton.textContent = isOpen ? '+' : '×';
+    fabButton.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(45deg)';
+  }
+}
+
 function startFlow(){currentFlow={feeling:null,intensity:3,trigger:null,notes:''};document.getElementById('intensitySection').style.display='none';document.getElementById('feelingContinue').classList.remove('show');renderFeelings();showScreen('feelingScreen');}
 function renderFeelings(){document.getElementById('feelingsGrid').innerHTML=feelings.map(f=>'<div class="option-card" data-id="'+f.id+'" onclick="selectFeeling(\''+f.id+'\')"><span class="emoji">'+f.emoji+'</span><span class="label">'+f.label+'</span></div>').join('');}
 function selectFeeling(id){currentFlow.feeling=id;document.querySelectorAll('#feelingsGrid .option-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));document.getElementById('intensitySection').style.display='block';document.getElementById('feelingContinue').classList.add('show');}
