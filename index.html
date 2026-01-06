@@ -782,10 +782,28 @@
           <div style="flex:1"></div>
         </div>
         <div class="insights-header">
-          <h1 class="insights-title">⚙️ Gestione Dati</h1>
-          <p class="insights-subtitle">Backup e sicurezza</p>
+          <h1 class="insights-title">⚙️ Impostazioni</h1>
+          <p class="insights-subtitle">Personalizza la tua esperienza</p>
         </div>
         <div style="margin-top:20px">
+          <div class="understanding-card" style="margin-bottom:16px">
+            <div class="understanding-title">👤 PERSONALIZZAZIONE</div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:12px">
+              Come vuoi essere chiamato? Apparirà nella home screen.
+            </p>
+            <input
+              type="text"
+              id="userNameInput"
+              class="notes-input"
+              placeholder="es. Marco, Sara, Alex..."
+              maxlength="20"
+              onkeypress="if(event.key==='Enter')saveUserName()"
+              style="margin-bottom:12px;padding:14px;font-size:1rem;background:var(--bg-deep);border:2px solid var(--bg-elevated);color:var(--text-primary)"
+            >
+            <button class="timer-btn primary" onclick="saveUserName()" style="width:100%">
+              ✓ Salva Nome
+            </button>
+          </div>
           <div class="understanding-card" style="margin-bottom:16px">
             <div class="understanding-title">🔔 NOTIFICHE</div>
             <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
@@ -1755,7 +1773,31 @@ function clearAllData() {
   showScreen('homeScreen');
 }
 
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='homeScreen')updateHomeScreen();if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();if(id==='activeTasksScreen')renderActiveTasks();const fabContainer=document.getElementById('fabContainer');if(fabContainer){fabContainer.style.display=(id==='homeScreen'||id==='diaryScreen'||id==='activeTasksScreen')?'block':'none';}}
+function saveUserName(){
+  const input=document.getElementById('userNameInput');
+  if(!input)return;
+  const name=input.value.trim();
+  if(!name){
+    showToast('⚠️ Inserisci un nome');
+    return;
+  }
+  if(name.length>20){
+    showToast('⚠️ Nome troppo lungo (max 20 caratteri)');
+    return;
+  }
+  state.userName=name;
+  saveState();
+  updateHomeScreen();
+  showToast('✓ Nome salvato: '+name);
+}
+
+function loadUserNameInSettings(){
+  const input=document.getElementById('userNameInput');
+  if(!input)return;
+  input.value=state.userName==='Bentornato'?'':state.userName;
+}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='homeScreen')updateHomeScreen();if(id==='settingsScreen')loadUserNameInSettings();if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();if(id==='activeTasksScreen')renderActiveTasks();const fabContainer=document.getElementById('fabContainer');if(fabContainer){fabContainer.style.display=(id==='homeScreen'||id==='diaryScreen'||id==='activeTasksScreen')?'block':'none';}}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
 function setGreeting(){const h=new Date().getHours();const greetingEl=document.getElementById('greeting');const userNameEl=document.getElementById('userName');if(greetingEl)greetingEl.textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';if(userNameEl){const userName=state.userName||'Bentornato';userNameEl.textContent=userName;}}
 function startFlow(){currentFlow={feeling:null,intensity:3,trigger:null,notes:''};document.getElementById('intensitySection').style.display='none';document.getElementById('feelingContinue').classList.remove('show');renderFeelings();showScreen('feelingScreen');}
