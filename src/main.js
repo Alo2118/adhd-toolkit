@@ -181,6 +181,70 @@ function getPersonalInsights(){
 function getRecentTasks(limit=5){const tasks=Object.values(state.tasks).sort((a,b)=>new Date(b.lastMentioned)-new Date(a.lastMentioned));return tasks.slice(0,limit);}
 function isTaskRelatedTrigger(trigger){const taskTriggers=['task_paralysis','too_many','boring_task','transition','decision','big_task'];return taskTriggers.includes(trigger);}
 function mapTriggerForResponse(trigger){const triggerMap={'task_paralysis':'big_task','criticized':'criticized','mistake':'mistake','conflict':'conflict','social_event':'social_event','distracted':'distracted','noise':'noise','interruption':'interruption','understimulation':'boring_task','transition':'transition','routine_break':'routine_break','deadline':'deadline','waiting':'waiting','tired':'tired','drained':'too_many','decision':'decision','boring_task':'boring_task','too_many':'too_many','unknown':'unknown','big_task':'big_task'};return triggerMap[trigger]||trigger;}
+
+function updateTaskDatabase(taskName, category, feeling, trigger, intensity, strategyUsed, completed) {
+  if (!taskName) return;
+
+  const taskId = normalizeTaskName(taskName);
+
+  // Initialize task if doesn't exist
+  if (!state.tasks[taskId]) {
+    state.tasks[taskId] = {
+      name: taskName,
+      category: category,
+      firstSeen: new Date().toISOString(),
+      lastMentioned: new Date().toISOString(),
+      timesBlocked: 0,
+      timesResolved: 0,
+      feelings: {},
+      triggers: {},
+      strategies: {},
+      avgIntensity: 0,
+      totalIntensity: 0,
+      count: 0
+    };
+  }
+
+  const task = state.tasks[taskId];
+  task.lastMentioned = new Date().toISOString();
+  task.count++;
+  task.totalIntensity += intensity;
+  task.avgIntensity = (task.totalIntensity / task.count).toFixed(1);
+  task.timesBlocked++;
+  if (completed) task.timesResolved++;
+
+  task.feelings[feeling] = (task.feelings[feeling] || 0) + 1;
+  task.triggers[trigger] = (task.triggers[trigger] || 0) + 1;
+
+  if (strategyUsed) {
+    if (!task.strategies[strategyUsed]) {
+      task.strategies[strategyUsed] = { used: 0, completed: 0 };
+    }
+    task.strategies[strategyUsed].used++;
+    if (completed) task.strategies[strategyUsed].completed++;
+  }
+
+  saveState();
+}
+
+function getBestStrategyForTask(taskId) {
+  const task = state.tasks[taskId];
+  if (!task || !task.strategies) return null;
+
+  let best = null;
+  let bestRate = 0;
+
+  for (const [stratName, stats] of Object.entries(task.strategies)) {
+    if (stats.used < 2) continue; // Need at least 2 uses
+    const rate = stats.completed / stats.used;
+    if (rate > bestRate) {
+      bestRate = rate;
+      best = { name: stratName, rate: rate, used: stats.used };
+    }
+  }
+
+  return best;
+}
 window.addEventListener('storage', (e) => {
   if (e.key === STORAGE_KEY && e.newValue) {
     try {
