@@ -1,0 +1,1 @@
+export const diaryMoods = [{id:'great',emoji:'😊',label:'Bene'},{id:'okay',emoji:'😐',label:'Così così'},{id:'low',emoji:'😔',label:'Giù'},{id:'anxious',emoji:'😰',label:'Ansioso'},{id:'angry',emoji:'😤',label:'Irritato'}];
