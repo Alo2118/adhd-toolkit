@@ -1,5 +1,5 @@
 // Versione app - deve corrispondere a index.html e manifest.json
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.1.0';
 const CACHE_NAME = `come-stai-v${APP_VERSION.replace(/\./g, '-')}`;
 const urlsToCache = [
   './',
