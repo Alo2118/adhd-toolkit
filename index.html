@@ -29,23 +29,66 @@
     .app{height:100%;display:flex;flex-direction:column;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
     .screen{display:none;flex-direction:column;height:100%;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
     .screen.active{display:flex}
-    .home-screen{justify-content:center;align-items:center;text-align:center;padding:60px 24px 40px;display:flex;flex-direction:column;width:100%}
-    .home-greeting{font-size:1.1rem;color:var(--text-secondary);margin-bottom:12px}
-    .home-question{font-size:2rem;font-weight:800;margin-bottom:50px;line-height:1.3;max-width:400px}
-    .home-main-btn{position:relative;width:240px;height:240px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-calm),var(--accent-soft));color:var(--bg-deep);font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;box-shadow:0 20px 60px rgba(126,184,218,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;margin-bottom:50px;padding:20px}
-    .home-main-btn:active{transform:scale(0.95)}
-    .garden-pause-btn{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,0.9);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:all 0.2s;z-index:10}
-    .garden-pause-btn:hover{transform:scale(1.1);background:white}
+    .home-screen{justify-content:flex-start;align-items:stretch;text-align:left;padding:32px 24px 40px;display:flex;flex-direction:column;width:100%;gap:20px}
+    .home-header{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+    .home-greeting{font-size:0.95rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+    .home-user-name{font-size:1.8rem;font-weight:800;color:var(--text-primary);line-height:1.2}
+    .home-stats-row{display:flex;gap:12px;margin-bottom:4px}
+    .home-stat-card{flex:1;background:var(--bg-card);border-radius:var(--radius-md);padding:12px;border:1px solid var(--bg-elevated);transition:all 0.3s}
+    .home-stat-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+    .home-stat-value{font-size:1.5rem;font-weight:800;color:var(--accent-calm);line-height:1}
+    .home-stat-label{font-size:0.75rem;color:var(--text-muted);margin-top:4px;font-weight:600}
+    .home-main-cta{position:relative;width:100%;padding:28px 24px;border-radius:var(--radius-lg);border:none;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;font-family:inherit;font-size:1.15rem;font-weight:800;cursor:pointer;box-shadow:0 12px 40px rgba(102,126,234,0.4);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;transition:all 0.3s;overflow:hidden}
+    .home-main-cta:before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(255,255,255,0.1) 0%,rgba(255,255,255,0) 100%);opacity:0;transition:opacity 0.3s}
+    .home-main-cta:hover:before{opacity:1}
+    .home-main-cta:active{transform:scale(0.98);box-shadow:0 8px 30px rgba(102,126,234,0.5)}
+    .home-main-cta-content{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex:1}
+    .home-main-cta-title{font-size:1.15rem;font-weight:800;line-height:1.2}
+    .home-main-cta-subtitle{font-size:0.85rem;opacity:0.9;font-weight:600}
+    .home-main-cta-icon{font-size:2.5rem;animation:breathe 3s ease-in-out infinite}
+    @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(102,126,234,0.7)}70%{box-shadow:0 0 0 12px rgba(102,126,234,0)}100%{box-shadow:0 0 0 0 rgba(102,126,234,0)}}
+    @keyframes ripple{0%{transform:scale(0.8);opacity:1}100%{transform:scale(2);opacity:0}}
+    .home-garden-card{background:linear-gradient(135deg,rgba(125,211,168,0.12) 0%,rgba(126,184,218,0.12) 100%);border:1px solid rgba(125,211,168,0.3);border-radius:var(--radius-lg);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:8px;transition:all 0.3s;cursor:pointer}
+    .home-garden-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(125,211,168,0.2)}
+    .home-garden-card:active{transform:scale(0.98)}
+    .home-garden-plant{position:relative;width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);border-radius:50%;animation:breathe 4s ease-in-out infinite}
+    .garden-emoji{font-size:3.5rem;line-height:1}
+    .home-garden-info{flex:1;display:flex;flex-direction:column;gap:6px}
+    .home-garden-level{font-size:0.85rem;font-weight:700;color:var(--accent-green);text-transform:uppercase;letter-spacing:0.05em}
+    .home-garden-progress{width:100%;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;overflow:hidden;position:relative}
+    .home-garden-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-green),var(--accent-calm));border-radius:3px;transition:width 0.6s ease}
+    .home-garden-points{font-size:0.75rem;color:var(--text-secondary);font-weight:600}
+    .garden-pause-btn{width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;backdrop-filter:blur(10px)}
+    .garden-pause-btn:hover{transform:scale(1.1);background:rgba(255,255,255,0.25)}
     .garden-pause-btn:active{transform:scale(0.95)}
-    .garden-emoji{font-size:3rem;line-height:1}
-    .garden-level{font-size:0.75rem;font-weight:600;opacity:0.8;letter-spacing:0.5px}
-    .garden-points{font-size:0.85rem;font-weight:600;opacity:0.9}
-    .main-btn-text{font-size:1rem;margin-top:4px}
-    .home-actions{display:flex;flex-direction:column;gap:12px;width:300px;margin-bottom:40px}
-    .home-action-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:18px 24px;border-radius:var(--radius-lg);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;width:100%}
-    .home-action-btn:active{background:var(--bg-elevated);transform:scale(0.98)}
-    .home-secondary{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:350px}
-    .home-sec-btn{padding:12px 20px;border-radius:var(--radius-full);border:1px solid var(--bg-elevated);background:transparent;color:var(--text-muted);font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer}
+    .home-actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:8px}
+    .home-action-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 16px;border-radius:var(--radius-md);border:1px solid var(--bg-elevated);background:var(--bg-card);color:var(--text-secondary);font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.3s;text-align:center}
+    .home-action-card:hover{background:var(--bg-elevated);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.2);border-color:var(--accent-calm)}
+    .home-action-card:active{transform:scale(0.98)}
+    .home-action-card .icon{font-size:1.8rem;line-height:1}
+    .home-action-card .label{font-size:0.85rem;font-weight:600}
+    .home-insights-preview{background:linear-gradient(135deg,rgba(195,174,214,0.1) 0%,rgba(126,184,218,0.1) 100%);border:1px solid rgba(195,174,214,0.25);border-radius:var(--radius-lg);padding:18px;margin-bottom:8px}
+    .home-insights-title{font-size:0.8rem;font-weight:700;color:var(--accent-soft);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+    .home-insight-item{font-size:0.9rem;color:var(--text-secondary);line-height:1.6;margin-bottom:8px;display:flex;align-items:start;gap:8px}
+    .home-insight-item:last-child{margin-bottom:0}
+    .home-insight-emoji{font-size:1.2rem;line-height:1}
+    .home-quick-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px 0}
+    .home-nav-btn{padding:10px 18px;border-radius:var(--radius-full);border:1px solid var(--bg-elevated);background:transparent;color:var(--text-muted);font-family:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .home-nav-btn:hover{background:var(--bg-card);color:var(--text-secondary);border-color:var(--accent-calm)}
+    .home-nav-btn:active{transform:scale(0.95)}
+    .fab-container{position:fixed;bottom:calc(var(--safe-bottom) + 24px);right:24px;z-index:100}
+    .fab-button{width:64px;height:64px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent-warm),var(--accent-coral));color:white;font-size:1.8rem;font-weight:300;cursor:pointer;box-shadow:0 8px 24px rgba(232,168,124,0.4);display:flex;align-items:center;justify-content:center;transition:all 0.3s;animation:pulse 2s infinite}
+    .fab-button:hover{transform:scale(1.1);box-shadow:0 12px 32px rgba(232,168,124,0.6)}
+    .fab-button:active{transform:scale(0.95);animation:none}
+    .fab-menu{position:absolute;bottom:80px;right:0;display:none;flex-direction:column;gap:12px;align-items:flex-end}
+    .fab-menu.open{display:flex;animation:fadeInUp 0.3s ease}
+    @keyframes fadeInUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+    .fab-menu-item{display:flex;align-items:center;gap:12px;background:var(--bg-card);padding:12px 18px;border-radius:var(--radius-full);border:1px solid var(--bg-elevated);cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:all 0.2s;white-space:nowrap}
+    .fab-menu-item:hover{background:var(--bg-elevated);transform:translateX(-4px);box-shadow:0 6px 16px rgba(0,0,0,0.25)}
+    .fab-menu-item:active{transform:scale(0.95)}
+    .fab-menu-item .icon{font-size:1.3rem}
+    .fab-menu-item .label{font-size:0.85rem;font-weight:600;color:var(--text-secondary)}
     .app-footer{margin-top:40px;padding:20px 16px;text-align:center;font-size:0.75rem;color:var(--text-muted);line-height:1.6}
     .app-footer a{color:var(--text-muted);text-decoration:none;transition:color 0.2s}
     .app-footer a:hover{color:var(--text-secondary)}
@@ -415,35 +458,104 @@
     </div>
     <div class="screen" id="homeScreen">
       <div class="home-screen">
-        <p class="home-greeting" id="greeting">Ciao</p>
-        <div id="gardenBadge" style="display:none"></div>
-        <h1 class="home-question">Come stai<br>in questo momento?</h1>
-        <button class="home-main-btn" onclick="startFlow()">
-          <div class="garden-pause-btn" id="gardenPauseBtn" onclick="event.stopPropagation();showGardenPauseModal()" role="button" tabindex="0">⏸️</div>
-          <span class="garden-emoji" id="mainGardenEmoji">🌱</span>
-          <span class="garden-level" id="mainGardenLevel">Lv 0</span>
-          <span class="garden-points" id="mainGardenPoints">0 punti</span>
-          <span class="main-btn-text">Ho bisogno<br>di aiuto</span>
+        <!-- Header con personalizzazione -->
+        <div class="home-header">
+          <p class="home-greeting" id="greeting">Ciao</p>
+          <h1 class="home-user-name" id="userName">Bentornato</h1>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="home-stats-row" id="homeStatsRow">
+          <div class="home-stat-card">
+            <div class="home-stat-value" id="statStreak">0</div>
+            <div class="home-stat-label">giorni di fila</div>
+          </div>
+          <div class="home-stat-card">
+            <div class="home-stat-value" id="statTotal">0</div>
+            <div class="home-stat-label">momenti tracciati</div>
+          </div>
+        </div>
+
+        <!-- Main CTA Button -->
+        <button class="home-main-cta" onclick="startFlow()">
+          <div class="home-main-cta-content">
+            <div class="home-main-cta-title">Ho bisogno di aiuto</div>
+            <div class="home-main-cta-subtitle">Trova strategie per questo momento</div>
+          </div>
+          <div class="home-main-cta-icon">💪</div>
         </button>
-        <div class="home-actions">
-          <button class="home-action-btn" onclick="showScreen('diaryScreen')">
-            <span>📝</span><span>Scrivi nel diario</span>
-          </button>
-          <button class="home-action-btn" onclick="showScreen('activeTasksScreen')">
-            <span>✓</span><span>I miei compiti</span>
-          </button>
+
+        <!-- Garden Card -->
+        <div class="home-garden-card" onclick="showScreen('settingsScreen')">
+          <div class="home-garden-plant">
+            <span class="garden-emoji" id="mainGardenEmoji">🌱</span>
+          </div>
+          <div class="home-garden-info">
+            <div class="home-garden-level" id="mainGardenLevel">Lv 0 • Germoglio</div>
+            <div class="home-garden-progress">
+              <div class="home-garden-progress-fill" id="mainGardenProgressFill" style="width:0%"></div>
+            </div>
+            <div class="home-garden-points" id="mainGardenPoints">0 / 21 punti al prossimo livello</div>
+          </div>
+          <button class="garden-pause-btn" id="gardenPauseBtn" onclick="event.stopPropagation();showGardenPauseModal()" role="button" tabindex="0">⏸️</button>
         </div>
-        <div class="home-secondary">
-          <button class="home-sec-btn" onclick="showScreen('learnScreen')">💡 Impara</button>
-          <button class="home-sec-btn" onclick="showScreen('insightsScreen')">📊 Pattern</button>
-          <button class="home-sec-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
-          <button class="home-sec-btn" onclick="showScreen('settingsScreen')">⚙️ Dati</button>
+
+        <!-- Insights Preview -->
+        <div class="home-insights-preview" id="homeInsightsPreview" style="display:none">
+          <div class="home-insights-title">✨ I tuoi insights</div>
+          <div id="homeInsightsList"></div>
         </div>
+
+        <!-- Actions Grid -->
+        <div class="home-actions-grid">
+          <div class="home-action-card" onclick="showScreen('diaryScreen')">
+            <div class="icon">📝</div>
+            <div class="label">Diario</div>
+          </div>
+          <div class="home-action-card" onclick="showScreen('activeTasksScreen')">
+            <div class="icon">✓</div>
+            <div class="label">Compiti</div>
+          </div>
+          <div class="home-action-card" onclick="showScreen('learnScreen')">
+            <div class="icon">💡</div>
+            <div class="label">Impara</div>
+          </div>
+          <div class="home-action-card" onclick="showScreen('insightsScreen')">
+            <div class="icon">📊</div>
+            <div class="label">Pattern</div>
+          </div>
+        </div>
+
+        <!-- Quick Navigation -->
+        <div class="home-quick-nav">
+          <button class="home-nav-btn" onclick="showScreen('historyScreen')">📋 Storico</button>
+          <button class="home-nav-btn" onclick="showScreen('settingsScreen')">⚙️ Impostazioni</button>
+        </div>
+
         <div class="app-footer">
           © 2025 Come Stai?<br>
           <a href="TERMINI.md" target="_blank">Termini</a> • <a href="PRIVACY.md" target="_blank">Privacy</a> • <a href="LICENSE" target="_blank">Licenza</a>
         </div>
       </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab-container" id="fabContainer" style="display:none">
+      <div class="fab-menu" id="fabMenu">
+        <div class="fab-menu-item" onclick="startFlow();toggleFabMenu()">
+          <span class="icon">💪</span>
+          <span class="label">Aiuto ora</span>
+        </div>
+        <div class="fab-menu-item" onclick="showScreen('diaryScreen');toggleFabMenu()">
+          <span class="icon">📝</span>
+          <span class="label">Scrivi diario</span>
+        </div>
+        <div class="fab-menu-item" onclick="showScreen('activeTasksScreen');toggleFabMenu()">
+          <span class="icon">✓</span>
+          <span class="label">Compiti</span>
+        </div>
+      </div>
+      <button class="fab-button" onclick="toggleFabMenu()">+</button>
     </div>
     <div class="screen" id="feelingScreen">
       <div class="flow-header">
@@ -1268,7 +1380,7 @@ const responses={
   'shame_criticized':{tldr:'RSD amplifica la critica 10x. La reazione è neurologica, non debolezza.',understanding:'RSD + critica = <strong>vergogna amplificata 10x</strong>. È una tempesta neurologica.<br><br>Cosa succede:<br>• La critica attiva <strong>RSD</strong> (sensibilità al rifiuto)<br>• Il cervello interpreta critica = rifiuto totale<br>• La disregolazione emotiva amplifica la risposta<br>• La vergogna accumulata negli anni esplode<br><br>La tua reazione è <strong>10 volte più intensa del fatto oggettivo</strong>. Non è debolezza. È il cervello ADHD che amplifica il segnale di rifiuto come meccanismo protettivo (doloroso ma non volontario).',actions:['breathe','ground','dump'],strategies:[{name:'RSD scale-down',desc:'Reazione: 10/10. Fatto oggettivo: scrivi.'},{name:'Fonte check',desc:'Chi critica? Conosce il mio ADHD?'},{name:'24h rule',desc:'Non rispondere ora. Domani l\'onda RSD passa.'},{name:'Vittorie recenti',desc:'Scrivi 3 successi recenti. Bilancia.'}]},
   'default':{tldr:'Quello che senti è valido. Il cervello ADHD processa emozioni più intensamente.',understanding:'Quello che senti è <strong>valido e reale</strong>.<br><br>Con ADHD:<br>• Le emozioni sono <strong>più intense</strong> (disregolazione emotiva)<br>• I trigger sono più frequenti<br>• Il recupero è più lento<br><br>Non stai esagerando. Il tuo cervello processa le emozioni diversamente. Servono strategie per gestire l\'intensità, non giudizio su ciò che senti.',actions:['breathe','ground','dump'],strategies:[{name:'Check-in fisico',desc:'Fame? Sete? Stanchezza? Sovrastimolazione?'},{name:'Movimento breve',desc:'5 min camminata. Reset neurologico.'},{name:'Respira 5 volte',desc:'Inspira 4 sec, espira 6 sec. Ripeti 5 volte.'},{name:'Scrivi 3 righe',desc:'Cosa senti. Perché. Cosa ti serve ora.'}]}
 };
-let state={history:[],diary:[],patterns:{},garden:{points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null},tasks:{},activeTasks:[],notificationSettings:{enabled:false,taskStuckDays:3,deadlineWarningDays:2}};
+let state={history:[],diary:[],patterns:{},garden:{points:0,level:0,lastActivityDate:null,isPaused:false,pauseUntil:null},tasks:{},activeTasks:[],notificationSettings:{enabled:false,taskStuckDays:3,deadlineWarningDays:2},userName:'Bentornato'};
 let currentFlow={feeling:null,intensity:3,trigger:null,taskName:'',notes:''};
 let screenHistory=['homeScreen'];
 let timerInterval=null,timerSeconds=120,timerTotalSeconds=120;
@@ -1317,8 +1429,7 @@ function declineTerms() {
 document.addEventListener('DOMContentLoaded',()=>{
   checkLegalConsent();
   loadState();
-  setGreeting();
-  updateGardenBadge();
+  updateHomeScreen();
   renderFeelings();
   renderTriggers();
   renderDiaryMoods();
@@ -1347,6 +1458,7 @@ function loadState() {
     state.tasks = (loaded.tasks && typeof loaded.tasks === 'object') ? loaded.tasks : {};
     state.activeTasks = Array.isArray(loaded.activeTasks) ? loaded.activeTasks : [];
     state.notificationSettings = (loaded.notificationSettings && typeof loaded.notificationSettings === 'object') ? loaded.notificationSettings : {enabled:false,taskStuckDays:3,deadlineWarningDays:2};
+    state.userName = (loaded.userName && typeof loaded.userName === 'string') ? loaded.userName : 'Bentornato';
     state.version = SCHEMA_VERSION;
   } catch (err) {
     try {
@@ -1360,6 +1472,7 @@ function loadState() {
         state.tasks = (loaded.tasks && typeof loaded.tasks === 'object') ? loaded.tasks : {};
         state.activeTasks = Array.isArray(loaded.activeTasks) ? loaded.activeTasks : [];
         state.notificationSettings = (loaded.notificationSettings && typeof loaded.notificationSettings === 'object') ? loaded.notificationSettings : {enabled:false,taskStuckDays:3,deadlineWarningDays:2};
+        state.userName = (loaded.userName && typeof loaded.userName === 'string') ? loaded.userName : 'Bentornato';
         showToast('⚠️ Dati recuperati da backup');
         return;
       }
@@ -1416,7 +1529,12 @@ function addGardenPoints(points,activityName){checkGardenDecay();const wasWither
 function pauseGarden(days){state.garden.isPaused=true;const until=new Date();until.setDate(until.getDate()+days);state.garden.pauseUntil=until.toISOString();saveState();updateGardenBadge();showToast('🌙 Pianta in pausa per '+days+' giorni');}
 function resumeGarden(){state.garden.isPaused=false;state.garden.pauseUntil=null;saveState();updateGardenBadge();showToast('🌱 Pausa terminata! Bentornato!');}
 function updateGardenBadge(){updateMainButton();}
-function updateMainButton(){const emojiEl=document.getElementById('mainGardenEmoji');const levelEl=document.getElementById('mainGardenLevel');const pointsEl=document.getElementById('mainGardenPoints');const pauseBtn=document.getElementById('gardenPauseBtn');if(!emojiEl||!levelEl||!pointsEl||!pauseBtn)return;const isWithered=checkGardenDecay();const level=getGardenLevel(state.garden.points);const emoji=getGardenEmoji(level,isWithered&&!state.garden.isPaused);const name=getGardenName(level);const points=state.garden.points;emojiEl.textContent=emoji;levelEl.textContent='Lv '+level;pointsEl.textContent=points+' punti';if(state.garden.isPaused){pauseBtn.textContent='▶️';pauseBtn.onclick=(e)=>{e.stopPropagation();resumeGarden();};}else{pauseBtn.textContent='⏸️';pauseBtn.onclick=(e)=>{e.stopPropagation();showGardenPauseModal();};}}
+function updateMainButton(){const emojiEl=document.getElementById('mainGardenEmoji');const levelEl=document.getElementById('mainGardenLevel');const pointsEl=document.getElementById('mainGardenPoints');const progressEl=document.getElementById('mainGardenProgressFill');const pauseBtn=document.getElementById('gardenPauseBtn');if(!emojiEl||!levelEl||!pointsEl||!pauseBtn)return;const isWithered=checkGardenDecay();const level=getGardenLevel(state.garden.points);const emoji=getGardenEmoji(level,isWithered&&!state.garden.isPaused);const name=getGardenName(level);const points=state.garden.points;const levelPoints=[0,21,51,101,201,500];const nextLevel=Math.min(level+1,5);const pointsToNext=levelPoints[nextLevel];const prevLevelPoints=levelPoints[level];const progressInLevel=points-prevLevelPoints;const pointsNeededForLevel=pointsToNext-prevLevelPoints;const progressPercent=level>=5?100:Math.min(100,(progressInLevel/pointsNeededForLevel)*100);emojiEl.textContent=emoji;levelEl.textContent='Lv '+level+' • '+name;pointsEl.textContent=level>=5?points+' punti • Livello massimo!':points+' / '+pointsToNext+' punti al prossimo livello';if(progressEl)progressEl.style.width=progressPercent+'%';if(state.garden.isPaused){pauseBtn.textContent='▶️';pauseBtn.onclick=(e)=>{e.stopPropagation();resumeGarden();};}else{pauseBtn.textContent='⏸️';pauseBtn.onclick=(e)=>{e.stopPropagation();showGardenPauseModal();};}}
+function updateHomeStats(){const streakEl=document.getElementById('statStreak');const totalEl=document.getElementById('statTotal');if(!streakEl||!totalEl)return;const streak=calculateStreak();const total=state.history.length;streakEl.textContent=streak;totalEl.textContent=total;}
+function calculateStreak(){if(state.history.length===0)return 0;const sortedHistory=[...state.history].sort((a,b)=>new Date(b.date)-new Date(a.date));let streak=0;let currentDate=new Date();currentDate.setHours(0,0,0,0);for(const entry of sortedHistory){const entryDate=new Date(entry.date);entryDate.setHours(0,0,0,0);const diffDays=Math.floor((currentDate-entryDate)/(1000*60*60*24));if(diffDays===streak||diffDays===streak+1){if(diffDays===streak+1)streak++;currentDate=new Date(entryDate);}else{break;}}return streak;}
+function updateHomeInsights(){const previewEl=document.getElementById('homeInsightsPreview');const listEl=document.getElementById('homeInsightsList');if(!previewEl||!listEl)return;const insights=getPersonalInsights();if(!insights||state.history.length<3){previewEl.style.display='none';return;}previewEl.style.display='block';let html='';if(insights.recentSuccess){const perc=Math.round(insights.recentSuccess.rate*100);const emoji=perc>=70?'🎉':perc>=50?'💪':'📈';html+='<div class="home-insight-item"><span class="home-insight-emoji">'+emoji+'</span><span>'+perc+'% di successo negli ultimi 7 giorni</span></div>';}if(insights.bestFeeling&&insights.bestFeeling.count>=2){html+='<div class="home-insight-item"><span class="home-insight-emoji">⭐</span><span>Per te funziona quando ti senti '+feelings.find(f=>f.id===insights.bestFeeling.feeling)?.label.toLowerCase()+'</span></div>';}if(insights.temporalPatterns&&insights.temporalPatterns.bestDay){const days=['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'];html+='<div class="home-insight-item"><span class="home-insight-emoji">📅</span><span>Il tuo giorno migliore: '+days[insights.temporalPatterns.bestDay.day]+'</span></div>';}listEl.innerHTML=html||'<div class="home-insight-item"><span class="home-insight-emoji">✨</span><span>Continua così per sbloccare insights personalizzati!</span></div>';}
+function updateHomeScreen(){setGreeting();updateMainButton();updateHomeStats();updateHomeInsights();}
+function toggleFabMenu(){const menu=document.getElementById('fabMenu');if(!menu)return;menu.classList.toggle('open');}
 function showGardenPauseModal(){if(confirm('Vuoi mettere in pausa il giardino?\n\nLa tua pianta non appassirà per 7 giorni.\nUtile quando hai bisogno di una pausa dall\'app.')){pauseGarden(7);}}
 const taskCategories={studio:['studiare','esame','lezione','compiti','tesi','scuola','università','corso','materia','storia','matematica','fisica','chimica'],lavoro:['email','meeting','report','progetto','chiamata','lavoro','riunione','presentazione','deadline','documento','cliente'],casa:['pulizie','pulire','lavare','stirare','cucinare','spesa','casa','cucina','bagno','camera','stanza','piatti','biancheria','bucato'],sociale:['uscire','amici','festa','compleanno','chiamare','sociale','cena','aperitivo','evento','appuntamento'],cura:['doccia','vestirsi','medicine','dentista','sport','palestra','correre','yoga','meditare','dormire'],admin:['bollette','banca','documenti','tasse','prenotare','email','modulo','pratica','appuntamento','telefonata']};
 function detectTaskCategory(taskName){const t=taskName.toLowerCase();for(const[cat,keywords]of Object.entries(taskCategories)){if(keywords.some(k=>t.includes(k)))return cat;}return 'altro';}
@@ -1541,13 +1659,14 @@ window.addEventListener('storage', (e) => {
         state.patterns = newState.patterns || state.patterns;
         state.garden = (newState.garden && typeof newState.garden === 'object') ? newState.garden : state.garden;
         state.tasks = (newState.tasks && typeof newState.tasks === 'object') ? newState.tasks : state.tasks;
+        state.userName = (newState.userName && typeof newState.userName === 'string') ? newState.userName : state.userName;
         const activeScreen = document.querySelector('.screen.active');
         if (activeScreen) {
           const id = activeScreen.id;
           if (id === 'insightsScreen') renderInsights();
           if (id === 'historyScreen') renderHistory();
           if (id === 'diaryScreen') renderDiaryEntries();
-          if (id === 'homeScreen') updateGardenBadge();
+          if (id === 'homeScreen') updateHomeScreen();
         }
       }
     } catch (err) {
@@ -1636,9 +1755,9 @@ function clearAllData() {
   showScreen('homeScreen');
 }
 
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();if(id==='activeTasksScreen')renderActiveTasks();}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(screenHistory[screenHistory.length-1]!==id)screenHistory.push(id);if(id==='homeScreen')updateHomeScreen();if(id==='insightsScreen')renderInsights();if(id==='historyScreen')renderHistory();if(id==='diaryScreen')renderDiaryEntries();if(id==='groundScreen')initGrounding();if(id==='learnScreen')renderLearn();if(id==='activeTasksScreen')renderActiveTasks();const fabContainer=document.getElementById('fabContainer');if(fabContainer){fabContainer.style.display=(id==='homeScreen'||id==='diaryScreen'||id==='activeTasksScreen')?'block':'none';}}
 function goBack(){screenHistory.pop();const prev=screenHistory[screenHistory.length-1]||'homeScreen';document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(prev).classList.add('active');}
-function setGreeting(){const h=new Date().getHours();document.getElementById('greeting').textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';}
+function setGreeting(){const h=new Date().getHours();const greetingEl=document.getElementById('greeting');const userNameEl=document.getElementById('userName');if(greetingEl)greetingEl.textContent=h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';if(userNameEl){const userName=state.userName||'Bentornato';userNameEl.textContent=userName;}}
 function startFlow(){currentFlow={feeling:null,intensity:3,trigger:null,notes:''};document.getElementById('intensitySection').style.display='none';document.getElementById('feelingContinue').classList.remove('show');renderFeelings();showScreen('feelingScreen');}
 function renderFeelings(){document.getElementById('feelingsGrid').innerHTML=feelings.map(f=>'<div class="option-card" data-id="'+f.id+'" onclick="selectFeeling(\''+f.id+'\')"><span class="emoji">'+f.emoji+'</span><span class="label">'+f.label+'</span></div>').join('');}
 function selectFeeling(id){currentFlow.feeling=id;document.querySelectorAll('#feelingsGrid .option-card').forEach(c=>c.classList.toggle('selected',c.dataset.id===id));document.getElementById('intensitySection').style.display='block';document.getElementById('feelingContinue').classList.add('show');}
