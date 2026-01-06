@@ -8,12 +8,11 @@ import { responses } from './data/responses.js';
 import { state } from './utils/state.js';
 import { loadState, saveState, exportData, importData, clearAllData, STORAGE_KEY, SCHEMA_VERSION } from './utils/storage.js';
 import { showToast, toggleCheckbox, filterDataByPeriod, detectTaskCategory, normalizeTaskName, getCategoryEmoji } from './utils/helpers.js';
-import { 
-  checkGardenDecay, getGardenLevel, getGardenEmoji, getGardenName, 
-  addGardenPoints, pauseGarden, resumeGarden, updateGardenBadge, 
-  updateMainButton, showGardenPauseModal 
+import {
+  checkGardenDecay, getGardenLevel, getGardenEmoji, getGardenName,
+  addGardenPoints, pauseGarden, resumeGarden, updateGardenBadge,
+  updateMainButton, showGardenPauseModal
 } from './components/garden.js';
-import { generatePDFReport } from './report/pdf-generator.js';
 import { APP_VERSION } from './config/version.js';
 
 // Constants

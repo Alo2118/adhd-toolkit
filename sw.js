@@ -26,7 +26,6 @@ const urlsToCache = [
   './src/utils/storage.js',
   './src/utils/helpers.js',
   './src/components/garden.js',
-  './src/report/pdf-generator.js',
   // External resources
   'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
