@@ -1,5 +1,5 @@
-// Versione app - deve corrispondere a index.html e manifest.json
-const APP_VERSION = '1.2.0';
+// Importa versione da file centralizzato
+importScripts('./version.js');
 const CACHE_NAME = `come-stai-v${APP_VERSION.replace(/\./g, '-')}`;
 const urlsToCache = [
   './',
@@ -7,6 +7,7 @@ const urlsToCache = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './version.js',
   // Modular CSS
   './src/styles/variables.css',
   './src/styles/base.css',
@@ -14,6 +15,7 @@ const urlsToCache = [
   './src/styles/components.css',
   // Modular JavaScript
   './src/main.js',
+  './src/config/version.js',
   './src/data/feelings.js',
   './src/data/triggers.js',
   './src/data/moods.js',
