@@ -1,0 +1,29 @@
+/* CSS Custom Properties */
+:root {
+  /* Colors - Background */
+  --bg-deep: #1a1a2e;
+  --bg-card: #25253d;
+  --bg-elevated: #2d2d4a;
+
+  /* Colors - Accents */
+  --accent-calm: #7eb8da;
+  --accent-warm: #e8a87c;
+  --accent-soft: #c3aed6;
+  --accent-green: #7dd3a8;
+  --accent-coral: #e07a7a;
+
+  /* Colors - Text */
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b8;
+  --text-muted: #6a6a82;
+
+  /* Border Radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 100px;
+
+  /* Safe Areas */
+  --safe-top: env(safe-area-inset-top, 20px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
+}
