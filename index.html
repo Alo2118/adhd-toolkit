@@ -667,20 +667,20 @@
         </div>
         <div class="report-option">
           <label class="report-option-label">Cosa vuoi condividere?</label>
-          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludePatterns')">
-            <input type="checkbox" id="reportIncludePatterns" checked onclick="event.stopPropagation()">
+          <label class="report-checkbox">
+            <input type="checkbox" id="reportIncludePatterns" checked onchange="this.parentElement.classList.toggle('checked', this.checked)">
             <span class="report-checkbox-label">I miei pattern e trigger</span>
           </label>
-          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeHistory')">
-            <input type="checkbox" id="reportIncludeHistory" checked onclick="event.stopPropagation()">
+          <label class="report-checkbox">
+            <input type="checkbox" id="reportIncludeHistory" checked onchange="this.parentElement.classList.toggle('checked', this.checked)">
             <span class="report-checkbox-label">Momenti in cui ho chiesto aiuto</span>
           </label>
-          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeDiary')">
-            <input type="checkbox" id="reportIncludeDiary" onclick="event.stopPropagation()">
+          <label class="report-checkbox">
+            <input type="checkbox" id="reportIncludeDiary" onchange="this.parentElement.classList.toggle('checked', this.checked)">
             <span class="report-checkbox-label">Le mie note personali</span>
           </label>
-          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeStrategies')">
-            <input type="checkbox" id="reportIncludeStrategies" checked onclick="event.stopPropagation()">
+          <label class="report-checkbox">
+            <input type="checkbox" id="reportIncludeStrategies" checked onchange="this.parentElement.classList.toggle('checked', this.checked)">
             <span class="report-checkbox-label">Cosa funziona per me</span>
           </label>
         </div>

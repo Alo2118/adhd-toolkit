@@ -85,6 +85,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderTriggers();
   renderDiaryMoods();
   checkAndScheduleNotifications();
+
+  // Initialize checkbox states for report options
+  ['reportIncludePatterns','reportIncludeHistory','reportIncludeDiary','reportIncludeStrategies'].forEach(id=>{
+    const checkbox=document.getElementById(id);
+    if(checkbox&&checkbox.checked){
+      checkbox.parentElement.classList.add('checked');
+    }
+  });
 });
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
