@@ -695,7 +695,11 @@ function renderLearn(){
 
   c.innerHTML=h;
 }
-function selectReportPeriod(days){reportPeriodDays=days;document.querySelectorAll('.report-period-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');}
+function selectReportPeriod(days, element){
+  reportPeriodDays=days;
+  document.querySelectorAll('.report-period-btn').forEach(b=>b.classList.remove('selected'));
+  element.classList.add('selected');
+}
 function generatePDFReport(){
 const{jsPDF}=window.jspdf;
 const doc=new jsPDF();
