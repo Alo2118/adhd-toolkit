@@ -729,7 +729,11 @@ console.log('- filteredDiary length:', filteredDiary.length);
 
 // Check if there's any data to show
 if(filteredHistory.length===0&&filteredDiary.length===0&&Object.keys(state.tasks).length===0){
-  showToast('⚠️ Non ci sono dati da includere nel report per il periodo selezionato');
+  if(state.history.length>0||state.diary.length>0){
+    showToast('⚠️ Nessun dato nel periodo selezionato. Prova a selezionare "Tutto"');
+  }else{
+    showToast('⚠️ Non ci sono ancora dati da includere nel report');
+  }
   return;
 }
 
