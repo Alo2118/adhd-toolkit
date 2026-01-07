@@ -810,6 +810,7 @@ doc.setTextColor(0);
 let y=75;
 
 // STATS BOXES
+console.log('Section check - Stats boxes:', filteredHistory.length>0 ? 'RENDER' : 'SKIP (no history data)');
 if(filteredHistory.length>0){
   const streak=calculateStreak();
   const totalMoments=filteredHistory.length;
@@ -827,6 +828,7 @@ if(filteredHistory.length>0){
 }
 
 // PATTERNS SECTION
+console.log('Section check - Patterns:', includePatterns&&filteredHistory.length>0 ? 'RENDER' : 'SKIP (includePatterns='+includePatterns+', historyLen='+filteredHistory.length+')');
 if(includePatterns&&filteredHistory.length>0){
   doc.setFillColor(240,245,250);
   doc.roundedRect(15,y,180,8,1,1,'F');
@@ -919,6 +921,7 @@ if(includePatterns&&filteredHistory.length>0){
 }
 
 // TIMELINE VISUAL
+console.log('Section check - Timeline:', includeHistory&&filteredHistory.length>0 ? 'RENDER' : 'SKIP (includeHistory='+includeHistory+', historyLen='+filteredHistory.length+')');
 if(includeHistory&&filteredHistory.length>0){
   if(y>240){
     doc.addPage();
@@ -1031,6 +1034,7 @@ y=20;
 
 // DIFFICULT TASKS cards
 const difficultTasks=getTopDifficultTasks(3);
+console.log('Section check - Difficult tasks:', difficultTasks.length>0 ? 'RENDER ('+difficultTasks.length+' tasks)' : 'SKIP (no tasks with 2+ blocks)');
 if(difficultTasks.length>0){
   doc.setFillColor(240,245,250);
   doc.roundedRect(15,y,180,8,1,1,'F');
@@ -1066,6 +1070,7 @@ if(difficultTasks.length>0){
 
 // WORKING STRATEGIES cards
 const tasksWithStrat=getTasksWithBestStrategies(3);
+console.log('Section check - Working strategies:', tasksWithStrat.length>0 ? 'RENDER ('+tasksWithStrat.length+' tasks)' : 'SKIP (no tasks with successful strategies)');
 if(tasksWithStrat.length>0){
   if(y>220){
     doc.addPage();
@@ -1139,6 +1144,7 @@ if(includeDiary&&filteredDiary.length>0){
 }
 
 // STRATEGIES TO TRY
+console.log('Section check - Strategies to try:', includeStrategies ? 'RENDER' : 'SKIP');
 if(includeStrategies){
   if(y>200){
     doc.addPage();
