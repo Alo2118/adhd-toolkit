@@ -543,8 +543,10 @@ function renderInsights(){
     // Best strategy for most common feeling
     if(personalInsights.feelingStrategy&&personalInsights.feelingStrategy.bestStrategy){
       const f=feelings.find(x=>x.id===personalInsights.feelingStrategy.feeling);
-      const perc=Math.round(personalInsights.feelingStrategy.bestStrategy.rate*100);
-      h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Quando ti senti '+f.label+'</span></div><p class="insight-card-content">Per te funziona meglio: <span class="insight-highlight" style="color:var(--accent-calm)">'+personalInsights.feelingStrategy.bestStrategy.name+'</span> ('+perc+'% successo)</p></div>';
+      if(f){
+        const perc=Math.round(personalInsights.feelingStrategy.bestStrategy.rate*100);
+        h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Quando ti senti '+f.label+'</span></div><p class="insight-card-content">Per te funziona meglio: <span class="insight-highlight" style="color:var(--accent-calm)">'+personalInsights.feelingStrategy.bestStrategy.name+'</span> ('+perc+'% successo)</p></div>';
+      }
     }
 
     // Temporal patterns
@@ -557,19 +559,23 @@ function renderInsights(){
   }
 
   // Existing insights
-  if(state.patterns.feelings){
+  if(state.patterns.feelings && Object.keys(state.patterns.feelings).length > 0){
     const t=Object.entries(state.patterns.feelings).sort((a,b)=>b[1]-a[1])[0];
     if(t){
       const f=feelings.find(x=>x.id===t[0]);
-      h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Emozione più frequente</span></div><p class="insight-card-content">Ti senti <span class="insight-highlight">'+f.label.toLowerCase()+'</span> più spesso ('+t[1]+' volte).</p></div>';
+      if(f){
+        h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+f.emoji+'</span><span class="insight-card-title">Emozione più frequente</span></div><p class="insight-card-content">Ti senti <span class="insight-highlight">'+f.label.toLowerCase()+'</span> più spesso ('+t[1]+' volte).</p></div>';
+      }
     }
   }
 
-  if(state.patterns.triggers){
+  if(state.patterns.triggers && Object.keys(state.patterns.triggers).length > 0){
     const t=Object.entries(state.patterns.triggers).sort((a,b)=>b[1]-a[1])[0];
     if(t){
       const tr=triggers.find(x=>x.id===t[0]);
-      h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+tr.emoji+'</span><span class="insight-card-title">Trigger più comune</span></div><p class="insight-card-content">"<span class="insight-highlight">'+tr.label+'</span>" ti mette in difficoltà più spesso.</p></div>';
+      if(tr){
+        h+='<div class="insight-card"><div class="insight-card-header"><span class="insight-card-emoji">'+tr.emoji+'</span><span class="insight-card-title">Trigger più comune</span></div><p class="insight-card-content">"<span class="insight-highlight">'+tr.label+'</span>" ti mette in difficoltà più spesso.</p></div>';
+      }
     }
   }
 
