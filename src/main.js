@@ -721,6 +721,15 @@ console.log('- includePatterns:', includePatterns);
 console.log('- includeHistory:', includeHistory);
 console.log('- includeDiary:', includeDiary);
 console.log('- includeStrategies:', includeStrategies);
+
+// Show what will be included
+const includedSections=[];
+if(includePatterns) includedSections.push('Pattern e trigger');
+if(includeHistory) includedSections.push('Timeline momenti');
+if(includeDiary) includedSections.push('Note personali');
+if(includeStrategies) includedSections.push('Strategie');
+console.log('Sezioni incluse nel PDF:', includedSections.join(', ') || 'Nessuna (solo copertina)');
+
 console.log('- state.history length:', state.history.length);
 console.log('- state.diary length:', state.diary.length);
 console.log('- state.tasks count:', Object.keys(state.tasks).length);
