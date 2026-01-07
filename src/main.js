@@ -704,11 +704,23 @@ const includeHistory=document.getElementById('reportIncludeHistory').checked;
 const includeDiary=document.getElementById('reportIncludeDiary').checked;
 const includeStrategies=document.getElementById('reportIncludeStrategies').checked;
 
+console.log('PDF Generation Debug:');
+console.log('- includePatterns:', includePatterns);
+console.log('- includeHistory:', includeHistory);
+console.log('- includeDiary:', includeDiary);
+console.log('- includeStrategies:', includeStrategies);
+console.log('- state.history length:', state.history.length);
+console.log('- state.diary length:', state.diary.length);
+console.log('- reportPeriodDays:', reportPeriodDays);
+
 const today=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
 const periodText=reportPeriodDays===0?'dall\'inizio':reportPeriodDays===7?'nell\'ultima settimana':'nell\'ultimo mese';
 
 const filteredHistory=filterDataByPeriod(state.history, reportPeriodDays);
 const filteredDiary=filterDataByPeriod(state.diary, reportPeriodDays);
+
+console.log('- filteredHistory length:', filteredHistory.length);
+console.log('- filteredDiary length:', filteredDiary.length);
 
 // Helper functions for visual elements
 function drawStatBox(x,y,w,h,value,label,color){
