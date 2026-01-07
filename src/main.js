@@ -843,12 +843,14 @@ if(includePatterns&&filteredHistory.length>0){
   const topFeeling=Object.entries(feelingCounts).sort((a,b)=>b[1]-a[1])[0];
   if(topFeeling){
     const f=feelings.find(x=>x.id===topFeeling[0]);
-    doc.setFontSize(9);
-    doc.setTextColor(80);
-    const text='Più spesso: '+f.label.toLowerCase()+' ('+topFeeling[1]+(topFeeling[1]===1?' volta':' volte')+')';
-    doc.text(text,20,y);
-    y+=8;
-    doc.setTextColor(0);
+    if(f){
+      doc.setFontSize(9);
+      doc.setTextColor(80);
+      const text='Più spesso: '+f.label.toLowerCase()+' ('+topFeeling[1]+(topFeeling[1]===1?' volta':' volte')+')';
+      doc.text(text,20,y);
+      y+=8;
+      doc.setTextColor(0);
+    }
   }
 
   // TRIGGERS SECTION
@@ -882,12 +884,14 @@ if(includePatterns&&filteredHistory.length>0){
   const topTrigger=Object.entries(triggerCounts).sort((a,b)=>b[1]-a[1])[0];
   if(topTrigger){
     const tr=triggers.find(x=>x.id===topTrigger[0]);
-    doc.setFontSize(9);
-    doc.setTextColor(80);
-    const text='Più frequente: '+tr.label+' ('+topTrigger[1]+(topTrigger[1]===1?' volta':' volte')+')';
-    doc.text(text,20,y);
-    y+=8;
-    doc.setTextColor(0);
+    if(tr){
+      doc.setFontSize(9);
+      doc.setTextColor(80);
+      const text='Più frequente: '+tr.label+' ('+topTrigger[1]+(topTrigger[1]===1?' volta':' volte')+')';
+      doc.text(text,20,y);
+      y+=8;
+      doc.setTextColor(0);
+    }
   }
 }
 
