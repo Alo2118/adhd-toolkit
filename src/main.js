@@ -711,7 +711,12 @@ console.log('- includeDiary:', includeDiary);
 console.log('- includeStrategies:', includeStrategies);
 console.log('- state.history length:', state.history.length);
 console.log('- state.diary length:', state.diary.length);
+console.log('- state.tasks count:', Object.keys(state.tasks).length);
 console.log('- reportPeriodDays:', reportPeriodDays);
+if(state.history.length>0){
+  console.log('- First history entry date:', state.history[0].date);
+  console.log('- Last history entry date:', state.history[state.history.length-1].date);
+}
 
 const today=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
 const periodText=reportPeriodDays===0?'dall\'inizio':reportPeriodDays===7?'nell\'ultima settimana':'nell\'ultimo mese';
@@ -721,6 +726,12 @@ const filteredDiary=filterDataByPeriod(state.diary, reportPeriodDays);
 
 console.log('- filteredHistory length:', filteredHistory.length);
 console.log('- filteredDiary length:', filteredDiary.length);
+
+// Check if there's any data to show
+if(filteredHistory.length===0&&filteredDiary.length===0&&Object.keys(state.tasks).length===0){
+  showToast('⚠️ Non ci sono dati da includere nel report per il periodo selezionato');
+  return;
+}
 
 // Helper functions for visual elements
 function drawStatBox(x,y,w,h,value,label,color){
