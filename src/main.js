@@ -151,6 +151,21 @@ function getTemporalPatterns(){
   };
 }
 
+function getPersonalStrategyStats() {
+  const stats = {};
+  state.history.forEach(h => {
+    if (h.strategyUsed) {
+      if (!stats[h.strategyUsed]) stats[h.strategyUsed] = { used: 0, completed: 0 };
+      stats[h.strategyUsed].used++;
+      if (h.strategyCompleted) stats[h.strategyUsed].completed++;
+    }
+  });
+  return Object.entries(stats)
+    .filter(([, s]) => s.used >= 2)
+    .map(([name, s]) => ({ name, used: s.used, completed: s.completed, rate: s.completed / s.used }))
+    .sort((a, b) => b.rate - a.rate || b.used - a.used);
+}
+
 function getPersonalInsights(){
   if(state.history.length<3)return null;
   const insights={};
@@ -453,7 +468,6 @@ function generateResponse(){
 
   showScreen('responseScreen');
 }
-function saveCurrentTaskToList(){if(!currentFlow.taskName)return;const taskCategory=detectTaskCategory(currentFlow.taskName);const now=new Date().toISOString();const newTask={id:Date.now(),name:currentFlow.taskName,category:taskCategory,deadline:null,notes:currentFlow.notes||'',status:'active',createdAt:now,lastUpdatedAt:now,relatedHistoryIds:[state.history[0]?state.history[0].id:null].filter(Boolean)};state.activeTasks.push(newTask);saveState();document.getElementById('saveTaskPrompt').style.display='none';showToast('✓ Salvato nei compiti!');checkAndScheduleNotifications();}
 function executeStrategy(name){if(state.history.length>0){state.history[0].strategyUsed=name;saveState();}const n=name.toLowerCase();if(n.includes('respira')||n.includes('breath')||n.includes('pausa vuota')){showScreen('breatheScreen');return;}if(n.includes('pomodoro')||n.includes('sprint')||n.includes('timer')||n.includes('nap')||n.includes('buffer')||n.includes('min')||n.includes('cammina')||n.includes('corri')||n.includes('movimento')||n.includes('phone')||n.includes('social')||n.includes('scroll')||n.includes('pausa')||n.includes('break')||n.includes('serie')||n.includes('tv')||n.includes('passiva')||n.includes('stretching')){let mins=2;if(n.includes('serie')||n.includes('tv')||n.includes('passiva'))mins=20;else if(n.includes('30'))mins=30;else if(n.includes('25'))mins=25;else if(n.includes('20'))mins=20;else if(n.includes('10'))mins=10;else if(n.includes('5'))mins=5;else if(n.includes('2'))mins=2;else if(n.includes('cammina')||n.includes('corri')||n.includes('movimento')||n.includes('phone')||n.includes('social')||n.includes('scroll')||n.includes('pausa')||n.includes('break')||n.includes('stretching'))mins=5;startCustomTimer(mins);return;}if(n.includes('dump')||n.includes('scrivi')||n.includes('lista')||n.includes('nota')||n.includes('vittorie')||n.includes('successi')||n.includes('contatore')||n.includes('diario')||n.includes('repair')||n.includes('snapshot')||n.includes('cattura')){let prompt='';if(n.includes('vittorie')||n.includes('successi')||n.includes('fiero'))prompt='3 cose di cui vado fiero oggi:\n1. \n2. \n3. ';else if(n.includes('lista')||n.includes('elimina')||n.includes('dimezza')||n.includes('triage'))prompt='Lista:\n• ';else if(n.includes('3 righe'))prompt='Cosa sento:\nPerché:\nCosa mi serve:';else if(n.includes('worst')||n.includes('scenario'))prompt='Worst case scenario:\n\nCosa succederebbe davvero?\n';else if(n.includes('fatto')||n.includes('interpreta'))prompt='FATTO:\n\nINTERPRETAZIONE:\n';else if(n.includes('paura'))prompt='FATTO:\n\nPAURA:\n';else if(n.includes('contatore')||n.includes('quante'))prompt='Cose che ho fatto BENE:\n1. \n2. \n3. \n4. \n5. ';else if(n.includes('repair')||n.includes('sistemare'))prompt='Cosa posso fare ORA per sistemare:\n\n';else if(n.includes('snapshot')||n.includes('nota')||n.includes('cattura'))prompt='Dove ero:\n\nCosa pensavo:\n\nProssimo passo:\n';else prompt='';showDumpWithPrompt(prompt);return;}if(n.includes('ground')||n.includes('5 cose')||n.includes('ancora al presente')){showScreen('groundingScreen');return;}if(n.includes('check')||n.includes('basics')){showChecklist(name);return;}if(n.includes('doubling')||n.includes('body')){showGuidedTip('Body Doubling','💡 Lavora accanto a qualcuno:\n\n• Chiamata video con un amico\n• Vai in caffè o biblioteca\n• App come Focusmate o StudyStream\n• Anche solo la presenza aiuta\n\nNon serve parlare!');return;}if(n.includes('gamif')||n.includes('sfida')){showGuidedTip('Gamification','🎮 Trasforma in gioco:\n\n• "Quanto veloce riesco?"\n• Metti canzone, finisci prima che finisca\n• Competi con te di ieri\n• Ricompensa alla fine\n\nChe punteggio fai oggi?');return;}if(n.includes('ricompensa')||n.includes('dopo')){showGuidedTip('Ricompensa','🎁 Cosa fai DOPO averlo finito?\n\n• Episodio serie\n• 10 min gioco\n• Snack\n• Pausa fuori\n\nDecidi ORA, prima di iniziare!');return;}if(n.includes('compassione')||n.includes('normaliz')){showGuidedTip('Self-Compassion','💚 Con ADHD è NORMALE:\n\n• Distrarsi spesso\n• Errori frequenti\n• Emozioni intense\n• Bisogno di supporti\n\nNon sei pigro. Sei ADHD.');return;}if(n.includes('zoom')||n.includes('100')){showGuidedQuestion('Zoom Out','Su 100 cose che fai, quante vanno bene?\n\n(Scrivi un numero)');return;}if(n.includes('test del tempo')||n.includes('settimana')){showGuidedQuestion('Test del Tempo','Tra una settimana sarà ancora grave?\n\nTra un mese?\n\nTra un anno?');return;}if(n.includes('script')||n.includes('frasi')){showGuidedTip('Script Sociale','💬 3 frasi pronte:\n\n1. "Ciao! Come va?"\n2. "Che cosa fai?"\n3. "Interessante, dimmi di più"\n\nBasta questo per iniziare!');return;}if(n.includes('exit')||n.includes('andare')){showGuidedTip('Exit Strategy','🚪 Puoi uscire quando vuoi:\n\n• "Resto max 1h"\n• "Ho impegno alle X"\n• "Devo fare chiamata"\n\nDecidilo PRIMA. Calma.');return;}if(n.includes('scale')||n.includes('10x')||n.includes('rsd')){showGuidedQuestion('RSD Scale-Down','La tua reazione è: 10/10\n\nIl fatto oggettivo è: _/10\n\n(Scala da 1 a 10)');return;}if(n.includes('fonte')||n.includes('chi')){showGuidedQuestion('Check Fonte','Chi ha fatto questa critica?\n\nConosce il tuo ADHD?\n\nÈ fonte affidabile?');return;}if(n.includes('priority')||n.includes('priorità')||n.includes('urgente')){showGuidedQuestion('Priority Check','Questa è DAVVERO la cosa più urgente ORA?\n\nSe sì, perché?\n\nSe no, qual è?');return;}if(n.includes('ambiente')||n.includes('stimoli')||n.includes('reset amb')){showGuidedTip('Reset Ambiente','🧹 Togli stimoli non necessari:\n\n• Chiudi tab extra\n• Phone in altra stanza\n• Cuffie noise-cancelling\n• Solo il necessario sul tavolo\n\nAmbiente pulito = mente pulita');return;}if(n.includes('amico')||n.includes('friend')){showGuidedQuestion('Prospettiva Amico','Cosa diresti a un amico ADHD in questa situazione?\n\n(Usa quella compassione per te)');return;}if(n.includes('ripara')){showGuidedQuestion('Ripara e Vai','Puoi rimediare?\n\nSe sì: fallo ORA\nSe no: lascia andare\n\nQuale scegli?');return;}showGuidedTip(name,'💡 '+name+'\n\nStrategia attivata!');}
 function startCustomTimer(minutes){timerSeconds=minutes*60;timerTotalSeconds=minutes*60;showScreen('timerScreen');resetTimer();updateTimerDisplay();}
 function showDumpWithPrompt(prompt){showScreen('dumpScreen');document.getElementById('dumpTextarea').value=prompt;document.getElementById('dumpTextarea').focus();}
@@ -675,10 +689,7 @@ function renderLearn(){
 
   c.innerHTML=h;
 }
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function toggleCheckbox(id){const checkbox=document.getElementById(id);checkbox.checked=!checkbox.checked;checkbox.parentElement.classList.toggle('checked',checkbox.checked);}
 function selectReportPeriod(days){reportPeriodDays=days;document.querySelectorAll('.report-period-btn').forEach(b=>b.classList.remove('selected'));event.target.classList.add('selected');}
-function filterDataByPeriod(data){if(reportPeriodDays===0)return data;const cutoff=new Date();cutoff.setDate(cutoff.getDate()-reportPeriodDays);return data.filter(item=>new Date(item.date)>=cutoff);}
 function generatePDFReport(){
 const{jsPDF}=window.jspdf;
 const doc=new jsPDF();
@@ -690,8 +701,8 @@ const includeStrategies=document.getElementById('reportIncludeStrategies').check
 const today=new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
 const periodText=reportPeriodDays===0?'dall\'inizio':reportPeriodDays===7?'nell\'ultima settimana':'nell\'ultimo mese';
 
-const filteredHistory=filterDataByPeriod(state.history);
-const filteredDiary=filterDataByPeriod(state.diary);
+const filteredHistory=filterDataByPeriod(state.history, reportPeriodDays);
+const filteredDiary=filterDataByPeriod(state.diary, reportPeriodDays);
 
 // Helper functions for visual elements
 function drawStatBox(x,y,w,h,value,label,color){
