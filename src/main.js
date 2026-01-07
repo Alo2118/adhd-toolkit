@@ -809,7 +809,7 @@ if(includePatterns&&filteredHistory.length>0){
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
   doc.setFont(undefined,'bold');
-  doc.text('📊  COME MI SONO SENTITO',18,y+5.5);
+  doc.text('COME MI SONO SENTITO',18,y+5.5);
   doc.setFont(undefined,'normal');
   y+=12;
 
@@ -856,7 +856,7 @@ if(includePatterns&&filteredHistory.length>0){
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
   doc.setFont(undefined,'bold');
-  doc.text('⚠️  TRIGGER PRINCIPALI',18,y+5.5);
+  doc.text('TRIGGER PRINCIPALI',18,y+5.5);
   doc.setFont(undefined,'normal');
   y+=12;
 
@@ -902,7 +902,7 @@ if(includeHistory&&filteredHistory.length>0){
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
   doc.setFont(undefined,'bold');
-  doc.text('📅  TIMELINE DEI MOMENTI',18,y+5.5);
+  doc.text('TIMELINE DEI MOMENTI',18,y+5.5);
   doc.setFont(undefined,'normal');
   y+=12;
 
@@ -929,7 +929,7 @@ if(includeHistory&&filteredHistory.length>0){
 
     doc.setFont(undefined,'bold');
     doc.setTextColor(0);
-    doc.text(f.emoji+' '+dateStr+' '+timeStr,25,y+1);
+    doc.text(dateStr+' '+timeStr,25,y+1);
     doc.setFont(undefined,'normal');
     doc.setTextColor(100);
     doc.text(f.label,50,y+1);
@@ -951,7 +951,7 @@ if(includePatterns&&filteredHistory.length>=3){
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
   doc.setFont(undefined,'bold');
-  doc.text('📆  MAPPA SETTIMANALE',18,y+5.5);
+  doc.text('MAPPA SETTIMANALE',18,y+5.5);
   doc.setFont(undefined,'normal');
   y+=12;
 
@@ -1009,7 +1009,7 @@ if(difficultTasks.length>0){
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
   doc.setFont(undefined,'bold');
-  doc.text('⚡  SFIDE PRINCIPALI',18,y+5.5);
+  doc.text('SFIDE PRINCIPALI',18,y+5.5);
   doc.setFont(undefined,'normal');
   y+=14;
 
@@ -1122,14 +1122,14 @@ if(includeStrategies){
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
   doc.setFont(undefined,'bold');
-  doc.text('🛠️  STRATEGIE DA PROVARE',18,y+5.5);
+  doc.text('STRATEGIE DA PROVARE',18,y+5.5);
   doc.setFont(undefined,'normal');
   y+=14;
 
   const contexts=[
-    {key:'lavoro',label:'💼 Al lavoro',strategies:contextStrategies.lavoro.slice(0,2)},
-    {key:'studio',label:'📚 Nello studio',strategies:contextStrategies.studio.slice(0,2)},
-    {key:'casa',label:'🏠 A casa',strategies:contextStrategies.casa.slice(0,2)}
+    {key:'lavoro',label:'Al lavoro',strategies:contextStrategies.lavoro.slice(0,2)},
+    {key:'studio',label:'Nello studio',strategies:contextStrategies.studio.slice(0,2)},
+    {key:'casa',label:'A casa',strategies:contextStrategies.casa.slice(0,2)}
   ];
 
   contexts.forEach(ctx=>{
