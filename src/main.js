@@ -970,12 +970,10 @@ if(includeHistory&&filteredHistory.length>0){
   doc.setFillColor(240,245,250);
   doc.roundedRect(15,y,180,8,1,1,'F');
   doc.setFontSize(12);
-  doc.setFont(undefined,'bold');
+  doc.setFont('helvetica','bold');
   doc.text('TIMELINE DEI MOMENTI',18,y+5.5);
-  doc.setFont(undefined,'normal');
   y+=12;
 
-  doc.setFontSize(7);
   const recentMoments=filteredHistory.slice(0,15);
   recentMoments.forEach((e,i)=>{
     if(y>268){
@@ -991,9 +989,9 @@ if(includeHistory&&filteredHistory.length>0){
     doc.setFillColor(103,126,234);
     doc.circle(20,y+0.5,0.8,'F');
 
-    // Date and time - always same style
-    doc.setFontSize(7);
+    // Date and time - ALWAYS reset font before text
     doc.setFont('helvetica','bold');
+    doc.setFontSize(7);
     doc.setTextColor(0,0,0);
     doc.text(dateStr+' '+timeStr,25,y+1.5);
 
@@ -1007,12 +1005,12 @@ if(includeHistory&&filteredHistory.length>0){
     }
     if(e.notes&&e.notes.trim()) parts.push('"'+e.notes+'"');
 
-    // Join with bullet separator
+    // Join with separator
     const fullText=parts.join(' - ');
 
-    // Set font for content - always same
-    doc.setFontSize(7);
+    // ALWAYS reset font before content text
     doc.setFont('helvetica','normal');
+    doc.setFontSize(7);
     doc.setTextColor(70,70,70);
 
     // Truncate if too long (max ~120 chars for single line)
