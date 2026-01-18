@@ -333,6 +333,11 @@
   /* Reduce padding for more usable space */
   .home-screen{padding:20px 12px 40px}
 
+  /* Add bottom padding to screens with fixed continue button */
+  .screen{
+    padding-bottom:100px;
+  }
+
   /* Larger intensity dots for better visibility and touch */
   .intensity-dot{
     height:60px;
@@ -340,6 +345,11 @@
     border-width:3px;
   }
   .intensity-bar{gap:6px}
+
+  /* More space after intensity section to avoid overlap with continue button */
+  .intensity-section{
+    margin-bottom:30px;
+  }
 
   /* Fix edit/delete buttons spacing and position */
   .edit-btn,.delete-btn{
