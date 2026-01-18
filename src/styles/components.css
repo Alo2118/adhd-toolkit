@@ -327,4 +327,42 @@
     .day-checkbox input{display:none}
     .day-checkbox input:checked + span{color:var(--accent-calm);font-weight:700}
     .day-checkbox:has(input:checked){background:rgba(126,184,218,0.15);border-color:var(--accent-calm)}
+
+/* Mobile responsive fixes */
+@media (max-width: 600px) {
+  /* Reduce padding for more usable space */
+  .home-screen{padding:20px 12px 40px}
+
+  /* Larger intensity dots for better visibility and touch */
+  .intensity-dot{
+    height:60px;
+    font-size:1.1rem;
+    border-width:3px;
+  }
+  .intensity-bar{gap:6px}
+
+  /* Fix edit/delete buttons spacing and position */
+  .edit-btn,.delete-btn{
+    width:32px;
+    height:32px;
+    font-size:0.85rem;
+    flex-shrink:0;
+  }
+
+  /* Move action buttons to top-right to avoid overlap */
+  .history-card-actions{
+    position:absolute;
+    top:8px;
+    right:8px;
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+  }
+
+  /* Add padding-right to card header to avoid overlap with buttons */
+  .history-card-header{
+    padding-right:75px;
+  }
+}
+
     .day-checkbox span{font-size:0.9rem;font-weight:600;color:var(--text-secondary)}
