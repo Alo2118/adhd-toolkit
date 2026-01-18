@@ -96,6 +96,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
+// Listen for data import event to refresh UI
+window.addEventListener('dataImported', (event) => {
+  console.log('Data imported:', event.detail);
+  cleanupDataSpaces();
+  updateHomeScreen();
+  updateGardenBadge();
+  checkGardenDecay();
+  if(document.querySelector('.screen.active')?.id === 'homeScreen'){
+    showScreen('homeScreen'); // Force refresh home screen
+  }
+  showToast('✓ Backup caricato: ' + event.detail.history + ' momenti, ' + event.detail.diary + ' note');
+});
+
 // Clean up extra spaces from saved data (one-time fix)
 function cleanupDataSpaces(){
   let cleaned=false;

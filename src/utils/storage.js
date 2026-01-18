@@ -132,7 +132,19 @@ export function importData(callback) {
         state.history = Array.isArray(imported.history) ? imported.history : [];
         state.diary = Array.isArray(imported.diary) ? imported.diary : [];
         state.patterns = imported.patterns || {};
+        state.garden = (imported.garden && typeof imported.garden === 'object') ? imported.garden : state.garden;
+        state.tasks = (imported.tasks && typeof imported.tasks === 'object') ? imported.tasks : {};
+        state.activeTasks = Array.isArray(imported.activeTasks) ? imported.activeTasks : [];
+        state.userName = (imported.userName && typeof imported.userName === 'string') ? imported.userName : state.userName;
+
         saveState();
+
+        // Trigger UI refresh by dispatching custom event
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('dataImported', {
+            detail: { history: state.history.length, diary: state.diary.length }
+          }));
+        }
 
         if (callback) callback({ success: true, count: { history: state.history.length, diary: state.diary.length } });
       } catch (err) {
