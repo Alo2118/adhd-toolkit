@@ -991,49 +991,44 @@ if(includeHistory&&filteredHistory.length>0){
     doc.setFillColor(103,126,234);
     doc.circle(20,y+0.5,0.8,'F');
 
-    // Date and time in bold, 7pt, black
+    // Date and time - always same style
     doc.setFontSize(7);
     doc.setFont('helvetica','bold');
     doc.setTextColor(0,0,0);
     doc.text(dateStr+' '+timeStr,25,y+1.5);
 
-    // Build rest of text
-    const parts=[f.label];
-    if(e.taskName)parts.push(e.taskName);
+    // Rest of content - build text parts
+    const parts=[];
+    parts.push(f.label);
+    if(e.taskName) parts.push(e.taskName);
     if(e.strategyUsed){
       const stratSymbol=e.strategyCompleted?'✓':'→';
       parts.push(stratSymbol+' '+e.strategyUsed);
     }
-    if(e.notes&&e.notes.trim())parts.push('"'+e.notes+'"');
+    if(e.notes&&e.notes.trim()) parts.push('"'+e.notes+'"');
 
-    const restText=' • '+parts.join(' • ');
+    // Join with bullet separator
+    const fullText=parts.join(' - ');
 
-    // Rest of info in normal font, 7pt, gray
+    // Set font for content - always same
     doc.setFontSize(7);
     doc.setFont('helvetica','normal');
     doc.setTextColor(70,70,70);
 
-    const lines=doc.splitTextToSize(restText,120);
+    // Truncate if too long (max ~120 chars for single line)
+    const maxLength=120;
+    const displayText=fullText.length>maxLength ? fullText.substring(0,maxLength-3)+'...' : fullText;
 
-    let currentY=y+1.5;
-    lines.slice(0,2).forEach((line,idx)=>{
-      // Ensure font is set for each line
-      doc.setFontSize(7);
-      doc.setFont('helvetica','normal');
-      doc.setTextColor(70,70,70);
-      doc.text(line,55,currentY);
-      if(idx===0&&lines.length>1)currentY+=3.5;
-    });
+    doc.text(displayText,55,y+1.5);
 
     // Timeline connector line
-    const entryHeight=lines.length>1?6.5:3.5;
     if(i<recentMoments.length-1){
       doc.setDrawColor(230);
       doc.setLineWidth(0.15);
-      doc.line(20,y+1,20,y+entryHeight-0.5);
+      doc.line(20,y+1,20,y+4);
     }
 
-    y+=entryHeight;
+    y+=4.5;
   });
   y+=3;
 }
