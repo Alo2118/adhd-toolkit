@@ -1004,15 +1004,15 @@ if(includeHistory&&filteredHistory.length>0){
 
     y+=6;
 
-    // Line 2: Content in normal
+    // Line 2: Content in normal - Clean extra spaces from data
     const parts=[];
-    parts.push(f.label);
-    if(e.taskName) parts.push(e.taskName);
+    parts.push(f.label.replace(/\s+/g,' ').trim());
+    if(e.taskName) parts.push(e.taskName.replace(/\s+/g,' ').trim());
     if(e.strategyUsed){
       const symbol=e.strategyCompleted?'✓':'→';
-      parts.push(symbol+' '+e.strategyUsed);
+      parts.push(symbol+' '+e.strategyUsed.replace(/\s+/g,' ').trim());
     }
-    if(e.notes&&e.notes.trim()) parts.push('"'+e.notes+'"');
+    if(e.notes&&e.notes.trim()) parts.push('"'+e.notes.replace(/\s+/g,' ').trim()+'"');
 
     const content=parts.join(' | ');
     const maxLen=110;
