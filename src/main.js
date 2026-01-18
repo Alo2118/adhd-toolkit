@@ -971,7 +971,7 @@ if(includeHistory&&filteredHistory.length>0){
   doc.setFont(undefined,'normal');
   y+=12;
 
-  doc.setFontSize(6.5);
+  doc.setFontSize(7);
   const recentMoments=filteredHistory.slice(0,15);
   recentMoments.forEach((e,i)=>{
     if(y>268){
@@ -987,8 +987,18 @@ if(includeHistory&&filteredHistory.length>0){
     doc.setFillColor(103,126,234);
     doc.circle(20,y+0.5,0.8,'F');
 
-    // Build complete entry on single line
-    const parts=[dateStr+' '+timeStr, f.label];
+    // Date and time in bold
+    doc.setFont(undefined,'bold');
+    doc.setTextColor(0);
+    doc.setFontSize(7);
+    doc.text(dateStr+' '+timeStr,25,y+1.5);
+
+    // Rest of info in normal font
+    doc.setFont(undefined,'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(70);
+
+    const parts=[f.label];
     if(e.taskName)parts.push(e.taskName);
     if(e.strategyUsed){
       const stratSymbol=e.strategyCompleted?'✓':'→';
@@ -996,15 +1006,13 @@ if(includeHistory&&filteredHistory.length>0){
     }
     if(e.notes&&e.notes.trim())parts.push('"'+e.notes+'"');
 
-    const fullText=parts.join(' • ');
-    doc.setFont(undefined,'normal');
-    doc.setTextColor(60);
-    const lines=doc.splitTextToSize(fullText,165);
+    const restText=' • '+parts.join(' • ');
+    const lines=doc.splitTextToSize(restText,120);
 
     let currentY=y+1.5;
     lines.slice(0,2).forEach((line,idx)=>{
-      doc.text(line,25,currentY);
-      if(idx===0&&lines.length>1)currentY+=3;
+      doc.text(line,55,currentY);
+      if(idx===0&&lines.length>1)currentY+=3.5;
     });
 
     // Timeline connector line
