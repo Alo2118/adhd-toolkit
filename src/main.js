@@ -80,6 +80,7 @@ function declineTerms() {
 document.addEventListener('DOMContentLoaded',()=>{
   checkLegalConsent();
   loadState();
+  cleanupDataSpaces();
   updateHomeScreen();
   renderFeelings();
   renderTriggers();
@@ -94,6 +95,41 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 });
+
+// Clean up extra spaces from saved data (one-time fix)
+function cleanupDataSpaces(){
+  let cleaned=false;
+
+  // Clean history entries
+  state.history.forEach(h=>{
+    if(h.taskName&&/\s{2,}/.test(h.taskName)){
+      h.taskName=h.taskName.replace(/\s+/g,' ').trim();
+      cleaned=true;
+    }
+    if(h.strategyUsed&&/\s{2,}/.test(h.strategyUsed)){
+      h.strategyUsed=h.strategyUsed.replace(/\s+/g,' ').trim();
+      cleaned=true;
+    }
+    if(h.notes&&/\s{2,}/.test(h.notes)){
+      h.notes=h.notes.replace(/\s+/g,' ').trim();
+      cleaned=true;
+    }
+  });
+
+  // Clean diary entries
+  state.diary.forEach(d=>{
+    if(d.text&&/\s{2,}/.test(d.text)){
+      d.text=d.text.replace(/\s+/g,' ').trim();
+      cleaned=true;
+    }
+  });
+
+  // Save if cleaned
+  if(cleaned){
+    console.log('✓ Cleaned up extra spaces from saved data');
+    saveState();
+  }
+}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 
