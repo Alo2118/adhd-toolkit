@@ -961,10 +961,10 @@ if(includeHistory&&filteredHistory.length>0){
   doc.setFont(undefined,'normal');
   y+=12;
 
-  doc.setFontSize(7);
-  const recentMoments=filteredHistory.slice(0,12);
+  doc.setFontSize(6.5);
+  const recentMoments=filteredHistory.slice(0,15);
   recentMoments.forEach((e,i)=>{
-    if(y>265){
+    if(y>268){
       doc.addPage();
       y=20;
     }
@@ -975,48 +975,34 @@ if(includeHistory&&filteredHistory.length>0){
 
     // Timeline dot
     doc.setFillColor(103,126,234);
-    doc.circle(20,y+0.5,1,'F');
+    doc.circle(20,y+0.5,0.8,'F');
 
-    // Date, time and feeling on same line
-    doc.setFont(undefined,'bold');
-    doc.setTextColor(0);
-    doc.setFontSize(7);
-    doc.text(dateStr+' '+timeStr,25,y+1.5);
-    doc.setFont(undefined,'normal');
-    doc.setTextColor(103,126,234);
-    doc.text('• '+f.label,55,y+1.5);
-    doc.setTextColor(0);
-
-    let currentY=y+1.5;
-
-    // Task, strategy and notes on compact lines
-    const details=[];
-    if(e.taskName)details.push(e.taskName);
+    // Build complete entry on single line
+    const parts=[dateStr+' '+timeStr, f.label];
+    if(e.taskName)parts.push(e.taskName);
     if(e.strategyUsed){
       const stratSymbol=e.strategyCompleted?'✓':'→';
-      details.push(stratSymbol+' '+e.strategyUsed);
+      parts.push(stratSymbol+' '+e.strategyUsed);
     }
-    if(e.notes&&e.notes.trim())details.push('"'+e.notes+'"');
+    if(e.notes&&e.notes.trim())parts.push('"'+e.notes+'"');
 
-    if(details.length>0){
-      currentY+=3.5;
-      doc.setFontSize(6.5);
-      doc.setTextColor(80);
-      const detailText=details.join(' • ');
-      const detailLines=doc.splitTextToSize(detailText,165);
-      detailLines.slice(0,2).forEach((line,idx)=>{
-        doc.text(line,25,currentY);
-        if(idx===0&&detailLines.length>1)currentY+=3;
-      });
-      doc.setTextColor(0);
-    }
+    const fullText=parts.join(' • ');
+    doc.setFont(undefined,'normal');
+    doc.setTextColor(60);
+    const lines=doc.splitTextToSize(fullText,165);
+
+    let currentY=y+1.5;
+    lines.slice(0,2).forEach((line,idx)=>{
+      doc.text(line,25,currentY);
+      if(idx===0&&lines.length>1)currentY+=3;
+    });
 
     // Timeline connector line
-    const entryHeight=currentY-y+3.5;
+    const entryHeight=lines.length>1?6.5:3.5;
     if(i<recentMoments.length-1){
-      doc.setDrawColor(220);
-      doc.setLineWidth(0.2);
-      doc.line(20,y+1.5,20,y+entryHeight-0.5);
+      doc.setDrawColor(230);
+      doc.setLineWidth(0.15);
+      doc.line(20,y+1,20,y+entryHeight-0.5);
     }
 
     y+=entryHeight;
