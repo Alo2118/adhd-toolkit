@@ -817,22 +817,22 @@ function drawCard(x,y,w,h,title,content,color){
 
 // COVER PAGE with gradient effect
 doc.setFillColor(103,126,234);
-doc.rect(0,0,210,65,'F');
+doc.rect(0,0,210,45,'F');
 doc.setFillColor(118,142,218);
-doc.rect(0,40,210,25,'F');
+doc.rect(0,28,210,17,'F');
 
 doc.setTextColor(255,255,255);
-doc.setFontSize(32);
+doc.setFontSize(26);
 doc.setFont(undefined,'bold');
-doc.text('IL MIO PERCORSO',105,28,{align:'center'});
-doc.setFontSize(36);
-doc.text('ADHD',105,43,{align:'center'});
-doc.setFontSize(11);
+doc.text('IL MIO PERCORSO',105,20,{align:'center'});
+doc.setFontSize(30);
+doc.text('ADHD',105,33,{align:'center'});
+doc.setFontSize(9);
 doc.setFont(undefined,'normal');
-doc.text(today+' • '+periodText,105,55,{align:'center'});
+doc.text(today+' • '+periodText,105,41,{align:'center'});
 doc.setTextColor(0);
 
-let y=75;
+let y=52;
 
 // STATS BOXES
 console.log('Section check - Stats boxes:', filteredHistory.length>0 ? 'RENDER' : 'SKIP (no history data)');
@@ -842,14 +842,14 @@ if(filteredHistory.length>0){
   const successRate=filteredHistory.filter(e=>e.strategyCompleted).length;
   const successPercent=totalMoments>0?Math.round((successRate/totalMoments)*100):0;
 
-  drawStatBox(15,y,38,22,totalMoments,totalMoments===1?'momento':'momenti',[103,126,234]);
-  drawStatBox(56,y,38,22,successPercent+'%','successo',[125,211,168]);
-  drawStatBox(97,y,38,22,streak,streak===1?'giorno':'giorni',[232,168,124]);
+  drawStatBox(15,y,38,18,totalMoments,totalMoments===1?'momento':'momenti',[103,126,234]);
+  drawStatBox(56,y,38,18,successPercent+'%','successo',[125,211,168]);
+  drawStatBox(97,y,38,18,streak,streak===1?'giorno':'giorni',[232,168,124]);
 
   const avgIntensity=(filteredHistory.reduce((sum,e)=>sum+e.intensity,0)/filteredHistory.length).toFixed(1);
-  drawStatBox(138,y,38,22,avgIntensity+'/5','intensità media',[195,174,214]);
+  drawStatBox(138,y,38,18,avgIntensity+'/5','intensità media',[195,174,214]);
 
-  y+=30;
+  y+=22;
 }
 
 // PATTERNS SECTION
@@ -885,8 +885,8 @@ if(includePatterns&&filteredHistory.length>0){
 
   if(feelingData.length>0){
     const maxFeeling=Math.max(...feelingData.map(d=>d.value));
-    drawBarChart(20,y,80,30,feelingData,maxFeeling);
-    y+=40;
+    drawBarChart(20,y,80,25,feelingData,maxFeeling);
+    y+=32;
   }
 
   // Top feeling text
@@ -894,11 +894,11 @@ if(includePatterns&&filteredHistory.length>0){
   if(topFeeling){
     const f=feelings.find(x=>x.id===topFeeling[0]);
     if(f){
-      doc.setFontSize(9);
+      doc.setFontSize(8);
       doc.setTextColor(80);
       const text='Più spesso: '+f.label.toLowerCase()+' ('+topFeeling[1]+(topFeeling[1]===1?' volta':' volte')+')';
       doc.text(text,20,y);
-      y+=8;
+      y+=6;
       doc.setTextColor(0);
     }
   }
@@ -918,7 +918,7 @@ if(includePatterns&&filteredHistory.length>0){
     .map(([id,count])=>{
       const tr=triggers.find(x=>x.id===id)||{label:'?'};
       return{
-        label:tr.label.length>15?tr.label.substring(0,13)+'..':tr.label,
+        label:tr.label,
         value:count,
         color:[232,168,124]
       };
@@ -926,8 +926,8 @@ if(includePatterns&&filteredHistory.length>0){
 
   if(triggerData.length>0){
     const maxTrigger=Math.max(...triggerData.map(d=>d.value));
-    drawBarChart(20,y,80,30,triggerData,maxTrigger);
-    y+=40;
+    drawBarChart(20,y,80,25,triggerData,maxTrigger);
+    y+=32;
   }
 
   // Top trigger text
@@ -935,11 +935,11 @@ if(includePatterns&&filteredHistory.length>0){
   if(topTrigger){
     const tr=triggers.find(x=>x.id===topTrigger[0]);
     if(tr){
-      doc.setFontSize(9);
+      doc.setFontSize(8);
       doc.setTextColor(80);
       const text='Più frequente: '+tr.label+' ('+topTrigger[1]+(topTrigger[1]===1?' volta':' volte')+')';
       doc.text(text,20,y);
-      y+=8;
+      y+=6;
       doc.setTextColor(0);
     }
   }
@@ -961,83 +961,67 @@ if(includeHistory&&filteredHistory.length>0){
   doc.setFont(undefined,'normal');
   y+=12;
 
-  doc.setFontSize(8);
-  const recentMoments=filteredHistory.slice(0,10);
+  doc.setFontSize(7);
+  const recentMoments=filteredHistory.slice(0,12);
   recentMoments.forEach((e,i)=>{
-    if(y>260){
+    if(y>265){
       doc.addPage();
       y=20;
     }
     const f=feelings.find(x=>x.id===e.feeling)||{label:'?',emoji:'•'};
-    const tr=triggers.find(x=>x.id===e.trigger)||{label:'?'};
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
     const timeStr=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
 
     // Timeline dot
     doc.setFillColor(103,126,234);
-    doc.circle(20,y+1,1.5,'F');
+    doc.circle(20,y+0.5,1,'F');
 
-    // Date and time
+    // Date, time and feeling on same line
     doc.setFont(undefined,'bold');
     doc.setTextColor(0);
-    doc.setFontSize(8);
-    doc.text(dateStr+' '+timeStr,25,y+2);
-
-    // Feeling
+    doc.setFontSize(7);
+    doc.text(dateStr+' '+timeStr,25,y+1.5);
     doc.setFont(undefined,'normal');
     doc.setTextColor(103,126,234);
-    doc.setFontSize(7);
-    doc.text(f.label,25,y+6);
+    doc.text('• '+f.label,55,y+1.5);
     doc.setTextColor(0);
 
-    let currentY=y+6;
+    let currentY=y+1.5;
 
-    // Task name (cosa stava succedendo)
-    if(e.taskName){
-      currentY+=4;
-      doc.setFontSize(7);
-      doc.setTextColor(80);
-      const taskLines=doc.splitTextToSize('Stavo: '+e.taskName,150);
-      doc.text(taskLines[0]||'',25,currentY);
-      if(taskLines.length>1)currentY+=3;
-    }
-
-    // Strategy used
+    // Task, strategy and notes on compact lines
+    const details=[];
+    if(e.taskName)details.push(e.taskName);
     if(e.strategyUsed){
-      currentY+=4;
-      doc.setTextColor(125,211,168);
       const stratSymbol=e.strategyCompleted?'✓':'→';
-      doc.text(stratSymbol+' '+e.strategyUsed,25,currentY);
-      doc.setTextColor(0);
+      details.push(stratSymbol+' '+e.strategyUsed);
     }
+    if(e.notes&&e.notes.trim())details.push('"'+e.notes+'"');
 
-    // Notes
-    if(e.notes&&e.notes.trim()){
-      currentY+=4;
-      doc.setFontSize(7);
-      doc.setTextColor(100);
-      doc.setFont(undefined,'italic');
-      const noteLines=doc.splitTextToSize('"'+e.notes+'"',150);
-      noteLines.slice(0,2).forEach((line,idx)=>{
+    if(details.length>0){
+      currentY+=3.5;
+      doc.setFontSize(6.5);
+      doc.setTextColor(80);
+      const detailText=details.join(' • ');
+      const detailLines=doc.splitTextToSize(detailText,165);
+      detailLines.slice(0,2).forEach((line,idx)=>{
         doc.text(line,25,currentY);
-        if(idx<noteLines.length-1)currentY+=3;
+        if(idx===0&&detailLines.length>1)currentY+=3;
       });
-      doc.setFont(undefined,'normal');
       doc.setTextColor(0);
     }
 
     // Timeline connector line
-    const entryHeight=currentY-y+5;
+    const entryHeight=currentY-y+3.5;
     if(i<recentMoments.length-1){
-      doc.setDrawColor(200);
-      doc.setLineWidth(0.3);
-      doc.line(20,y+3,20,y+entryHeight);
+      doc.setDrawColor(220);
+      doc.setLineWidth(0.2);
+      doc.line(20,y+1.5,20,y+entryHeight-0.5);
     }
 
     y+=entryHeight;
   });
-  y+=5;
+  y+=3;
 }
 
 // WEEK HEATMAP
@@ -1095,46 +1079,50 @@ if(includePatterns&&filteredHistory.length>=3){
     doc.setTextColor(0);
   });
 
-  y+=20;
+  y+=16;
 }
 
-// NEW PAGE for strategies and insights
-doc.addPage();
-y=20;
+// NEW PAGE for strategies and insights only if needed
+if(y>200){
+  doc.addPage();
+  y=20;
+}else{
+  y+=5;
+}
 
 // DIFFICULT TASKS cards
 const difficultTasks=getTopDifficultTasks(3);
 console.log('Section check - Difficult tasks:', difficultTasks.length>0 ? 'RENDER ('+difficultTasks.length+' tasks)' : 'SKIP (no tasks with 2+ blocks)');
 if(difficultTasks.length>0){
   doc.setFillColor(240,245,250);
-  doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
+  doc.roundedRect(15,y,180,7,1,1,'F');
+  doc.setFontSize(11);
   doc.setFont(undefined,'bold');
-  doc.text('SFIDE PRINCIPALI',18,y+5.5);
+  doc.text('SFIDE PRINCIPALI',18,y+5);
   doc.setFont(undefined,'normal');
-  y+=14;
+  y+=11;
 
   difficultTasks.forEach(task=>{
-    if(y>260){
+    if(y>265){
       doc.addPage();
       y=20;
     }
     const rate=task.timesResolved>0?Math.round((task.timesResolved/task.timesBlocked)*100):0;
-    const title=task.name.length>25?task.name.substring(0,23)+'..':task.name;
+    const title=task.name.length>30?task.name.substring(0,28)+'..':task.name;
     const content='Bloccato '+task.timesBlocked+(task.timesBlocked===1?' volta':' volte')+' • Risolto '+rate+'%';
 
-    drawCard(20,y,85,18,title,content,[224,122,122]);
+    drawCard(20,y,85,14,title,content,[224,122,122]);
 
     const best=getBestStrategyForTask(normalizeTaskName(task.name));
     if(best){
-      doc.setFontSize(7);
+      doc.setFontSize(6.5);
       doc.setTextColor(80,150,100);
       const stratText='✓ '+best.name+' funziona '+Math.round(best.rate*100)+'%';
-      doc.text(stratText,22,y+14);
+      doc.text(stratText,22,y+11);
       doc.setTextColor(0);
     }
 
-    y+=20;
+    y+=16;
   });
 }
 
@@ -1142,50 +1130,50 @@ if(difficultTasks.length>0){
 const tasksWithStrat=getTasksWithBestStrategies(3);
 console.log('Section check - Working strategies:', tasksWithStrat.length>0 ? 'RENDER ('+tasksWithStrat.length+' tasks)' : 'SKIP (no tasks with successful strategies)');
 if(tasksWithStrat.length>0){
+  if(y>230){
+    doc.addPage();
+    y=20;
+  }
+
+  doc.setFillColor(240,245,250);
+  doc.roundedRect(15,y,180,7,1,1,'F');
+  doc.setFontSize(11);
+  doc.setFont(undefined,'bold');
+  doc.text('COSA FUNZIONA PER ME',18,y+5);
+  doc.setFont(undefined,'normal');
+  y+=11;
+
+  tasksWithStrat.forEach(item=>{
+    if(y>265){
+      doc.addPage();
+      y=20;
+    }
+    const title=item.task.name.length>30?item.task.name.substring(0,28)+'..':item.task.name;
+    const content=item.strategy.name+' • '+Math.round(item.strategy.rate*100)+'% successo';
+
+    drawCard(20,y,85,13,title,content,[125,211,168]);
+    y+=14;
+  });
+}
+
+// DIARY ENTRIES
+if(includeDiary&&filteredDiary.length>0){
   if(y>220){
     doc.addPage();
     y=20;
   }
 
   doc.setFillColor(240,245,250);
-  doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
+  doc.roundedRect(15,y,180,7,1,1,'F');
+  doc.setFontSize(11);
   doc.setFont(undefined,'bold');
-  doc.text('✨  COSA FUNZIONA PER ME',18,y+5.5);
+  doc.text('LE MIE RIFLESSIONI',18,y+5);
   doc.setFont(undefined,'normal');
-  y+=14;
+  y+=11;
 
-  tasksWithStrat.forEach(item=>{
-    if(y>260){
-      doc.addPage();
-      y=20;
-    }
-    const title=item.task.name.length>25?item.task.name.substring(0,23)+'..':item.task.name;
-    const content=item.strategy.name+' • '+Math.round(item.strategy.rate*100)+'% successo';
-
-    drawCard(20,y,85,15,title,content,[125,211,168]);
-    y+=17;
-  });
-}
-
-// DIARY ENTRIES
-if(includeDiary&&filteredDiary.length>0){
-  if(y>210){
-    doc.addPage();
-    y=20;
-  }
-
-  doc.setFillColor(240,245,250);
-  doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
-  doc.setFont(undefined,'bold');
-  doc.text('📝  LE MIE RIFLESSIONI',18,y+5.5);
-  doc.setFont(undefined,'normal');
-  y+=14;
-
-  doc.setFontSize(8);
+  doc.setFontSize(7);
   filteredDiary.slice(0,5).forEach(entry=>{
-    if(y>250){
+    if(y>260){
       doc.addPage();
       y=20;
     }
@@ -1197,7 +1185,7 @@ if(includeDiary&&filteredDiary.length>0){
     doc.text(dateStr,20,y);
     doc.setFont(undefined,'normal');
     doc.setTextColor(80);
-    y+=5;
+    y+=4;
 
     const lines=doc.splitTextToSize(entry.text,170);
     lines.slice(0,3).forEach(line=>{
@@ -1206,9 +1194,9 @@ if(includeDiary&&filteredDiary.length>0){
         y=20;
       }
       doc.text(line,20,y);
-      y+=4;
+      y+=3.5;
     });
-    y+=3;
+    y+=2;
   });
   doc.setTextColor(0);
 }
@@ -1216,18 +1204,18 @@ if(includeDiary&&filteredDiary.length>0){
 // STRATEGIES TO TRY
 console.log('Section check - Strategies to try:', includeStrategies ? 'RENDER' : 'SKIP');
 if(includeStrategies){
-  if(y>200){
+  if(y>220){
     doc.addPage();
     y=20;
   }
 
   doc.setFillColor(240,245,250);
-  doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
+  doc.roundedRect(15,y,180,7,1,1,'F');
+  doc.setFontSize(11);
   doc.setFont(undefined,'bold');
-  doc.text('STRATEGIE DA PROVARE',18,y+5.5);
+  doc.text('STRATEGIE DA PROVARE',18,y+5);
   doc.setFont(undefined,'normal');
-  y+=14;
+  y+=11;
 
   const contexts=[
     {key:'lavoro',label:'Al lavoro',strategies:contextStrategies.lavoro.slice(0,2)},
@@ -1236,17 +1224,17 @@ if(includeStrategies){
   ];
 
   contexts.forEach(ctx=>{
-    if(y>250){
+    if(y>260){
       doc.addPage();
       y=20;
     }
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont(undefined,'bold');
     doc.text(ctx.label,20,y);
     doc.setFont(undefined,'normal');
-    y+=6;
+    y+=5;
 
-    doc.setFontSize(8);
+    doc.setFontSize(7);
     ctx.strategies.forEach(s=>{
       if(y>270){
         doc.addPage();
@@ -1256,29 +1244,33 @@ if(includeStrategies){
       doc.text('• '+s.name,22,y);
       doc.setTextColor(100);
       const descLines=doc.splitTextToSize(s.desc,160);
-      doc.text(descLines[0]||'',28,y+4);
+      doc.text(descLines[0]||'',28,y+3.5);
       doc.setTextColor(0);
-      y+=9;
+      y+=7.5;
     });
-    y+=3;
+    y+=2;
   });
 }
 
 // FINAL PAGE
-doc.addPage();
-y=40;
+if(y>180){
+  doc.addPage();
+  y=20;
+}else{
+  y+=10;
+}
 
 doc.setFillColor(195,174,214);
-doc.rect(0,0,210,60,'F');
+doc.rect(0,y,210,35,'F');
 
 doc.setTextColor(255,255,255);
-doc.setFontSize(18);
+doc.setFontSize(15);
 doc.setFont(undefined,'bold');
-doc.text('RIFLESSIONE FINALE',105,25,{align:'center'});
+doc.text('RIFLESSIONE FINALE',105,y+18,{align:'center'});
 doc.setTextColor(0);
 
-y=75;
-doc.setFontSize(10);
+y+=42;
+doc.setFontSize(9);
 doc.setTextColor(60);
 const conclusion=doc.splitTextToSize('Questo documento racconta il mio viaggio. Non è perfetto, e non deve esserlo. Ogni momento di difficoltà che ho affrontato, ogni strategia che ho provato, ogni nota che ho scritto - tutto questo fa parte della mia crescita.\n\nConvivere con l\'ADHD è una sfida quotidiana, ma sto imparando a conoscermi meglio. Sto costruendo la mia cassetta degli attrezzi. Sto diventando più consapevole.\n\nQuesto non è un fallimento. È il mio percorso.',170);
 
@@ -1288,7 +1280,7 @@ conclusion.forEach(line=>{
     y=20;
   }
   doc.text(line,20,y);
-  y+=5;
+  y+=4.5;
 });
 
 doc.setTextColor(0);
