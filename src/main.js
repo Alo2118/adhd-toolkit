@@ -962,35 +962,80 @@ if(includeHistory&&filteredHistory.length>0){
   y+=12;
 
   doc.setFontSize(8);
-  const recentMoments=filteredHistory.slice(0,8);
+  const recentMoments=filteredHistory.slice(0,10);
   recentMoments.forEach((e,i)=>{
-    if(y>270){
+    if(y>260){
       doc.addPage();
       y=20;
     }
     const f=feelings.find(x=>x.id===e.feeling)||{label:'?',emoji:'•'};
+    const tr=triggers.find(x=>x.id===e.trigger)||{label:'?'};
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
     const timeStr=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
 
     // Timeline dot
     doc.setFillColor(103,126,234);
-    doc.circle(20,y,1,'F');
-    if(i<recentMoments.length-1){
-      doc.setDrawColor(200);
-      doc.setLineWidth(0.5);
-      doc.line(20,y+1,20,y+6);
-    }
+    doc.circle(20,y+1,1.5,'F');
 
+    // Date and time
     doc.setFont(undefined,'bold');
     doc.setTextColor(0);
-    doc.text(dateStr+' '+timeStr,25,y+1);
+    doc.setFontSize(8);
+    doc.text(dateStr+' '+timeStr,25,y+2);
+
+    // Feeling
     doc.setFont(undefined,'normal');
-    doc.setTextColor(100);
-    doc.text(f.label,50,y+1);
+    doc.setTextColor(103,126,234);
+    doc.setFontSize(7);
+    doc.text(f.label,25,y+6);
     doc.setTextColor(0);
 
-    y+=7;
+    let currentY=y+6;
+
+    // Task name (cosa stava succedendo)
+    if(e.taskName){
+      currentY+=4;
+      doc.setFontSize(7);
+      doc.setTextColor(80);
+      const taskLines=doc.splitTextToSize('Stavo: '+e.taskName,150);
+      doc.text(taskLines[0]||'',25,currentY);
+      if(taskLines.length>1)currentY+=3;
+    }
+
+    // Strategy used
+    if(e.strategyUsed){
+      currentY+=4;
+      doc.setTextColor(125,211,168);
+      const stratSymbol=e.strategyCompleted?'✓':'→';
+      doc.text(stratSymbol+' '+e.strategyUsed,25,currentY);
+      doc.setTextColor(0);
+    }
+
+    // Notes
+    if(e.notes&&e.notes.trim()){
+      currentY+=4;
+      doc.setFontSize(7);
+      doc.setTextColor(100);
+      doc.setFont(undefined,'italic');
+      const noteLines=doc.splitTextToSize('"'+e.notes+'"',150);
+      noteLines.slice(0,2).forEach((line,idx)=>{
+        doc.text(line,25,currentY);
+        if(idx<noteLines.length-1)currentY+=3;
+      });
+      doc.setFont(undefined,'normal');
+      doc.setTextColor(0);
+    }
+
+    // Timeline connector line
+    const entryHeight=currentY-y+5;
+    if(i<recentMoments.length-1){
+      doc.setDrawColor(200);
+      doc.setLineWidth(0.3);
+      doc.line(20,y+3,20,y+entryHeight);
+    }
+
+    y+=entryHeight;
   });
   y+=5;
 }
