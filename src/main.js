@@ -959,7 +959,7 @@ if(includePatterns&&filteredHistory.length>0){
   y+=2;
 }
 
-// TIMELINE VISUAL
+// TIMELINE VISUAL - Completely rewritten
 console.log('Section check - Timeline:', includeHistory&&filteredHistory.length>0 ? 'RENDER' : 'SKIP (includeHistory='+includeHistory+', historyLen='+filteredHistory.length+')');
 if(includeHistory&&filteredHistory.length>0){
   if(y>240){
@@ -967,68 +967,73 @@ if(includeHistory&&filteredHistory.length>0){
     y=20;
   }
 
+  // Section header
   doc.setFillColor(240,245,250);
   doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
   doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.setTextColor(0,0,0);
   doc.text('TIMELINE DEI MOMENTI',18,y+5.5);
-  y+=12;
+  y+=15;
 
-  const recentMoments=filteredHistory.slice(0,15);
+  // Render timeline entries
+  const recentMoments=filteredHistory.slice(0,12);
+
   recentMoments.forEach((e,i)=>{
-    if(y>268){
+    // Check if need new page
+    if(y>255){
       doc.addPage();
       y=20;
     }
-    const f=feelings.find(x=>x.id===e.feeling)||{label:'Sconosciuto',emoji:'•'};
+
+    // Get data
+    const f=feelings.find(x=>x.id===e.feeling)||{label:'Sconosciuto'};
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
     const timeStr=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
 
-    // Timeline dot
+    // Draw timeline dot
     doc.setFillColor(103,126,234);
-    doc.circle(20,y+0.5,0.8,'F');
+    doc.circle(20,y+2,1.2,'F');
 
-    // Date and time - ALWAYS reset font before text
+    // Line 1: Date and time in bold
     doc.setFont('helvetica','bold');
-    doc.setFontSize(7);
+    doc.setFontSize(10);
     doc.setTextColor(0,0,0);
-    doc.text(dateStr+' '+timeStr,25,y+1.5);
+    doc.text(dateStr+' '+timeStr,26,y+3);
 
-    // Rest of content - build text parts
+    y+=6;
+
+    // Line 2: Content in normal
     const parts=[];
     parts.push(f.label);
     if(e.taskName) parts.push(e.taskName);
     if(e.strategyUsed){
-      const stratSymbol=e.strategyCompleted?'✓':'→';
-      parts.push(stratSymbol+' '+e.strategyUsed);
+      const symbol=e.strategyCompleted?'✓':'→';
+      parts.push(symbol+' '+e.strategyUsed);
     }
     if(e.notes&&e.notes.trim()) parts.push('"'+e.notes+'"');
 
-    // Join with separator
-    const fullText=parts.join(' - ');
+    const content=parts.join(' | ');
+    const maxLen=110;
+    const displayContent=content.length>maxLen ? content.substring(0,maxLen-3)+'...' : content;
 
-    // ALWAYS reset font before content text
     doc.setFont('helvetica','normal');
-    doc.setFontSize(7);
-    doc.setTextColor(70,70,70);
+    doc.setFontSize(10);
+    doc.setTextColor(80,80,80);
+    doc.text(displayContent,26,y+3);
 
-    // Truncate if too long (max ~120 chars for single line)
-    const maxLength=120;
-    const displayText=fullText.length>maxLength ? fullText.substring(0,maxLength-3)+'...' : fullText;
+    y+=8;
 
-    doc.text(displayText,55,y+1.5);
-
-    // Timeline connector line
+    // Connector line to next entry
     if(i<recentMoments.length-1){
-      doc.setDrawColor(230);
-      doc.setLineWidth(0.15);
-      doc.line(20,y+1,20,y+4);
+      doc.setDrawColor(220,220,220);
+      doc.setLineWidth(0.3);
+      doc.line(20,y-6,20,y-1);
     }
-
-    y+=4.5;
   });
-  y+=3;
+
+  y+=5;
 }
 
 // WEEK HEATMAP
