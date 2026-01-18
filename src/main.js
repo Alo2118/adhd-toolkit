@@ -852,16 +852,16 @@ if(filteredHistory.length>0){
   y+=22;
 }
 
-// PATTERNS SECTION
+// PATTERNS SECTION - Compact two-column format
 console.log('Section check - Patterns:', includePatterns&&filteredHistory.length>0 ? 'RENDER' : 'SKIP (includePatterns='+includePatterns+', historyLen='+filteredHistory.length+')');
 if(includePatterns&&filteredHistory.length>0){
   doc.setFillColor(240,245,250);
-  doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
+  doc.roundedRect(15,y,180,7,1,1,'F');
+  doc.setFontSize(11);
   doc.setFont(undefined,'bold');
-  doc.text('COME MI SONO SENTITO',18,y+5.5);
+  doc.text('I MIEI PATTERN',18,y+5);
   doc.setFont(undefined,'normal');
-  y+=12;
+  y+=10;
 
   const feelingCounts={};
   const triggerCounts={};
@@ -870,79 +870,89 @@ if(includePatterns&&filteredHistory.length>0){
     triggerCounts[e.trigger]=(triggerCounts[e.trigger]||0)+1;
   });
 
-  // Feelings bar chart
+  // Feelings - Left column
   const feelingData=Object.entries(feelingCounts)
     .sort((a,b)=>b[1]-a[1])
     .slice(0,5)
     .map(([id,count])=>{
       const f=feelings.find(x=>x.id===id)||{label:'?'};
-      return{
-        label:f.label,
-        value:count,
-        color:[103,126,234]
-      };
+      return{label:f.label,value:count};
     });
 
-  if(feelingData.length>0){
-    const maxFeeling=Math.max(...feelingData.map(d=>d.value));
-    drawBarChart(20,y,80,25,feelingData,maxFeeling);
-    y+=32;
-  }
-
-  // Top feeling text
-  const topFeeling=Object.entries(feelingCounts).sort((a,b)=>b[1]-a[1])[0];
-  if(topFeeling){
-    const f=feelings.find(x=>x.id===topFeeling[0]);
-    if(f){
-      doc.setFontSize(8);
-      doc.setTextColor(80);
-      const text='Più spesso: '+f.label.toLowerCase()+' ('+topFeeling[1]+(topFeeling[1]===1?' volta':' volte')+')';
-      doc.text(text,20,y);
-      y+=6;
-      doc.setTextColor(0);
-    }
-  }
-
-  // TRIGGERS SECTION
-  doc.setFillColor(240,245,250);
-  doc.roundedRect(15,y,180,8,1,1,'F');
-  doc.setFontSize(12);
-  doc.setFont(undefined,'bold');
-  doc.text('TRIGGER PRINCIPALI',18,y+5.5);
-  doc.setFont(undefined,'normal');
-  y+=12;
-
+  // Triggers - Right column
   const triggerData=Object.entries(triggerCounts)
     .sort((a,b)=>b[1]-a[1])
     .slice(0,5)
     .map(([id,count])=>{
       const tr=triggers.find(x=>x.id===id)||{label:'?'};
-      return{
-        label:tr.label,
-        value:count,
-        color:[232,168,124]
-      };
+      return{label:tr.label,value:count};
     });
 
-  if(triggerData.length>0){
-    const maxTrigger=Math.max(...triggerData.map(d=>d.value));
-    drawBarChart(20,y,80,25,triggerData,maxTrigger);
-    y+=32;
+  const maxFeeling=Math.max(...feelingData.map(d=>d.value),1);
+  const maxTrigger=Math.max(...triggerData.map(d=>d.value),1);
+
+  // Column headers
+  doc.setFontSize(8);
+  doc.setFont(undefined,'bold');
+  doc.setTextColor(103,126,234);
+  doc.text('Come mi sono sentito',20,y);
+  doc.setTextColor(232,168,124);
+  doc.text('Trigger principali',110,y);
+  doc.setTextColor(0);
+  y+=5;
+
+  // Render rows side by side
+  const maxRows=Math.max(feelingData.length,triggerData.length);
+  doc.setFontSize(7);
+  doc.setFont(undefined,'normal');
+
+  for(let i=0;i<maxRows;i++){
+    if(y>268){
+      doc.addPage();
+      y=20;
+    }
+
+    // Left column - Feelings
+    if(i<feelingData.length){
+      const item=feelingData[i];
+      const barWidth=Math.round((item.value/maxFeeling)*35);
+
+      doc.setTextColor(0);
+      const labelText=item.label.length>18?item.label.substring(0,16)+'..':item.label;
+      doc.text(labelText,20,y);
+
+      doc.setFillColor(103,126,234);
+      doc.roundedRect(60,y-2.5,barWidth,3,0.5,0.5,'F');
+
+      doc.setTextColor(80);
+      doc.setFontSize(6.5);
+      doc.text(item.value.toString(),62+barWidth,y);
+      doc.setFontSize(7);
+    }
+
+    // Right column - Triggers
+    if(i<triggerData.length){
+      const item=triggerData[i];
+      const barWidth=Math.round((item.value/maxTrigger)*35);
+
+      doc.setTextColor(0);
+      const labelText=item.label.length>18?item.label.substring(0,16)+'..':item.label;
+      doc.text(labelText,110,y);
+
+      doc.setFillColor(232,168,124);
+      doc.roundedRect(150,y-2.5,barWidth,3,0.5,0.5,'F');
+
+      doc.setTextColor(80);
+      doc.setFontSize(6.5);
+      doc.text(item.value.toString(),152+barWidth,y);
+      doc.setFontSize(7);
+    }
+
+    y+=4;
   }
 
-  // Top trigger text
-  const topTrigger=Object.entries(triggerCounts).sort((a,b)=>b[1]-a[1])[0];
-  if(topTrigger){
-    const tr=triggers.find(x=>x.id===topTrigger[0]);
-    if(tr){
-      doc.setFontSize(8);
-      doc.setTextColor(80);
-      const text='Più frequente: '+tr.label+' ('+topTrigger[1]+(topTrigger[1]===1?' volta':' volte')+')';
-      doc.text(text,20,y);
-      y+=6;
-      doc.setTextColor(0);
-    }
-  }
+  doc.setTextColor(0);
+  y+=2;
 }
 
 // TIMELINE VISUAL
