@@ -991,17 +991,13 @@ if(includeHistory&&filteredHistory.length>0){
     doc.setFillColor(103,126,234);
     doc.circle(20,y+0.5,0.8,'F');
 
-    // Date and time in bold
-    doc.setFont(undefined,'bold');
-    doc.setTextColor(0);
+    // Date and time in bold, 7pt, black
     doc.setFontSize(7);
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(0,0,0);
     doc.text(dateStr+' '+timeStr,25,y+1.5);
 
-    // Rest of info in normal font
-    doc.setFont(undefined,'normal');
-    doc.setFontSize(7);
-    doc.setTextColor(70);
-
+    // Build rest of text
     const parts=[f.label];
     if(e.taskName)parts.push(e.taskName);
     if(e.strategyUsed){
@@ -1011,10 +1007,20 @@ if(includeHistory&&filteredHistory.length>0){
     if(e.notes&&e.notes.trim())parts.push('"'+e.notes+'"');
 
     const restText=' • '+parts.join(' • ');
+
+    // Rest of info in normal font, 7pt, gray
+    doc.setFontSize(7);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(70,70,70);
+
     const lines=doc.splitTextToSize(restText,120);
 
     let currentY=y+1.5;
     lines.slice(0,2).forEach((line,idx)=>{
+      // Ensure font is set for each line
+      doc.setFontSize(7);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(70,70,70);
       doc.text(line,55,currentY);
       if(idx===0&&lines.length>1)currentY+=3.5;
     });
