@@ -870,23 +870,27 @@ if(includePatterns&&filteredHistory.length>0){
     triggerCounts[e.trigger]=(triggerCounts[e.trigger]||0)+1;
   });
 
-  // Feelings - Left column
+  // Feelings - Left column (filter out invalid data)
   const feelingData=Object.entries(feelingCounts)
     .sort((a,b)=>b[1]-a[1])
-    .slice(0,5)
     .map(([id,count])=>{
-      const f=feelings.find(x=>x.id===id)||{label:'?'};
+      const f=feelings.find(x=>x.id===id);
+      if(!f)return null;
       return{label:f.label,value:count};
-    });
+    })
+    .filter(x=>x!==null)
+    .slice(0,5);
 
-  // Triggers - Right column
+  // Triggers - Right column (filter out invalid data)
   const triggerData=Object.entries(triggerCounts)
     .sort((a,b)=>b[1]-a[1])
-    .slice(0,5)
     .map(([id,count])=>{
-      const tr=triggers.find(x=>x.id===id)||{label:'?'};
+      const tr=triggers.find(x=>x.id===id);
+      if(!tr)return null;
       return{label:tr.label,value:count};
-    });
+    })
+    .filter(x=>x!==null)
+    .slice(0,5);
 
   const maxFeeling=Math.max(...feelingData.map(d=>d.value),1);
   const maxTrigger=Math.max(...triggerData.map(d=>d.value),1);
@@ -978,7 +982,7 @@ if(includeHistory&&filteredHistory.length>0){
       doc.addPage();
       y=20;
     }
-    const f=feelings.find(x=>x.id===e.feeling)||{label:'?',emoji:'•'};
+    const f=feelings.find(x=>x.id===e.feeling)||{label:'Sconosciuto',emoji:'•'};
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});
     const timeStr=d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
