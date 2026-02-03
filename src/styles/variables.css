@@ -1,0 +1,82 @@
+:root {
+  /* Neon Calm - Dark (default) */
+  --bg-deep: #0f1222;
+  --bg-card: #151a2e;
+  --bg-elevated: #1b2140;
+  --accent-calm: #7bd3ff;
+  --accent-warm: #f2b38a;
+  --accent-soft: #b8a6ff;
+  --accent-green: #7dd3a8;
+  --accent-coral: #ff8c8c;
+  --text-primary: #f4f6ff;
+  --text-secondary: #c6cbe0;
+  --text-muted: #9aa2c2;
+
+  --border-subtle: rgba(123, 211, 255, 0.12);
+  --shadow-soft: 0 8px 30px rgba(8, 12, 30, 0.45);
+  --shadow-glow: 0 0 20px rgba(123, 211, 255, 0.18);
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 100px;
+  --safe-top: env(safe-area-inset-top, 20px);
+  --safe-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Neon Calm - Light */
+    --bg-deep: #f6f8ff;
+    --bg-card: #ffffff;
+    --bg-elevated: #eef2ff;
+    --accent-calm: #2fa3e6;
+    --accent-warm: #e88c5c;
+    --accent-soft: #7b6bff;
+    --accent-green: #2fbf89;
+    --accent-coral: #e76868;
+    --text-primary: #121528;
+    --text-secondary: #2f3757;
+    --text-muted: #586189;
+
+    --border-subtle: rgba(47, 163, 230, 0.15);
+    --shadow-soft: 0 10px 30px rgba(30, 40, 90, 0.12);
+    --shadow-glow: 0 0 18px rgba(47, 163, 230, 0.18);
+  }
+}
+
+:root[data-theme="light"],
+body[data-theme="light"] {
+  --bg-deep: #f6f8ff;
+  --bg-card: #ffffff;
+  --bg-elevated: #eef2ff;
+  --accent-calm: #2fa3e6;
+  --accent-warm: #e88c5c;
+  --accent-soft: #7b6bff;
+  --accent-green: #2fbf89;
+  --accent-coral: #e76868;
+  --text-primary: #121528;
+  --text-secondary: #2f3757;
+  --text-muted: #586189;
+  --border-subtle: rgba(47, 163, 230, 0.15);
+  --shadow-soft: 0 10px 30px rgba(30, 40, 90, 0.12);
+  --shadow-glow: 0 0 18px rgba(47, 163, 230, 0.18);
+}
+
+:root[data-theme="dark"],
+body[data-theme="dark"] {
+  --bg-deep: #0f1222;
+  --bg-card: #151a2e;
+  --bg-elevated: #1b2140;
+  --accent-calm: #7bd3ff;
+  --accent-warm: #f2b38a;
+  --accent-soft: #b8a6ff;
+  --accent-green: #7dd3a8;
+  --accent-coral: #ff8c8c;
+  --text-primary: #f4f6ff;
+  --text-secondary: #c6cbe0;
+  --text-muted: #9aa2c2;
+  --border-subtle: rgba(123, 211, 255, 0.12);
+  --shadow-soft: 0 8px 30px rgba(8, 12, 30, 0.45);
+  --shadow-glow: 0 0 20px rgba(123, 211, 255, 0.18);
+}

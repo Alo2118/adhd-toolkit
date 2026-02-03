@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-deep);
+    background-image:
+        radial-gradient(800px 400px at 10% -10%, rgba(123, 211, 255, 0.08), transparent 60%),
+        radial-gradient(600px 300px at 90% -10%, rgba(184, 166, 255, 0.08), transparent 60%);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+}
