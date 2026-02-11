@@ -1,35 +1,51 @@
 export const feelingScreen = `
-<div class="flow-header">
-    <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
-    <div class="progress-bar">
-        <div class="progress-fill" style="width: 33%"></div>
+<div class="wizard-screen wizard-feeling-step">
+    <div class="wizard-header">
+        <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
+        <div class="wizard-steps-indicator">
+            <div class="wizard-step-dot active"></div>
+            <div class="wizard-step-dot"></div>
+            <div class="wizard-step-dot"></div>
+        </div>
     </div>
-</div>
-<h2 class="step-title">Cosa provi?</h2>
-<div class="options-grid" id="feelingsGrid">
-    <!-- Populated by JS -->
+    <div class="wizard-body">
+        <h2 class="wizard-title">Cosa provi?</h2>
+        <p class="wizard-subtitle">Scegli quello che senti di più</p>
+        <div class="wizard-feelings-grid" id="feelingsGrid">
+            <!-- Populated by JS -->
+        </div>
+    </div>
 </div>
 `;
 
 export const triggerScreen = `
-<div class="flow-header">
-    <button class="back-btn" onclick="showScreen('feelingScreen')">←</button>
-    <div class="progress-bar">
-        <div class="progress-fill" style="width: 66%"></div>
+<div class="wizard-screen wizard-trigger-step">
+    <div class="wizard-header">
+        <button class="back-btn" id="triggerBackBtn" onclick="showScreen('feelingScreen')">←</button>
+        <div class="wizard-steps-indicator" id="triggerStepsIndicator">
+            <div class="wizard-step-dot completed"></div>
+            <div class="wizard-step-dot completed"></div>
+            <div class="wizard-step-dot active"></div>
+        </div>
     </div>
-</div>
-<h2 class="step-title">Cosa ti blocca?</h2>
-<div class="trigger-list" id="triggersList">
-    <!-- Populated by JS -->
+    <div class="wizard-body">
+        <h2 class="wizard-title">Cosa ti blocca?</h2>
+        <p class="wizard-subtitle" id="triggerSubtitle">Scegli quello che risuona di più</p>
+        <div class="wizard-trigger-list" id="triggersList">
+            <!-- Populated by JS -->
+        </div>
+    </div>
 </div>
 `;
 
 export const responseScreen = `
-<div class="response-screen">
-    <div class="flow-header">
+<div class="response-screen wizard-screen">
+    <div class="wizard-header">
         <button class="back-btn" onclick="showScreen('triggerScreen')">←</button>
-        <div class="progress-bar">
-            <div class="progress-fill" style="width: 100%"></div>
+        <div class="wizard-steps-indicator" id="responseStepsIndicator">
+            <div class="wizard-step-dot completed"></div>
+            <div class="wizard-step-dot completed"></div>
+            <div class="wizard-step-dot completed"></div>
         </div>
         <button class="close-btn" onclick="showScreen('homeScreen')" style="position:static">×</button>
     </div>

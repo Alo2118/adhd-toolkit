@@ -154,54 +154,77 @@ export function generatePDFReport(updateLastPrinted = false) {
         secondary: [186, 133, 255],
         green: [76, 209, 155],
         coral: [240, 114, 114],
+        orange: [242, 179, 138],
         dark: [24, 28, 45],
         muted: [110, 120, 140],
         light: [245, 247, 252],
-        border: [220, 225, 235]
+        border: [220, 225, 235],
+        white: [255, 255, 255]
     };
 
     const page = {
         w: doc.internal.pageSize.getWidth(),
         h: doc.internal.pageSize.getHeight(),
-        margin: 36
+        margin: 40
     };
 
+    let pageNumber = 1;
+
     function drawHeader() {
+        // Gradient-style header with rounded accent
         doc.setFillColor(...colors.primary);
-        doc.rect(0, 0, page.w, 110, 'F');
+        doc.rect(0, 0, page.w, 100, 'F');
+        // Accent stripe
+        doc.setFillColor(...colors.secondary);
+        doc.rect(0, 100, page.w, 4, 'F');
+
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(20);
-        doc.text('ADHD Toolkit - Report', page.margin, 40);
-        doc.setFontSize(11);
-        doc.text(`Creato il ${now.toLocaleDateString()}`, page.margin, 60);
-        doc.text(`Periodo: ${periodLabel}`, page.margin, 76);
+        doc.setFontSize(18);
+        doc.text('ADHD Toolkit', page.margin, 36);
+        doc.setFontSize(10);
+        doc.text('Report personale', page.margin, 52);
+        doc.setFontSize(9);
+        doc.text(`${periodLabel}  |  ${now.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}`, page.margin, 72);
         if (startLabel && endLabel) {
-            doc.text(`Da: ${startLabel} | A: ${endLabel}`, page.margin, 92);
+            doc.text(`Dal ${startLabel} al ${endLabel}`, page.margin, 86);
         }
         doc.setTextColor(...colors.dark);
-        return 130;
+        return 120;
+    }
+
+    function drawFooter() {
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(...colors.muted);
+            doc.text(`Pagina ${i} di ${totalPages}`, page.w / 2, page.h - 16, { align: 'center' });
+            doc.text('ADHD Toolkit | Generato automaticamente', page.margin, page.h - 16);
+        }
     }
 
     let y = drawHeader();
     const lineHeight = 14;
-    const pageBottom = page.h - page.margin;
+    const pageBottom = page.h - page.margin - 20;
 
     function addPageIfNeeded(extra = 0) {
         if (y + extra > pageBottom) {
             doc.addPage();
+            pageNumber++;
             y = drawHeader();
         }
     }
 
     function drawSectionTitle(title) {
         addPageIfNeeded(52);
-        doc.setFontSize(14);
+        y += 6;
+        // Section accent bar
+        doc.setFillColor(...colors.primary);
+        doc.roundedRect(page.margin, y - 4, 4, 22, 2, 2, 'F');
+        doc.setFontSize(13);
         doc.setTextColor(...colors.dark);
-        doc.text(title, page.margin, y);
-        doc.setDrawColor(...colors.primary);
-        doc.setLineWidth(2);
-        doc.line(page.margin, y + 6, page.margin + 120, y + 6);
-        y += 28;
+        doc.text(title, page.margin + 12, y + 12);
+        y += 30;
     }
 
     function wrapText(text, maxWidth) {
@@ -230,37 +253,81 @@ export function generatePDFReport(updateLastPrinted = false) {
         }
 
         const max = Math.max(...sliced.map(getValue), 1);
-        const labelWidth = 180;
-        const barWidth = page.w - page.margin * 2 - labelWidth - 40;
+        const labelWidth = 160;
+        const barWidth = page.w - page.margin * 2 - labelWidth - 50;
 
         sliced.forEach(item => {
-            addPageIfNeeded(24);
+            addPageIfNeeded(26);
             const label = getLabel(item);
             const value = getValue(item);
 
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(...colors.dark);
             const labelLines = wrapText(label, labelWidth - 8);
-            doc.text(labelLines, page.margin, y + 10);
+            doc.text(labelLines, page.margin + 4, y + 10);
 
             const barX = page.margin + labelWidth;
             const barY = y + 2 + (labelLines.length - 1) * 12;
-            const barH = 10;
+            const barH = 12;
             const barW = Math.round((value / max) * barWidth);
 
             doc.setFillColor(...colors.border);
-            doc.rect(barX, barY, barWidth, barH, 'F');
+            doc.roundedRect(barX, barY, barWidth, barH, 3, 3, 'F');
             doc.setFillColor(...color);
-            doc.rect(barX, barY, Math.max(8, barW), barH, 'F');
+            doc.roundedRect(barX, barY, Math.max(10, barW), barH, 3, 3, 'F');
 
-            doc.setTextColor(...colors.muted);
-            doc.text(String(value), barX + barWidth + 8, barY + 8);
-            y += 12 * labelLines.length + 10;
+            doc.setFontSize(9);
+            doc.setTextColor(...colors.dark);
+            doc.text(String(value), barX + barWidth + 8, barY + 9);
+            y += 12 * labelLines.length + 12;
         });
     }
 
+    function drawStatBox(x, boxW, value, label, color) {
+        doc.setFillColor(...colors.light);
+        doc.roundedRect(x, y, boxW, 50, 6, 6, 'F');
+        doc.setFillColor(...color);
+        doc.roundedRect(x, y, boxW, 4, 2, 2, 'F');
+        doc.setFontSize(16);
+        doc.setTextColor(...color);
+        doc.text(String(value), x + boxW / 2, y + 26, { align: 'center' });
+        doc.setFontSize(7);
+        doc.setTextColor(...colors.muted);
+        doc.text(label, x + boxW / 2, y + 40, { align: 'center' });
+    }
+
+    // ======== EXECUTIVE SUMMARY ========
+    {
+        const feelingCounts = {};
+        const triggerCounts = {};
+        history.forEach(item => {
+            if (item.feeling) feelingCounts[item.feeling] = (feelingCounts[item.feeling] || 0) + 1;
+            if (item.trigger) triggerCounts[item.trigger] = (triggerCounts[item.trigger] || 0) + 1;
+        });
+        const topF = Object.entries(feelingCounts).sort((a, b) => b[1] - a[1])[0];
+        const topT = Object.entries(triggerCounts).sort((a, b) => b[1] - a[1])[0];
+        const topFLabel = topF ? (feelings.find(f => f.id === topF[0])?.label || topF[0]) : '—';
+        const topTLabel = topT ? (allTriggers.find(t => t.id === topT[0])?.label || topT[0]) : '—';
+
+        const usableW = page.w - page.margin * 2;
+        const boxW = (usableW - 20) / 3;
+
+        drawStatBox(page.margin, boxW, history.length, 'Check-in', colors.primary);
+        drawStatBox(page.margin + boxW + 10, boxW, diary.length, 'Note diario', colors.secondary);
+        drawStatBox(page.margin + (boxW + 10) * 2, boxW, calculateStreak(history) + 'd', 'Streak', colors.green);
+        y += 60;
+
+        // Key insight line
+        if (topF) {
+            doc.setFontSize(9);
+            doc.setTextColor(...colors.muted);
+            doc.text(`Emozione dominante: ${topFLabel} (${topF[1]}x)  -  Trigger principale: ${topTLabel} (${topT?.[1] || 0}x)`, page.margin, y + 4);
+            y += 18;
+        }
+    }
+
     if (includePatterns) {
-        drawSectionTitle('Pattern (Emozioni e Trigger)');
+        drawSectionTitle('Emozioni e Trigger');
 
         const feelingCounts = {};
         const triggerCounts = {};
@@ -272,10 +339,10 @@ export function generatePDFReport(updateLastPrinted = false) {
         const topFeelings = Object.entries(feelingCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const topTriggers = Object.entries(triggerCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
-        doc.setFontSize(11);
+        doc.setFontSize(10);
         doc.setTextColor(...colors.dark);
-        doc.text('Emozioni più frequenti', page.margin, y);
-        y += 8;
+        doc.text('Emozioni più frequenti', page.margin + 4, y);
+        y += 10;
         drawBarChart(
             topFeelings,
             ([id]) => feelings.find(f => f.id === id)?.label || id,
@@ -284,19 +351,79 @@ export function generatePDFReport(updateLastPrinted = false) {
         );
 
         y += 8;
-        doc.text('Trigger più frequenti', page.margin, y);
-        y += 8;
+        doc.setFontSize(10);
+        doc.setTextColor(...colors.dark);
+        doc.text('Trigger più frequenti', page.margin + 4, y);
+        y += 10;
         drawBarChart(
             topTriggers,
             ([id]) => allTriggers.find(t => t.id === id)?.label || id,
             ([, count]) => count,
             colors.primary
         );
+
+        // Correlations
+        const corrs = buildCorrelations(history);
+        if (corrs.length > 0) {
+            y += 6;
+            doc.setFontSize(10);
+            doc.setTextColor(...colors.dark);
+            doc.text('Connessioni Emozione > Trigger', page.margin + 4, y);
+            y += 12;
+            corrs.slice(0, 5).forEach(c => {
+                addPageIfNeeded(18);
+                doc.setFontSize(9);
+                doc.setTextColor(...colors.muted);
+                doc.text(`${c.feelingLabel}  >  ${c.triggerLabel}`, page.margin + 8, y + 6);
+                doc.setTextColor(...colors.dark);
+                doc.text(`${c.count}x`, page.w - page.margin - 30, y + 6);
+                y += 16;
+            });
+        }
+
+        // Time patterns
+        const tp = analyzeTimePatterns(history);
+        if (tp.peakHour !== null) {
+            y += 6;
+            addPageIfNeeded(70);
+            doc.setFontSize(10);
+            doc.setTextColor(...colors.dark);
+            doc.text('Distribuzione temporale', page.margin + 4, y);
+            y += 14;
+
+            const periods = [
+                { label: 'Mattina (6-12)', value: tp.morning, color: colors.orange },
+                { label: 'Pomeriggio (12-18)', value: tp.afternoon, color: colors.primary },
+                { label: 'Sera (18-23)', value: tp.evening, color: colors.secondary },
+                { label: 'Notte (23-6)', value: tp.night, color: colors.dark }
+            ];
+            const maxP = Math.max(...periods.map(p => p.value), 1);
+            periods.forEach(p => {
+                addPageIfNeeded(20);
+                doc.setFontSize(8);
+                doc.setTextColor(...colors.muted);
+                doc.text(p.label, page.margin + 8, y + 8);
+                const barX = page.margin + 130;
+                const barW = page.w - page.margin * 2 - 180;
+                doc.setFillColor(...colors.border);
+                doc.roundedRect(barX, y, barW, 10, 3, 3, 'F');
+                doc.setFillColor(...p.color);
+                doc.roundedRect(barX, y, Math.max(6, (p.value / maxP) * barW), 10, 3, 3, 'F');
+                doc.setTextColor(...colors.dark);
+                doc.text(String(p.value), barX + barW + 8, y + 8);
+                y += 16;
+            });
+            doc.setFontSize(8);
+            doc.setTextColor(...colors.muted);
+            doc.text(`Orario di picco: ${formatHourRange(tp.peakHour)}`, page.margin + 8, y + 4);
+            y += 14;
+        }
+
         y += 6;
     }
 
     if (includeStrategies) {
-        drawSectionTitle('Strategie Applicate e Risultati');
+        drawSectionTitle('Strategie e Risultati');
 
         const strategyCounts = {};
         const strategyScores = {};
@@ -316,33 +443,53 @@ export function generatePDFReport(updateLastPrinted = false) {
         if (topStrategies.length === 0) {
             doc.setFontSize(10);
             doc.setTextColor(...colors.muted);
-            doc.text('Nessuna strategia registrata.', page.margin, y + 6);
+            doc.text('Nessuna strategia registrata.', page.margin + 4, y + 6);
             y += 18;
         } else {
-            topStrategies.forEach(([name, count]) => {
-                addPageIfNeeded(24);
+            // Table header
+            addPageIfNeeded(22);
+            doc.setFillColor(...colors.light);
+            doc.roundedRect(page.margin, y, page.w - page.margin * 2, 18, 4, 4, 'F');
+            doc.setFontSize(8);
+            doc.setTextColor(...colors.muted);
+            doc.text('Strategia', page.margin + 8, y + 12);
+            doc.text('Usi', page.w - page.margin - 110, y + 12);
+            doc.text('Valutazione', page.w - page.margin - 60, y + 12);
+            y += 22;
+
+            topStrategies.forEach(([name, count], idx) => {
+                addPageIfNeeded(28);
                 const feedbackCount = strategyFeedbackCounts[name] || 0;
                 const avg = feedbackCount > 0 ? (strategyScores[name] / feedbackCount) : 0;
                 const avgLabel = feedbackCount > 0 ? `${avg.toFixed(1)}/5` : '—';
 
-                doc.setFontSize(10);
-                doc.setTextColor(...colors.dark);
-                const nameLines = wrapText(name, 220);
-                doc.text(nameLines, page.margin, y + 8);
-                doc.setTextColor(...colors.muted);
-                doc.text(`${count} usi · media ${avgLabel} (${feedbackCount})`, page.margin + 240, y + 8);
-
-                const barX = page.margin;
-                const barY = y + 10 + (nameLines.length - 1) * 12;
-                const barW = page.w - page.margin * 2;
-                const barH = 6;
-                doc.setFillColor(...colors.border);
-                doc.rect(barX, barY, barW, barH, 'F');
-                if (feedbackCount > 0) {
-                    doc.setFillColor(...colors.green);
-                    doc.rect(barX, barY, Math.max(6, (avg / 5) * barW), barH, 'F');
+                if (idx % 2 === 0) {
+                    doc.setFillColor(248, 249, 254);
+                    doc.rect(page.margin, y - 2, page.w - page.margin * 2, 22, 'F');
                 }
-                y += 12 + nameLines.length * 12;
+
+                doc.setFontSize(9);
+                doc.setTextColor(...colors.dark);
+                const nameLines = wrapText(name, 300);
+                doc.text(nameLines[0], page.margin + 8, y + 10);
+                doc.setTextColor(...colors.muted);
+                doc.text(String(count), page.w - page.margin - 110, y + 10);
+
+                // Rating bar mini
+                if (feedbackCount > 0) {
+                    const rX = page.w - page.margin - 56;
+                    doc.setFillColor(...colors.border);
+                    doc.roundedRect(rX, y + 2, 40, 6, 2, 2, 'F');
+                    doc.setFillColor(...colors.green);
+                    doc.roundedRect(rX, y + 2, Math.max(4, (avg / 5) * 40), 6, 2, 2, 'F');
+                    doc.setFontSize(7);
+                    doc.text(avgLabel, rX + 42, y + 8);
+                } else {
+                    doc.setFontSize(7);
+                    doc.text('-', page.w - page.margin - 40, y + 10);
+                }
+
+                y += 22;
             });
         }
 
@@ -355,20 +502,23 @@ export function generatePDFReport(updateLastPrinted = false) {
         if (history.length === 0) {
             doc.setFontSize(10);
             doc.setTextColor(...colors.muted);
-            doc.text('Nessun momento registrato nel periodo selezionato.', page.margin, y + 6);
+            doc.text('Nessun momento registrato nel periodo selezionato.', page.margin + 4, y + 6);
             y += 18;
         } else {
-            const colDateWidth = 140;
-            const colTriggerWidth = 240;
+            const colDateWidth = 130;
+            const colTriggerWidth = 220;
             const colStrategyWidth = page.w - page.margin * 2 - colDateWidth - colTriggerWidth - 12;
 
             // Column headers
-            addPageIfNeeded(22);
-            doc.setFontSize(8);
+            addPageIfNeeded(24);
+            doc.setFillColor(...colors.light);
+            doc.roundedRect(page.margin, y - 2, page.w - page.margin * 2, 18, 4, 4, 'F');
+            doc.setFontSize(7);
             doc.setTextColor(...colors.muted);
-            doc.text('Trigger', page.margin + 6 + colDateWidth, y + 8);
-            doc.text('Strategia', page.margin + 6 + colDateWidth + colTriggerWidth, y + 8);
-            y += 14;
+            doc.text('DATA / EMOZIONE', page.margin + 8, y + 9);
+            doc.text('TRIGGER', page.margin + 8 + colDateWidth, y + 9);
+            doc.text('STRATEGIA', page.margin + 8 + colDateWidth + colTriggerWidth, y + 9);
+            y += 20;
 
             history.slice(0, 160).forEach((item, index) => {
                 addPageIfNeeded(20);
@@ -378,25 +528,25 @@ export function generatePDFReport(updateLastPrinted = false) {
                 const taskName = item.taskName || '';
                 const dateText = item.date ? formatDate(item.date) : '';
                 if (index % 2 === 0) {
-                    doc.setFillColor(...colors.light);
+                    doc.setFillColor(248, 249, 254);
                     doc.rect(page.margin, y - 2, page.w - page.margin * 2, 18, 'F');
                 }
 
-                const leftText = `${dateText} · ${feeling}`;
-                const triggerText = taskName ? `${trigger} · ${taskName}` : trigger;
-                const strategyText = strategy || '—';
+                const leftText = `${dateText} - ${feeling}`;
+                const triggerText = taskName ? `${trigger} - ${taskName}` : trigger;
+                const strategyText = strategy || '-';
 
                 doc.setTextColor(...colors.dark);
-                fitTextSingleLine(leftText, colDateWidth, 9, 7);
-                doc.text(leftText, page.margin + 6, y + 10);
+                fitTextSingleLine(leftText, colDateWidth, 8, 6);
+                doc.text(leftText, page.margin + 8, y + 10);
 
                 doc.setTextColor(...colors.muted);
-                fitTextSingleLine(triggerText, colTriggerWidth, 8, 7);
-                doc.text(triggerText, page.margin + 6 + colDateWidth, y + 10);
+                fitTextSingleLine(triggerText, colTriggerWidth, 8, 6);
+                doc.text(triggerText, page.margin + 8 + colDateWidth, y + 10);
 
                 doc.setTextColor(...colors.muted);
-                fitTextSingleLine(strategyText, colStrategyWidth, 8, 7);
-                doc.text(strategyText, page.margin + 6 + colDateWidth + colTriggerWidth, y + 10);
+                fitTextSingleLine(strategyText, colStrategyWidth, 8, 6);
+                doc.text(strategyText, page.margin + 8 + colDateWidth + colTriggerWidth, y + 10);
 
                 y += 18;
             });
@@ -411,30 +561,47 @@ export function generatePDFReport(updateLastPrinted = false) {
         if (diary.length === 0) {
             doc.setFontSize(10);
             doc.setTextColor(...colors.muted);
-            doc.text('Nessuna nota nel periodo selezionato.', page.margin, y + 6);
+            doc.text('Nessuna nota nel periodo selezionato.', page.margin + 4, y + 6);
             y += 18;
         } else {
             diary.slice(0, 40).forEach(item => {
-                addPageIfNeeded(36);
+                addPageIfNeeded(42);
                 const mood = diaryMoods.find(m => m.id === item.mood)?.label || item.mood || '';
                 const dateText = item.date ? formatDate(item.date) : '';
+
+                // Card background
+                const text = (item.text || '').trim();
+                const textLines = doc.splitTextToSize(text, page.w - page.margin * 2 - 24);
+                const cardH = 32 + textLines.length * 13;
+                addPageIfNeeded(cardH + 8);
+
+                doc.setFillColor(...colors.light);
+                doc.roundedRect(page.margin, y, page.w - page.margin * 2, cardH, 6, 6, 'F');
+
+                // Header
                 doc.setFontSize(9);
                 doc.setTextColor(...colors.dark);
-                const headerLines = wrapText(`${dateText} · ${mood}`, page.w - page.margin * 2 - 10);
-                doc.text(headerLines, page.margin, y + 10);
-                y += 12 * headerLines.length;
-                const text = (item.text || '').trim();
-                const lines = doc.splitTextToSize(text, page.w - page.margin * 2);
-                lines.forEach(line => {
-                    addPageIfNeeded(16);
+                doc.text(mood, page.margin + 10, y + 14);
+                doc.setFontSize(7);
+                doc.setTextColor(...colors.muted);
+                doc.text(dateText, page.w - page.margin - 10, y + 14, { align: 'right' });
+
+                // Body
+                let ty = y + 26;
+                textLines.forEach(line => {
+                    doc.setFontSize(8);
                     doc.setTextColor(...colors.muted);
-                    doc.text(line, page.margin, y + 10);
-                    y += 14;
+                    doc.text(line, page.margin + 10, ty);
+                    ty += 13;
                 });
-                y += 10;
+
+                y += cardH + 8;
             });
         }
     }
+
+    // Draw footer with page numbers
+    drawFooter();
 
     doc.save('adhd-report.pdf');
     if (updateLastPrinted) {
@@ -448,25 +615,67 @@ export function generatePDFReport(updateLastPrinted = false) {
 
 export function renderInsights() {
     const container = document.getElementById('insightsContent');
+    const summaryStrip = document.getElementById('insightsSummary');
     if (!container) return;
 
     const history = Array.isArray(state.history) ? state.history : [];
     const diary = Array.isArray(state.diary) ? state.diary : [];
 
     if (history.length === 0 && diary.length === 0) {
+        if (summaryStrip) summaryStrip.innerHTML = '';
         container.innerHTML = `
             <div class="empty-state">
                 <div class="emoji">📊</div>
                 <h3>Nessun dato disponibile</h3>
                 <p>Usa l'app per registrare momenti o note e vedere i tuoi pattern.</p>
             </div>
-            <button class="generate-report-btn" onclick="showScreen('reportScreen')">📄 Crea report PDF</button>
         `;
         return;
     }
 
-    const last7Days = getItemsWithinDays(history, 7).length;
-    const last30Days = getItemsWithinDays(history, 30).length;
+    const last7Days = getItemsWithinDays(history, 7);
+    const last30Days = getItemsWithinDays(history, 30);
+    const prev7Days = history.filter(i => {
+        if (!i.date) return false;
+        const d = new Date(i.date);
+        const now = Date.now();
+        return d >= new Date(now - 14 * 86400000) && d < new Date(now - 7 * 86400000);
+    });
+
+    // Trend calculation
+    const trend7 = prev7Days.length > 0
+        ? Math.round(((last7Days.length - prev7Days.length) / prev7Days.length) * 100)
+        : null;
+    const trendIcon = trend7 === null ? '➖' : trend7 > 0 ? '📈' : trend7 < 0 ? '📉' : '➖';
+    const trendLabel = trend7 === null ? 'Primo periodo'
+        : trend7 > 0 ? `+${trend7}% vs settimana prima`
+        : trend7 < 0 ? `${trend7}% vs settimana prima`
+        : 'Stabile vs settimana prima';
+
+    // Streak calculation
+    const streak = calculateStreak(history);
+
+    // Summary strip
+    if (summaryStrip) {
+        summaryStrip.innerHTML = `
+            <div class="summary-stat">
+                <span class="summary-stat-value">${history.length}</span>
+                <span class="summary-stat-label">Totale</span>
+            </div>
+            <div class="summary-stat">
+                <span class="summary-stat-value">${last7Days.length}</span>
+                <span class="summary-stat-label">7 giorni</span>
+            </div>
+            <div class="summary-stat">
+                <span class="summary-stat-value">${streak}🔥</span>
+                <span class="summary-stat-label">Streak</span>
+            </div>
+            <div class="summary-stat">
+                <span class="summary-stat-value">${trendIcon}</span>
+                <span class="summary-stat-label">${trend7 !== null ? (trend7 >= 0 ? '+' + trend7 + '%' : trend7 + '%') : '—'}</span>
+            </div>
+        `;
+    }
 
     const feelingCounts = countBy(history, item => item.feeling);
     const triggerCounts = countBy(history, item => item.trigger);
@@ -476,57 +685,290 @@ export function renderInsights() {
     });
     const { totals: strategyTotals, counts: strategyRatingCounts } = collectStrategyRatings(history);
 
-    const topFeeling = getTopEntry(feelingCounts);
-    const topTrigger = getTopEntry(triggerCounts);
-    const topStrategy = getTopEntry(strategyCounts);
+    // Top entries
+    const topFeelings = Object.entries(feelingCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topTriggers = Object.entries(triggerCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const topStrategies = Object.entries(strategyCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
-    const topFeelingLabel = topFeeling
-        ? feelings.find(f => f.id === topFeeling.key)?.label || topFeeling.key
-        : '—';
-    const topTriggerLabel = topTrigger
-        ? allTriggers.find(t => t.id === topTrigger.key)?.label || topTrigger.key
-        : '—';
+    // Feeling-Trigger correlations
+    const correlations = buildCorrelations(history);
 
-    const topStrategyLabel = topStrategy ? topStrategy.key : '—';
-    const topStrategyCount = topStrategy ? topStrategy.value : 0;
-    const topStrategyFeedback = topStrategy ? (strategyRatingCounts[topStrategy.key] || 0) : 0;
-    const topStrategyAvg = topStrategyFeedback > 0
-        ? (strategyTotals[topStrategy.key] / topStrategyFeedback)
-        : 0;
+    // Time patterns
+    const timePatterns = analyzeTimePatterns(history);
 
+    // Mood from diary
     const moodCounts = countBy(diary, item => item.mood);
     const topMood = getTopEntry(moodCounts);
     const topMoodLabel = topMood
         ? diaryMoods.find(m => m.id === topMood.key)?.label || topMood.key
         : '—';
 
-    container.innerHTML = `
-        ${insightCard('📌', 'Momenti registrati', `
-            Totale: <span class="insight-highlight">${history.length}</span><br>
-            Ultimi 7 giorni: <span class="insight-highlight">${last7Days}</span><br>
-            Ultimi 30 giorni: <span class="insight-highlight">${last30Days}</span>
-        `)}
-        ${insightCard('💭', 'Emozione più frequente', `
-            <span class="insight-highlight">${topFeelingLabel}</span>
-            ${topFeeling ? `(${topFeeling.value} volte)` : ''}
-        `)}
-        ${insightCard('🎯', 'Trigger più frequente', `
-            <span class="insight-highlight">${topTriggerLabel}</span>
-            ${topTrigger ? `(${topTrigger.value} volte)` : ''}
-        `)}
-        ${insightCard('🧠', 'Strategia più usata', `
-            <span class="insight-highlight">${topStrategyLabel}</span>
-            ${topStrategy ? `(${topStrategy.value} usi)` : ''}<br>
-            ${topStrategyFeedback > 0
-                ? `Valutazione media: <span class="insight-highlight">${topStrategyAvg.toFixed(1)}/5</span>`
-                : 'Nessun feedback ancora'}
-        `)}
-        ${diary.length > 0 ? insightCard('📝', 'Diario', `
-            Note totali: <span class="insight-highlight">${diary.length}</span><br>
-            Mood più comune: <span class="insight-highlight">${topMoodLabel}</span>
-        `) : ''}
-        <button class="generate-report-btn" onclick="showScreen('reportScreen')">📄 Crea report PDF</button>
+    let html = '';
+
+    // --- Trend Card ---
+    html += `
+        <div class="insight-card-v2 insight-trend">
+            <div class="insight-card-icon">${trendIcon}</div>
+            <div class="insight-card-body">
+                <div class="insight-card-label">Trend settimanale</div>
+                <div class="insight-card-value">${last7Days.length} check-in questa settimana</div>
+                <div class="insight-card-meta">${trendLabel}</div>
+            </div>
+        </div>
     `;
+
+    // --- Feelings Distribution ---
+    if (topFeelings.length > 0) {
+        const maxFeeling = topFeelings[0][1];
+        html += `
+            <div class="insight-section">
+                <h3 class="insight-section-title">💭 Emozioni più frequenti</h3>
+                <div class="insight-bars">
+                    ${topFeelings.map(([id, count]) => {
+                        const f = feelings.find(ff => ff.id === id);
+                        const pct = Math.round((count / maxFeeling) * 100);
+                        return `
+                            <div class="insight-bar-row">
+                                <span class="insight-bar-emoji">${f?.emoji || '❓'}</span>
+                                <span class="insight-bar-label">${f?.label || id}</span>
+                                <div class="insight-bar-track">
+                                    <div class="insight-bar-fill insight-bar-feeling" style="width:${pct}%"></div>
+                                </div>
+                                <span class="insight-bar-count">${count}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- Triggers Distribution ---
+    if (topTriggers.length > 0) {
+        const maxTrigger = topTriggers[0][1];
+        html += `
+            <div class="insight-section">
+                <h3 class="insight-section-title">🎯 Trigger principali</h3>
+                <div class="insight-bars">
+                    ${topTriggers.map(([id, count]) => {
+                        const t = allTriggers.find(tt => tt.id === id);
+                        const pct = Math.round((count / maxTrigger) * 100);
+                        return `
+                            <div class="insight-bar-row">
+                                <span class="insight-bar-emoji">${t?.emoji || '📌'}</span>
+                                <span class="insight-bar-label">${t?.label || id}</span>
+                                <div class="insight-bar-track">
+                                    <div class="insight-bar-fill insight-bar-trigger" style="width:${pct}%"></div>
+                                </div>
+                                <span class="insight-bar-count">${count}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- Strategy Effectiveness ---
+    if (topStrategies.length > 0) {
+        html += `
+            <div class="insight-section">
+                <h3 class="insight-section-title">🧠 Strategie più efficaci</h3>
+                <div class="insight-strategy-list">
+                    ${topStrategies.map(([name, count]) => {
+                        const fc = strategyRatingCounts[name] || 0;
+                        const avg = fc > 0 ? (strategyTotals[name] / fc) : 0;
+                        const stars = fc > 0 ? renderStars(avg) : '<span class="no-rating">Nessun feedback</span>';
+                        return `
+                            <div class="insight-strategy-item">
+                                <div class="insight-strategy-name">${name}</div>
+                                <div class="insight-strategy-meta">
+                                    <span class="insight-strategy-uses">${count} usi</span>
+                                    <span class="insight-strategy-rating">${stars}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- Correlations ---
+    if (correlations.length > 0) {
+        html += `
+            <div class="insight-section">
+                <h3 class="insight-section-title">🔗 Connessioni Emozione → Trigger</h3>
+                <div class="insight-correlations">
+                    ${correlations.slice(0, 4).map(c => `
+                        <div class="insight-correlation-card">
+                            <span class="corr-feeling">${c.feelingEmoji} ${c.feelingLabel}</span>
+                            <span class="corr-arrow">→</span>
+                            <span class="corr-trigger">${c.triggerLabel}</span>
+                            <span class="corr-count">${c.count}×</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- Time Patterns ---
+    if (timePatterns.peakHour !== null) {
+        html += `
+            <div class="insight-section">
+                <h3 class="insight-section-title">🕐 Quando succede di più</h3>
+                <div class="insight-time-grid">
+                    <div class="insight-time-card ${timePatterns.peakPeriod === 'mattina' ? 'active' : ''}">
+                        <span class="time-icon">🌅</span>
+                        <span class="time-label">Mattina</span>
+                        <span class="time-count">${timePatterns.morning}</span>
+                    </div>
+                    <div class="insight-time-card ${timePatterns.peakPeriod === 'pomeriggio' ? 'active' : ''}">
+                        <span class="time-icon">☀️</span>
+                        <span class="time-label">Pomeriggio</span>
+                        <span class="time-count">${timePatterns.afternoon}</span>
+                    </div>
+                    <div class="insight-time-card ${timePatterns.peakPeriod === 'sera' ? 'active' : ''}">
+                        <span class="time-icon">🌙</span>
+                        <span class="time-label">Sera</span>
+                        <span class="time-count">${timePatterns.evening}</span>
+                    </div>
+                    <div class="insight-time-card ${timePatterns.peakPeriod === 'notte' ? 'active' : ''}">
+                        <span class="time-icon">🌑</span>
+                        <span class="time-label">Notte</span>
+                        <span class="time-count">${timePatterns.night}</span>
+                    </div>
+                </div>
+                <p class="insight-time-summary">Orario di picco: <strong>${formatHourRange(timePatterns.peakHour)}</strong></p>
+            </div>
+        `;
+    }
+
+    // --- Diary Summary ---
+    if (diary.length > 0) {
+        html += `
+            <div class="insight-card-v2 insight-diary-summary">
+                <div class="insight-card-icon">📝</div>
+                <div class="insight-card-body">
+                    <div class="insight-card-label">Diario emotivo</div>
+                    <div class="insight-card-value">${diary.length} note scritte</div>
+                    <div class="insight-card-meta">Mood prevalente: ${topMoodLabel}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+export function renderReportPreview() {
+    const container = document.getElementById('reportPreview');
+    if (!container) return;
+    const history = Array.isArray(state.history) ? state.history : [];
+    const diary = Array.isArray(state.diary) ? state.diary : [];
+    const topFeeling = getTopEntry(countBy(history, i => i.feeling));
+    const fLabel = topFeeling ? (feelings.find(f => f.id === topFeeling.key)?.label || '—') : '—';
+    const fEmoji = topFeeling ? (feelings.find(f => f.id === topFeeling.key)?.emoji || '') : '';
+    container.innerHTML = `
+        <div class="report-preview-title">Anteprima dati</div>
+        <div class="report-preview-stats">
+            <div class="report-preview-stat">
+                <span class="rps-value">${history.length}</span>
+                <span class="rps-label">Check-in</span>
+            </div>
+            <div class="report-preview-stat">
+                <span class="rps-value">${diary.length}</span>
+                <span class="rps-label">Note</span>
+            </div>
+            <div class="report-preview-stat">
+                <span class="rps-value">${fEmoji}</span>
+                <span class="rps-label">${fLabel}</span>
+            </div>
+        </div>
+    `;
+}
+
+// --- Helper functions for insights ---
+
+function calculateStreak(history) {
+    if (!history || history.length === 0) return 0;
+    const days = new Set();
+    history.forEach(item => {
+        if (item.date) {
+            const d = new Date(item.date);
+            days.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+        }
+    });
+    let streak = 0;
+    let current = new Date();
+    current.setHours(0, 0, 0, 0);
+    while (true) {
+        const key = `${current.getFullYear()}-${current.getMonth()}-${current.getDate()}`;
+        if (days.has(key)) {
+            streak++;
+            current = new Date(current.getTime() - 86400000);
+        } else {
+            break;
+        }
+    }
+    return streak;
+}
+
+function buildCorrelations(history) {
+    const pairs = {};
+    (history || []).forEach(item => {
+        if (!item.feeling || !item.trigger) return;
+        const key = `${item.feeling}__${item.trigger}`;
+        pairs[key] = (pairs[key] || 0) + 1;
+    });
+    return Object.entries(pairs)
+        .sort((a, b) => b[1] - a[1])
+        .map(([key, count]) => {
+            const [fId, tId] = key.split('__');
+            const f = feelings.find(ff => ff.id === fId);
+            const t = allTriggers.find(tt => tt.id === tId);
+            return {
+                feelingEmoji: f?.emoji || '❓',
+                feelingLabel: f?.label || fId,
+                triggerLabel: t?.label || tId,
+                count
+            };
+        });
+}
+
+function analyzeTimePatterns(history) {
+    const hours = new Array(24).fill(0);
+    let counted = 0;
+    (history || []).forEach(item => {
+        if (!item.date) return;
+        const h = new Date(item.date).getHours();
+        hours[h]++;
+        counted++;
+    });
+    if (counted === 0) return { peakHour: null, morning: 0, afternoon: 0, evening: 0, night: 0, peakPeriod: null };
+
+    const morning = hours.slice(6, 12).reduce((a, b) => a + b, 0);
+    const afternoon = hours.slice(12, 18).reduce((a, b) => a + b, 0);
+    const evening = hours.slice(18, 23).reduce((a, b) => a + b, 0);
+    const night = hours.slice(0, 6).reduce((a, b) => a + b, 0) + (hours[23] || 0);
+
+    const peakHour = hours.indexOf(Math.max(...hours));
+    const periods = { mattina: morning, pomeriggio: afternoon, sera: evening, notte: night };
+    const peakPeriod = Object.entries(periods).sort((a, b) => b[1] - a[1])[0][0];
+
+    return { peakHour, morning, afternoon, evening, night, peakPeriod };
+}
+
+function formatHourRange(hour) {
+    return `${String(hour).padStart(2, '0')}:00 - ${String((hour + 1) % 24).padStart(2, '0')}:00`;
+}
+
+function renderStars(avg) {
+    const full = Math.floor(avg);
+    const half = avg - full >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty) + ` <span class="star-value">${avg.toFixed(1)}</span>`;
 }
 
 export function setHistoryPeriod(period) {
@@ -544,7 +986,7 @@ export function setHistoryFeelingFilter(feelingId) {
 
 export function selectReportPeriod(days) {
     if (days === 'last' && !state.report?.lastPrintedAt) return;
-    document.querySelectorAll('.report-period-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.report-period-btn, .report-period-chip').forEach(b => b.classList.remove('selected'));
     const btn = event?.target;
     if (btn) btn.classList.add('selected');
     if (days === 0) {
@@ -562,7 +1004,7 @@ export function toggleCheckbox(id) {
     const box = document.getElementById(id);
     if (!box) return;
     box.checked = !box.checked;
-    const wrapper = box.closest('.report-checkbox');
+    const wrapper = box.closest('.report-checkbox, .report-toggle');
     if (wrapper) wrapper.classList.toggle('checked', box.checked);
 }
 
@@ -574,7 +1016,7 @@ export function renderReportMeta() {
         info.textContent = 'Nessuna stampa precedente. Stampa una volta per abilitarla.';
         if (reportPeriod.type === 'last') {
             reportPeriod = { type: 'all', value: 0 };
-            document.querySelectorAll('.report-period-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.report-period-btn, .report-period-chip').forEach(b => b.classList.remove('selected'));
             document.getElementById('reportPeriodAll')?.classList.add('selected');
         }
     } else {

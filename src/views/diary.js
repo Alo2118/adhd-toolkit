@@ -59,69 +59,85 @@ export const diaryViews = {
     `,
 
     insights: `
-    <div class="diary-screen">
+    <div class="diary-screen insights-screen-v2">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-        <div class="insights-header">
-          <h1 class="insights-title">📊 I tuoi pattern</h1>
-          <p class="insights-subtitle">Cosa abbiamo imparato insieme</p>
+        <div class="insights-hero">
+          <div class="insights-hero-icon">📊</div>
+          <div>
+            <h1 class="insights-hero-title">I tuoi pattern</h1>
+            <p class="insights-hero-sub">Cosa abbiamo imparato insieme</p>
+          </div>
         </div>
+        <div class="insights-summary-strip" id="insightsSummary"></div>
         <div id="insightsContent"></div>
+        <button class="generate-report-btn" onclick="showScreen('reportScreen')">📄 Crea report PDF</button>
     </div>
     `,
 
     report: `
-    <div class="diary-screen report-screen">
+    <div class="diary-screen report-screen-v2">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('insightsScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-        <div class="insights-header report-hero">
-          <div class="report-hero-icon">📖</div>
+        <div class="report-hero-v2">
+          <div class="report-hero-icon-v2">📖</div>
           <div>
-            <h1 class="insights-title">Il mio percorso ADHD</h1>
-            <p class="insights-subtitle">Crea un PDF chiaro e condivisibile</p>
+            <h1 class="report-hero-title">Il mio percorso</h1>
+            <p class="report-hero-sub">Un PDF chiaro e condivisibile</p>
           </div>
         </div>
-        <div class="report-card">
-          <label class="report-option-label">Periodo</label>
-          <div class="report-period">
-            <button class="report-period-btn selected" id="reportPeriod7" onclick="selectReportPeriod(7)">7 giorni</button>
-            <button class="report-period-btn" id="reportPeriod30" onclick="selectReportPeriod(30)">30 giorni</button>
-            <button class="report-period-btn" id="reportPeriodAll" onclick="selectReportPeriod(0)">Tutto</button>
-            <button class="report-period-btn" id="reportPeriodLast" onclick="selectReportPeriod('last')">Dall'ultima stampa</button>
+        <div class="report-preview-card" id="reportPreview"></div>
+        <div class="report-card-v2">
+          <label class="report-option-label">📅 Periodo</label>
+          <div class="report-period-v2">
+            <button class="report-period-chip selected" id="reportPeriod7" onclick="selectReportPeriod(7)">7 giorni</button>
+            <button class="report-period-chip" id="reportPeriod30" onclick="selectReportPeriod(30)">30 giorni</button>
+            <button class="report-period-chip" id="reportPeriodAll" onclick="selectReportPeriod(0)">Tutto</button>
+            <button class="report-period-chip" id="reportPeriodLast" onclick="selectReportPeriod('last')">Dall'ultima stampa</button>
           </div>
           <div class="report-last-print" id="reportLastPrint"></div>
         </div>
-        <div class="report-card">
-          <label class="report-option-label">Cosa vuoi condividere?</label>
-          <label class="report-checkbox checked" onclick="toggleCheckbox('reportIncludePatterns')">
+        <div class="report-card-v2">
+          <label class="report-option-label">📋 Contenuti del report</label>
+          <label class="report-toggle checked" onclick="toggleCheckbox('reportIncludePatterns')">
             <input type="checkbox" id="reportIncludePatterns" checked onclick="event.stopPropagation()">
-            <span class="report-checkbox-label">I miei pattern e trigger</span>
+            <span class="report-toggle-track"><span class="report-toggle-thumb"></span></span>
+            <span class="report-toggle-label">Pattern e trigger</span>
           </label>
-          <label class="report-checkbox checked" onclick="toggleCheckbox('reportIncludeHistory')">
+          <label class="report-toggle checked" onclick="toggleCheckbox('reportIncludeHistory')">
             <input type="checkbox" id="reportIncludeHistory" checked onclick="event.stopPropagation()">
-            <span class="report-checkbox-label">Momenti in cui ho chiesto aiuto</span>
+            <span class="report-toggle-track"><span class="report-toggle-thumb"></span></span>
+            <span class="report-toggle-label">Momenti registrati</span>
           </label>
-          <label class="report-checkbox" onclick="toggleCheckbox('reportIncludeDiary')">
+          <label class="report-toggle" onclick="toggleCheckbox('reportIncludeDiary')">
             <input type="checkbox" id="reportIncludeDiary" onclick="event.stopPropagation()">
-            <span class="report-checkbox-label">Le mie note personali</span>
+            <span class="report-toggle-track"><span class="report-toggle-thumb"></span></span>
+            <span class="report-toggle-label">Note personali</span>
           </label>
-          <label class="report-checkbox checked" onclick="toggleCheckbox('reportIncludeStrategies')">
+          <label class="report-toggle checked" onclick="toggleCheckbox('reportIncludeStrategies')">
             <input type="checkbox" id="reportIncludeStrategies" checked onclick="event.stopPropagation()">
-            <span class="report-checkbox-label">Cosa funziona per me</span>
+            <span class="report-toggle-track"><span class="report-toggle-thumb"></span></span>
+            <span class="report-toggle-label">Strategie efficaci</span>
           </label>
         </div>
-        <div class="report-card report-actions">
-          <button class="report-download-btn" onclick="generatePDFReport(false)">
-          <span>📥</span>
-          <span>Scarica PDF</span>
+        <div class="report-actions-v2">
+          <button class="report-download-btn-v2" onclick="generatePDFReport(false)">
+            <span class="report-btn-icon">📥</span>
+            <div class="report-btn-text">
+              <span class="report-btn-title">Scarica PDF</span>
+              <span class="report-btn-desc">Salva il report sul dispositivo</span>
+            </div>
           </button>
-          <button class="report-download-btn report-download-secondary" onclick="generatePDFReport(true)">
-          <span>✅</span>
-          <span>Scarica PDF e aggiorna data stampa</span>
+          <button class="report-download-btn-v2 report-btn-secondary" onclick="generatePDFReport(true)">
+            <span class="report-btn-icon">✅</span>
+            <div class="report-btn-text">
+              <span class="report-btn-title">Scarica e aggiorna data</span>
+              <span class="report-btn-desc">Per tracciare cosa hai già stampato</span>
+            </div>
           </button>
         </div>
     </div>

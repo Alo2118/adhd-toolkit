@@ -19,9 +19,9 @@ export const homeScreen = `
     <button class="home-cta-card" onclick="startFlow()">
         <div class="home-cta-text">
             <div class="home-cta-title">Ho bisogno di aiuto</div>
-            <div class="home-cta-subtitle">Trova strategie per questo momento</div>
+            <div class="home-cta-subtitle">Percorso guidato per capire cosa succede</div>
         </div>
-        <div class="home-cta-icon">💪</div>
+        <div class="home-cta-icon">🧭</div>
     </button>
 
     <div class="home-garden-card" onclick="openGarden()">

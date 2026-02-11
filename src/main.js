@@ -3,19 +3,21 @@ import { triggerCategories } from './data/triggers.js';
 import { contextStrategies, strategyExplanations } from './data/strategies.js';
 import { responses } from './data/responses.js';
 import { guidedActions, homeMotivations } from './data/content.js';
+import { bodySignals, contextOptions, durationOptions, intensityEmojis, wizardMessages, intensityUrgency } from './data/wizard.js';
 import { state, initState, persist } from './utils/state.js';
 import { loadState, exportData, importData, clearAllData } from './utils/storage.js';
 import { formatDate, vibrate } from './utils/helpers.js';
 import { addGardenPoints, updateGardenBadge } from './components/garden.js';
 import { renderActiveTasks, saveTask, updateTask, toggleTaskComplete, deleteTask, toggleRecurringSection, updateRecurringDaysVisibility, updateNextOccurrencePreview, getRecurringSettingsFromUI, setTaskStatusFilter } from './components/tasks.js';
 import { requestNotificationPermission, updateNotificationStatusUI, updateNotificationDays, disableNotifications, checkAndScheduleNotifications } from './utils/notifications.js';
-import { renderHistory, renderDiaryEntries, generatePDFReport, renderInsights, renderReportMeta, setHistoryPeriod, setHistoryFeelingFilter, selectReportPeriod, toggleCheckbox } from './components/history.js';
+import { renderHistory, renderDiaryEntries, generatePDFReport, renderInsights, renderReportMeta, renderReportPreview, setHistoryPeriod, setHistoryFeelingFilter, selectReportPeriod, toggleCheckbox } from './components/history.js';
 import { initTimerScreen, startTimer, stopTimer, completeTimerReward, startBreathing, initGrounding, updateGroundingStep, stopBreathing, resetTimer, saveDump, completeMicroStep, completeChecklist, saveGuidedAnswer, executeStrategyFromDetail, completeStrategyFromDetail } from './components/tools.js';
 
 // Views
 import { legalScreen } from './views/legal.js';
 import { homeScreen } from './views/home.js';
 import { feelingScreen, triggerScreen, responseScreen } from './views/flow.js';
+import { wizardViews } from './views/wizard.js';
 import { toolsViews, guidedViews } from './views/tools.js';
 import { diaryViews } from './views/diary.js';
 import { tasksViews } from './views/tasks.js';
@@ -29,6 +31,14 @@ const routes = {
     feelingScreen: feelingScreen,
     triggerScreen: triggerScreen,
     responseScreen: responseScreen,
+
+    // Wizard
+    wizardWelcomeScreen: wizardViews.welcome,
+    wizardBodyScreen: wizardViews.body,
+    wizardIntensityScreen: wizardViews.intensity,
+    wizardFeelingScreen: wizardViews.feeling,
+    wizardContextScreen: wizardViews.context,
+    wizardSummaryScreen: wizardViews.summary,
 
     // Tools
     timerScreen: toolsViews.timer,
@@ -91,6 +101,7 @@ function handlePostRender(screenId) {
     else if (screenId === 'legalScreen') loadLegalTerms();
     else if (screenId === 'feelingScreen') renderFeelings();
     else if (screenId === 'triggerScreen') renderTriggers();
+
     else if (screenId === 'responseScreen') generateStrategy(); // Re-run logic to populate
     else if (screenId === 'activeTasksScreen') renderActiveTasks();
     else if (screenId === 'historyScreen') renderHistory();
@@ -102,7 +113,7 @@ function handlePostRender(screenId) {
     }
     else if (screenId === 'diaryDetailScreen') renderDiaryDetail();
     else if (screenId === 'insightsScreen') renderInsights();
-    else if (screenId === 'reportScreen') renderReportMeta();
+    else if (screenId === 'reportScreen') { renderReportMeta(); renderReportPreview(); }
     else if (screenId === 'groundScreen') initGrounding(); // Auto-start
     else if (screenId === 'timerScreen') initTimerScreen(2);
     else if (screenId === 'settingsScreen') {
@@ -110,6 +121,14 @@ function handlePostRender(screenId) {
         updateNotificationStatusUI();
         syncUserNameInput();
     }
+    // Wizard post-render
+    else if (screenId === 'wizardWelcomeScreen') initWizardWelcome();
+    else if (screenId === 'wizardBodyScreen') renderWizardBody();
+    else if (screenId === 'wizardIntensityScreen') initWizardIntensity();
+    else if (screenId === 'wizardFeelingScreen') renderWizardFeelings();
+    else if (screenId === 'wizardContextScreen') renderWizardContext();
+    else if (screenId === 'wizardSummaryScreen') renderWizardSummary();
+    else if (screenId === 'triggerScreen') renderTriggers();
 }
 
 function showToast(message) {
@@ -138,17 +157,446 @@ function goBack() {
 // --- Flow Logic (SAME AS BEFORE) ---
 
 function startFlow() {
+    // Initialize wizard state
+    if (!state.runtime) state.runtime = {};
+    state.runtime.wizard = {
+        bodySignal: null,
+        intensity: 2,
+        feeling: null,
+        context: null,
+        duration: null,
+    };
+    showScreen('wizardWelcomeScreen');
+}
+
+// --- Wizard Logic ---
+
+function initWizardWelcome() {
+    const msgs = wizardMessages.welcome;
+    const titleEl = document.getElementById('wizardWelcomeTitle');
+    const textEl = document.getElementById('wizardWelcomeText');
+    if (titleEl) titleEl.textContent = 'Fermati un momento';
+    if (textEl) textEl.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+}
+
+function wizardNext(step) {
+    vibrate(15);
+    const screenMap = {
+        body: 'wizardBodyScreen',
+        intensity: 'wizardIntensityScreen',
+        feeling: 'wizardFeelingScreen',
+        context: 'wizardContextScreen',
+        summary: 'wizardSummaryScreen',
+    };
+    showScreen(screenMap[step] || 'wizardWelcomeScreen');
+}
+
+function wizardBack(step) {
+    vibrate(10);
+    const screenMap = {
+        welcome: 'wizardWelcomeScreen',
+        body: 'wizardBodyScreen',
+        intensity: 'wizardIntensityScreen',
+        feeling: 'wizardFeelingScreen',
+        context: 'wizardContextScreen',
+    };
+    showScreen(screenMap[step] || 'homeScreen');
+}
+
+function wizardSkipToClassic() {
     showScreen('feelingScreen');
 }
+
+function renderWizardBody() {
+    const grid = document.getElementById('wizardBodyGrid');
+    if (!grid) return;
+    const selected = state.runtime?.wizard?.bodySignal;
+    grid.innerHTML = bodySignals.map(b => `
+        <button class="wizard-body-card ${selected === b.id ? 'selected' : ''}" onclick="selectWizardBody('${b.id}')">
+            <span class="emoji">${b.emoji}</span>
+            <span>${b.label}</span>
+        </button>
+    `).join('');
+}
+
+function selectWizardBody(signalId) {
+    if (!state.runtime?.wizard) return;
+    state.runtime.wizard.bodySignal = signalId;
+    vibrate(15);
+    renderWizardBody();
+
+    // Enable next button
+    const nextBtn = document.getElementById('wizardBodyNext');
+    if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.classList.remove('disabled');
+    }
+
+    // Show hint based on body signal
+    const signal = bodySignals.find(b => b.id === signalId);
+    const hintEl = document.getElementById('wizardBodyHint');
+    if (hintEl && signal && signal.feeling_hint.length > 0) {
+        const hintFeelings = signal.feeling_hint
+            .map(fId => feelings.find(f => f.id === fId))
+            .filter(Boolean)
+            .map(f => `${f.emoji} ${f.label}`);
+        hintEl.textContent = `Spesso collegato a: ${hintFeelings.join(', ')}`;
+        hintEl.classList.add('visible');
+    } else if (hintEl) {
+        hintEl.textContent = '';
+        hintEl.classList.remove('visible');
+    }
+}
+
+function initWizardIntensity() {
+    const level = state.runtime?.wizard?.intensity || 2;
+    updateWizardIntensity(level);
+}
+
+function updateWizardIntensity(value) {
+    const level = parseInt(value);
+    if (!state.runtime?.wizard) return;
+    state.runtime.wizard.intensity = level;
+
+    const data = intensityEmojis.find(i => i.level === level) || intensityEmojis[1];
+    const emojiEl = document.getElementById('wizardIntensityEmoji');
+    const labelEl = document.getElementById('wizardIntensityLabel');
+    const fillEl = document.getElementById('wizardIntensityFill');
+    const sliderEl = document.getElementById('wizardIntensitySlider');
+
+    if (emojiEl) {
+        emojiEl.textContent = data.emoji;
+        emojiEl.style.transform = `scale(${0.9 + level * 0.1})`;
+    }
+    if (labelEl) {
+        labelEl.textContent = data.label;
+        labelEl.style.color = data.color;
+    }
+    if (fillEl) {
+        fillEl.style.width = `${level * 20}%`;
+        fillEl.style.background = data.color;
+    }
+    if (sliderEl) sliderEl.value = level;
+}
+
+function renderWizardFeelings() {
+    const grid = document.getElementById('wizardFeelingsGrid');
+    if (!grid) return;
+
+    const selected = state.runtime?.wizard?.feeling;
+    const bodySignal = state.runtime?.wizard?.bodySignal;
+
+    // Find suggested feelings based on body signal
+    const signal = bodySignals.find(b => b.id === bodySignal);
+    const suggestedIds = signal?.feeling_hint || [];
+
+    // Sort feelings: suggested first, then rest
+    const sorted = [...feelings].sort((a, b) => {
+        const aS = suggestedIds.includes(a.id) ? 0 : 1;
+        const bS = suggestedIds.includes(b.id) ? 0 : 1;
+        return aS - bS;
+    });
+
+    grid.innerHTML = sorted.map(f => {
+        const isSuggested = suggestedIds.includes(f.id);
+        const isSelected = selected === f.id;
+        return `
+        <button class="wizard-feeling-card ${isSelected ? 'selected' : ''} ${isSuggested ? 'suggested' : ''}" 
+            onclick="selectWizardFeeling('${f.id}')">
+            <span class="emoji">${f.emoji}</span>
+            <span class="label">${f.label}</span>
+        </button>
+        `;
+    }).join('');
+
+    // Update suggestion text
+    const suggEl = document.getElementById('wizardFeelingSuggestion');
+    if (suggEl && suggestedIds.length > 0) {
+        suggEl.textContent = 'Le opzioni con 💡 sono suggerite in base al tuo corpo';
+    }
+}
+
+function selectWizardFeeling(feelingId) {
+    if (!state.runtime?.wizard) return;
+    state.runtime.wizard.feeling = feelingId;
+    state.currentFeeling = feelingId; // For compatibility with existing flow
+    vibrate(15);
+    renderWizardFeelings();
+
+    const nextBtn = document.getElementById('wizardFeelingNext');
+    if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.classList.remove('disabled');
+    }
+}
+
+function renderWizardContext() {
+    const contextGrid = document.getElementById('wizardContextGrid');
+    const durationGrid = document.getElementById('wizardDurationGrid');
+
+    if (contextGrid) {
+        const selectedCtx = state.runtime?.wizard?.context;
+        contextGrid.innerHTML = contextOptions.map(c => `
+            <button class="wizard-context-card ${selectedCtx === c.id ? 'selected' : ''}" 
+                onclick="selectWizardContext('${c.id}')">
+                <span class="emoji">${c.emoji}</span>
+                <span class="label">${c.label}</span>
+            </button>
+        `).join('');
+    }
+
+    if (durationGrid) {
+        const selectedDur = state.runtime?.wizard?.duration;
+        durationGrid.innerHTML = durationOptions.map(d => `
+            <button class="wizard-duration-card ${selectedDur === d.id ? 'selected' : ''}" 
+                onclick="selectWizardDuration('${d.id}')">
+                <span class="emoji">${d.emoji}</span>
+                <span class="label">${d.label}</span>
+            </button>
+        `).join('');
+    }
+}
+
+function selectWizardContext(contextId) {
+    if (!state.runtime?.wizard) return;
+    state.runtime.wizard.context = contextId;
+    vibrate(10);
+    renderWizardContext();
+}
+
+function selectWizardDuration(durationId) {
+    if (!state.runtime?.wizard) return;
+    state.runtime.wizard.duration = durationId;
+    vibrate(10);
+    renderWizardContext();
+}
+
+function wizardFinish() {
+    vibrate(20);
+    // Record wizard data then go to trigger selection → response
+    const w = state.runtime?.wizard;
+    if (w) recordWizardCheckin(w);
+    showScreen('triggerScreen');
+}
+
+function renderWizardSummary() {
+    const w = state.runtime?.wizard;
+    if (!w) return;
+
+    const feeling = feelings.find(f => f.id === w.feeling);
+    const body = bodySignals.find(b => b.id === w.bodySignal);
+    const ctx = contextOptions.find(c => c.id === w.context);
+    const dur = durationOptions.find(d => d.id === w.duration);
+    const intensity = intensityEmojis.find(i => i.level === w.intensity) || intensityEmojis[1];
+
+    // Summary card
+    const emojiEl = document.getElementById('wizardSummaryEmoji');
+    const titleEl = document.getElementById('wizardSummaryTitle');
+    const tagsEl = document.getElementById('wizardSummaryTags');
+    const insightEl = document.getElementById('wizardSummaryInsight');
+
+    if (emojiEl) emojiEl.textContent = feeling?.emoji || '🤔';
+    if (titleEl) titleEl.textContent = feeling ? `Ti senti ${feeling.label.toLowerCase()}` : 'Ecco il quadro';
+
+    if (tagsEl) {
+        let tags = '';
+        if (body && body.id !== 'nothing') {
+            tags += `<span class="wizard-tag wizard-tag-body">${body.emoji} ${body.label}</span>`;
+        }
+        tags += `<span class="wizard-tag wizard-tag-intensity">${intensity.emoji} ${intensity.label}</span>`;
+        if (ctx) {
+            tags += `<span class="wizard-tag wizard-tag-context">${ctx.emoji} ${ctx.label}</span>`;
+        }
+        if (dur) {
+            tags += `<span class="wizard-tag wizard-tag-duration">${dur.emoji} ${dur.label}</span>`;
+        }
+        tagsEl.innerHTML = tags;
+    }
+
+    // Generate personalized insight
+    if (insightEl) {
+        insightEl.innerHTML = generateWizardInsight(w, feeling, body, ctx, dur, intensity);
+    }
+
+    // Urgency banner
+    const urgencyBanner = document.getElementById('wizardUrgencyBanner');
+    const urgencyIcon = document.getElementById('wizardUrgencyIcon');
+    const urgencyText = document.getElementById('wizardUrgencyText');
+    const urgency = intensityUrgency[w.intensity] || intensityUrgency[3];
+    if (urgencyBanner) {
+        urgencyBanner.setAttribute('data-level', w.intensity);
+    }
+    if (urgencyIcon) urgencyIcon.textContent = w.intensity >= 4 ? '🚨' : '⚡';
+    if (urgencyText) urgencyText.textContent = urgency.label;
+
+    // Pattern detection
+    detectAndShowPattern(w);
+
+    // Render smart-filtered triggers
+    renderWizardTriggers(w);
+
+    // Store wizard data for insights
+    recordWizardCheckin(w);
+}
+
+function generateWizardInsight(w, feeling, body, ctx, dur, intensity) {
+    const parts = [];
+
+    if (feeling) {
+        const resp = responses[feeling.id];
+        if (resp) parts.push(resp.text);
+    }
+
+    if (w.intensity >= 4 && dur && dur.minutes >= 120) {
+        parts.push('<br><strong>Sei in questa situazione da un po\' e con intensità alta.</strong> Meriti attenzione adesso.');
+    } else if (w.intensity >= 4) {
+        parts.push('<br><strong>L\'intensità è alta.</strong> Concentrati su uno strumento rapido.');
+    } else if (dur && dur.minutes >= 480) {
+        parts.push('<br>Dura da tutto il giorno — potresti aver bisogno di un <strong>reset completo</strong>.');
+    }
+
+    if (body && body.id !== 'nothing' && body.zone !== 'none') {
+        const zoneMessages = {
+            chest: 'Il petto stretto spesso segnala ansia. Prova la respirazione guidata.',
+            stomach: 'Lo stomaco è il tuo secondo cervello. Ascoltalo.',
+            head: 'La testa pesante chiede una pausa. Non è debolezza.',
+            shoulders: 'Le spalle portano il peso dello stress. Prova a lasciarle cadere ora.',
+            legs: 'Le gambe irrequiete vogliono movimento. Assecondale.',
+            hands: 'Le mani agitate scaricano tensione. Un fidget può aiutare.',
+            throat: 'La gola chiusa può significare parole non dette.',
+        };
+        if (zoneMessages[body.zone]) {
+            parts.push(`<br>${zoneMessages[body.zone]}`);
+        }
+    }
+
+    return parts.join(' ') || 'Stai facendo bene a fermarti e osservarti. Questo è già un passo importante.';
+}
+
+function detectAndShowPattern(w) {
+    const patternCard = document.getElementById('wizardPatternCard');
+    const patternText = document.getElementById('wizardPatternText');
+    if (!patternCard || !patternText) return;
+
+    const history = state.history || [];
+    if (history.length < 3) return;
+
+    // Detect feeling patterns
+    const recentFeelings = history.slice(0, 10).map(h => h.feeling);
+    const feelingCount = {};
+    recentFeelings.forEach(f => { feelingCount[f] = (feelingCount[f] || 0) + 1; });
+
+    const dominantFeeling = Object.entries(feelingCount)
+        .sort((a, b) => b[1] - a[1])[0];
+
+    if (dominantFeeling && dominantFeeling[1] >= 3 && dominantFeeling[0] === w.feeling) {
+        const feelingData = feelings.find(f => f.id === dominantFeeling[0]);
+        if (feelingData) {
+            patternCard.style.display = 'flex';
+            patternText.innerHTML = `Nelle ultime sessioni, <strong>"${feelingData.label}"</strong> compare spesso. Potrebbe valere la pena esplorare cosa lo causa ripetutamente.`;
+            return;
+        }
+    }
+
+    // Detect time-of-day pattern
+    const now = new Date();
+    const hour = now.getHours();
+    const timeSlot = hour < 12 ? 'mattina' : hour < 18 ? 'pomeriggio' : 'sera';
+    const sameTimeCount = history.filter(h => {
+        const d = new Date(h.date);
+        const hHour = d.getHours();
+        const hSlot = hHour < 12 ? 'mattina' : hHour < 18 ? 'pomeriggio' : 'sera';
+        return hSlot === timeSlot;
+    }).length;
+
+    if (sameTimeCount >= 3) {
+        patternCard.style.display = 'flex';
+        patternText.innerHTML = `Noti? Tendi a chiedere aiuto di <strong>${timeSlot}</strong>. Potresti preparare strategie preventive per quel momento della giornata.`;
+    }
+}
+
+function renderWizardTriggers(w) {
+    const container = document.getElementById('wizardTriggerList');
+    if (!container) return;
+
+    // Flatten and optionally reorder triggers based on context
+    const contextTriggerMap = {
+        work: ['task_paralysis', 'too_many', 'boring_task', 'deadline', 'distracted', 'interruption'],
+        studio: ['task_paralysis', 'boring_task', 'distracted', 'understimulation'],
+        home: ['too_many', 'routine_break', 'understimulation', 'transition'],
+        social: ['social_event', 'conflict', 'criticized', 'noise'],
+        bed: ['tired', 'drained', 'unknown'],
+        transit: ['transition', 'waiting', 'noise'],
+    };
+
+    const suggested = contextTriggerMap[w.context] || [];
+
+    const allTriggers = triggerCategories.flatMap(cat => cat.triggers);
+    const sorted = [...allTriggers].sort((a, b) => {
+        const aS = suggested.includes(a.id) ? 0 : 1;
+        const bS = suggested.includes(b.id) ? 0 : 1;
+        return aS - bS;
+    });
+
+    // Show max 8 triggers in summary, prioritizing suggested
+    const displayed = sorted.slice(0, 10);
+
+    container.innerHTML = displayed.map(t => {
+        const isSuggested = suggested.includes(t.id);
+        return `
+        <button class="wizard-trigger-card ${isSuggested ? 'suggested' : ''}" onclick="selectWizardTrigger('${t.id}')">
+            <span class="emoji">${t.emoji}</span>
+            <span>${t.label}</span>
+        </button>
+        `;
+    }).join('');
+}
+
+function selectWizardTrigger(triggerId) {
+    vibrate(20);
+    if (isTaskRelatedTrigger(triggerId)) {
+        showTaskPicker(triggerId);
+        return;
+    }
+    state.currentTrigger = triggerId;
+    if (!state.runtime) state.runtime = {};
+    state.runtime.addHistoryOnResponse = true;
+    showScreen('responseScreen');
+}
+
+function recordWizardCheckin(w) {
+    if (!state.wizardCheckins) state.wizardCheckins = [];
+    state.wizardCheckins.unshift({
+        date: new Date().toISOString(),
+        bodySignal: w.bodySignal,
+        intensity: w.intensity,
+        feeling: w.feeling,
+        context: w.context,
+        duration: w.duration,
+    });
+    if (state.wizardCheckins.length > 50) state.wizardCheckins.pop();
+
+    // Update pulse check data
+    if (!state.pulseHistory) state.pulseHistory = [];
+    state.pulseHistory.unshift({
+        date: new Date().toISOString(),
+        level: w.intensity,
+    });
+    if (state.pulseHistory.length > 30) state.pulseHistory.pop();
+    persist();
+}
+
+
+
 
 function renderFeelings() {
     const grid = document.getElementById('feelingsGrid');
     if (!grid) return;
     grid.innerHTML = feelings.map(f => `
-        <div class="option-card" onclick="selectFeeling('${f.id}')">
+        <button class="wizard-feeling-card" onclick="selectFeeling('${f.id}')">
             <span class="emoji">${f.emoji}</span>
             <span class="label">${f.label}</span>
-        </div>
+        </button>
     `).join('');
 }
 
@@ -161,19 +609,99 @@ function selectFeeling(feelingId) {
 function renderTriggers() {
     const list = document.getElementById('triggersList');
     if (!list) return;
-    list.innerHTML = triggerCategories.map(cat => `
-        <div class="trigger-category">
-            <div class="trigger-category-title">${cat.category}</div>
-            <div class="trigger-category-items">
-                ${cat.triggers.map(t => `
-                    <div class="trigger-card" onclick="selectTrigger('${t.id}')">
-                        <span class="emoji">${t.emoji}</span>
-                        <span class="label">${t.label}</span>
-                    </div>
-                `).join('')}
+
+    const isWizard = Boolean(state.runtime?.wizard?.feeling);
+
+    // Update navigation and steps for wizard flow
+    if (isWizard) {
+        const backBtn = document.getElementById('triggerBackBtn');
+        if (backBtn) backBtn.setAttribute('onclick', "wizardBack('context')");
+
+        const stepsEl = document.getElementById('triggerStepsIndicator');
+        if (stepsEl) {
+            stepsEl.innerHTML = `
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot active"></div>
+            `;
+        }
+
+        const subtitle = document.getElementById('triggerSubtitle');
+        if (subtitle) subtitle.textContent = 'In base al tuo contesto, ecco cosa potrebbe bloccarti';
+    } else {
+        const stepsEl = document.getElementById('triggerStepsIndicator');
+        if (stepsEl) {
+            stepsEl.innerHTML = `
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot active"></div>
+                <div class="wizard-step-dot"></div>
+            `;
+        }
+    }
+
+    // Smart trigger sorting based on wizard context
+    const wizardContext = state.runtime?.wizard?.context;
+    const contextTriggerMap = {
+        work: ['task_paralysis', 'too_many', 'boring_task', 'deadline', 'distracted', 'interruption'],
+        studio: ['task_paralysis', 'boring_task', 'distracted', 'understimulation'],
+        home: ['too_many', 'routine_break', 'understimulation', 'transition'],
+        social: ['social_event', 'conflict', 'criticized', 'noise'],
+        bed: ['tired', 'drained', 'unknown'],
+        transit: ['transition', 'waiting', 'noise'],
+    };
+    const suggested = wizardContext ? (contextTriggerMap[wizardContext] || []) : [];
+
+    if (isWizard && suggested.length > 0) {
+        const allTriggers = triggerCategories.flatMap(cat => cat.triggers);
+        const suggestedTriggers = allTriggers.filter(t => suggested.includes(t.id));
+
+        let html = '';
+        if (suggestedTriggers.length > 0) {
+            html += `<div class="wizard-section-title">💡 Suggeriti per te</div>`;
+            html += suggestedTriggers.map(t => `
+                <button class="wizard-trigger-card suggested" onclick="selectTrigger('${t.id}')">
+                    <span class="emoji">${t.emoji}</span>
+                    <span>${t.label}</span>
+                </button>
+            `).join('');
+        }
+        // Rest in collapsible categories
+        html += `<div class="wizard-section-title" style="margin-top:20px">Tutti i trigger</div>`;
+        html += triggerCategories.map(cat => {
+            const filtered = cat.triggers.filter(t => !suggested.includes(t.id));
+            if (filtered.length === 0) return '';
+            return `
+            <div class="trigger-category">
+                <div class="trigger-category-title">${cat.category}</div>
+                <div class="trigger-category-items">
+                    ${filtered.map(t => `
+                        <button class="wizard-trigger-card" onclick="selectTrigger('${t.id}')">
+                            <span class="emoji">${t.emoji}</span>
+                            <span>${t.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            </div>`;
+        }).join('');
+        list.innerHTML = html;
+    } else {
+        list.innerHTML = triggerCategories.map(cat => `
+            <div class="trigger-category">
+                <div class="trigger-category-title">${cat.category}</div>
+                <div class="trigger-category-items">
+                    ${cat.triggers.map(t => `
+                        <button class="wizard-trigger-card" onclick="selectTrigger('${t.id}')">
+                            <span class="emoji">${t.emoji}</span>
+                            <span>${t.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    }
 }
 
 function selectTrigger(triggerId) {
@@ -191,6 +719,29 @@ function selectTrigger(triggerId) {
 function generateStrategy() {
     const feeling = feelings.find(f => f.id === state.currentFeeling);
     const triggerId = state.currentTrigger;
+    const isWizard = Boolean(state.runtime?.wizard?.feeling);
+
+    // Update step dots for wizard vs classic flow
+    const stepsEl = document.getElementById('responseStepsIndicator');
+    if (stepsEl) {
+        if (isWizard) {
+            stepsEl.innerHTML = `
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot active"></div>
+            `;
+        } else {
+            stepsEl.innerHTML = `
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot completed"></div>
+                <div class="wizard-step-dot active"></div>
+            `;
+        }
+    }
 
     // Find response
     let responseKey = `${state.currentFeeling}_${triggerId}`;
@@ -877,6 +1428,19 @@ window.setTheme = setTheme;
 window.disableNotifications = disableNotifications;
 window.updateNotificationDays = updateNotificationDays;
 window.saveUserName = saveUserName;
+
+// Wizard
+window.wizardNext = wizardNext;
+window.wizardBack = wizardBack;
+window.wizardSkipToClassic = wizardSkipToClassic;
+window.selectWizardBody = selectWizardBody;
+window.updateWizardIntensity = updateWizardIntensity;
+window.selectWizardFeeling = selectWizardFeeling;
+window.selectWizardContext = selectWizardContext;
+window.selectWizardDuration = selectWizardDuration;
+window.wizardFinish = wizardFinish;
+window.selectWizardTrigger = selectWizardTrigger;
+
 
 function applyTheme(theme) {
     const root = document.documentElement;
