@@ -2,14 +2,19 @@
 
 export const bodySignals = [
     { id: 'chest_tight', emoji: '💗', label: 'Petto stretto', zone: 'chest', feeling_hint: ['anxious', 'overwhelmed'] },
+    { id: 'breath_short', emoji: '😮‍💨', label: 'Fiato corto', zone: 'chest', feeling_hint: ['anxious', 'overwhelmed'] },
+    { id: 'heart_racing', emoji: '💓', label: 'Cuore che corre', zone: 'chest', feeling_hint: ['anxious', 'restless'] },
     { id: 'stomach_knot', emoji: '🫄', label: 'Nodo allo stomaco', zone: 'stomach', feeling_hint: ['anxious', 'shame'] },
     { id: 'head_heavy', emoji: '🤯', label: 'Testa pesante', zone: 'head', feeling_hint: ['overwhelmed', 'drained'] },
+    { id: 'head_buzzing', emoji: '💭', label: 'Testa che ronza', zone: 'head', feeling_hint: ['scattered', 'overwhelmed'] },
     { id: 'jaw_clenched', emoji: '😬', label: 'Mascella serrata', zone: 'head', feeling_hint: ['frustrated', 'restless'] },
+    { id: 'face_hot', emoji: '🔥', label: 'Calore al viso', zone: 'head', feeling_hint: ['shame', 'frustrated'] },
     { id: 'shoulders_tense', emoji: '🏋️', label: 'Spalle tese', zone: 'shoulders', feeling_hint: ['overwhelmed', 'anxious'] },
+    { id: 'throat_tight', emoji: '😶', label: 'Gola chiusa', zone: 'throat', feeling_hint: ['blocked', 'shame'] },
     { id: 'legs_restless', emoji: '🦵', label: 'Gambe irrequiete', zone: 'legs', feeling_hint: ['restless', 'anxious'] },
     { id: 'hands_shaky', emoji: '🤲', label: 'Mani agitate', zone: 'hands', feeling_hint: ['anxious', 'restless'] },
+    { id: 'skin_tingling', emoji: '✨', label: 'Formicolio', zone: 'body', feeling_hint: ['restless', 'scattered'] },
     { id: 'eyes_heavy', emoji: '😴', label: 'Occhi pesanti', zone: 'head', feeling_hint: ['drained', 'down'] },
-    { id: 'throat_tight', emoji: '😶', label: 'Gola chiusa', zone: 'throat', feeling_hint: ['blocked', 'shame'] },
     { id: 'nothing', emoji: '🤷', label: 'Non lo so', zone: 'none', feeling_hint: [] },
 ];
 

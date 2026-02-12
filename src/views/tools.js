@@ -159,6 +159,200 @@ export const toolsViews = {
         </div>
       </div>
     </div>
+    `,
+
+    // --- NEW TOOLS ---
+
+    countdown: `
+    <div class="screen-content">
+      <button class="close-btn" onclick="stopCountdown();showScreen('responseScreen')">×</button>
+      <div class="timer-screen countdown-screen-inner">
+        <h2 class="timer-title">🚀 Conta alla rovescia</h2>
+        <p class="timer-subtitle">5-4-3-2-1 e PARTI!</p>
+        <div class="countdown-circle" id="countdownCircle">
+          <span class="countdown-number" id="countdownNumber">5</span>
+        </div>
+        <div class="countdown-message" id="countdownMessage">Premi Inizia quando sei pronto</div>
+        <div class="timer-controls" id="countdownControls">
+          <button class="timer-btn primary" id="countdownStartBtn" onclick="startCountdown()">Inizia</button>
+          <button class="timer-btn secondary" onclick="stopCountdown();showScreen('responseScreen')">Chiudi</button>
+        </div>
+        <div class="feedback-section" id="strategyRatingSection" style="margin-top:24px">
+          <p class="feedback-question">Quanto è stata utile la strategia?</p>
+          <div class="feedback-btns">
+            <button class="feedback-btn" data-rating="1" onclick="recordStrategyOutcome(1)">1</button>
+            <button class="feedback-btn" data-rating="2" onclick="recordStrategyOutcome(2)">2</button>
+            <button class="feedback-btn" data-rating="3" onclick="recordStrategyOutcome(3)">3</button>
+            <button class="feedback-btn" data-rating="4" onclick="recordStrategyOutcome(4)">4</button>
+            <button class="feedback-btn" data-rating="5" onclick="recordStrategyOutcome(5)">5</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    `,
+
+    bodyMove: `
+    <div class="screen-content">
+      <button class="close-btn" onclick="stopBodyMove();showScreen('responseScreen')">×</button>
+      <div class="timer-screen bodymove-screen-inner">
+        <div class="bodymove-hero-emoji" id="bodyMoveEmoji">🏃</div>
+        <h2 class="timer-title" id="bodyMoveTitle">Attivazione fisica</h2>
+        <p class="timer-subtitle" id="bodyMoveSubtitle">Muovi il corpo per attivare il cervello</p>
+        <div class="bodymove-instruction" id="bodyMoveInstruction">Preparati!</div>
+        <div class="countdown-circle bodymove-timer-circle">
+          <span class="countdown-number bodymove-timer-num" id="bodyMoveTimer">0:30</span>
+        </div>
+        <div class="timer-controls">
+          <button class="timer-btn primary" id="bodyMoveStartBtn" onclick="startBodyMove()">Via! 💪</button>
+          <button class="timer-btn secondary" onclick="stopBodyMove();showScreen('responseScreen')">Chiudi</button>
+        </div>
+        <div class="feedback-section" id="strategyRatingSection" style="margin-top:24px">
+          <p class="feedback-question">Quanto è stata utile la strategia?</p>
+          <div class="feedback-btns">
+            <button class="feedback-btn" data-rating="1" onclick="recordStrategyOutcome(1)">1</button>
+            <button class="feedback-btn" data-rating="2" onclick="recordStrategyOutcome(2)">2</button>
+            <button class="feedback-btn" data-rating="3" onclick="recordStrategyOutcome(3)">3</button>
+            <button class="feedback-btn" data-rating="4" onclick="recordStrategyOutcome(4)">4</button>
+            <button class="feedback-btn" data-rating="5" onclick="recordStrategyOutcome(5)">5</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    `,
+
+    factCheck: `
+    <div class="screen-content">
+      <div class="dump-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('responseScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="dump-header">
+          <div class="dump-emoji">⚖️</div>
+          <h2 class="dump-title">Fatti vs Paure</h2>
+          <p class="dump-subtitle">Separa ciò che è reale da ciò che la mente amplifica</p>
+        </div>
+        <div class="factcheck-columns">
+          <div class="factcheck-col">
+            <h3 class="factcheck-label factcheck-facts-label">✅ Fatti oggettivi</h3>
+            <input type="text" class="factcheck-input" id="fact1" placeholder="Es: Ho consegnato 9/10 lavori">
+            <input type="text" class="factcheck-input" id="fact2" placeholder="Un fatto concreto...">
+            <input type="text" class="factcheck-input" id="fact3" placeholder="Un altro fatto...">
+          </div>
+          <div class="factcheck-col">
+            <h3 class="factcheck-label factcheck-fears-label">😰 Paure / Interpretazioni</h3>
+            <input type="text" class="factcheck-input" id="fear1" placeholder="Cosa temi...">
+            <input type="text" class="factcheck-input" id="fear2" placeholder="Cosa pensi...">
+            <input type="text" class="factcheck-input" id="fear3" placeholder="Altra paura...">
+          </div>
+        </div>
+        <div class="factcheck-result" id="factCheckResult"></div>
+      </div>
+      <div class="dump-actions">
+        <button class="btn secondary" onclick="showScreen('responseScreen')">Chiudi</button>
+        <button class="btn primary" onclick="saveFactCheck()">I fatti vincono ✓</button>
+      </div>
+      <div class="feedback-section" id="strategyRatingSection" style="margin-top:24px">
+        <p class="feedback-question">Quanto è stata utile la strategia?</p>
+        <div class="feedback-btns">
+          <button class="feedback-btn" data-rating="1" onclick="recordStrategyOutcome(1)">1</button>
+          <button class="feedback-btn" data-rating="2" onclick="recordStrategyOutcome(2)">2</button>
+          <button class="feedback-btn" data-rating="3" onclick="recordStrategyOutcome(3)">3</button>
+          <button class="feedback-btn" data-rating="4" onclick="recordStrategyOutcome(4)">4</button>
+          <button class="feedback-btn" data-rating="5" onclick="recordStrategyOutcome(5)">5</button>
+        </div>
+      </div>
+    </div>
+    `,
+
+    anchor333: `
+    <div class="screen-content">
+      <div class="ground-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('responseScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="dump-header">
+          <div class="dump-emoji">⚡</div>
+          <h2 class="dump-title">Ancora 3-3-3</h2>
+          <p class="dump-subtitle">Torna al presente in 15 secondi</p>
+        </div>
+        <div id="anchor333-container"></div>
+      </div>
+      <div class="feedback-section" id="strategyRatingSection" style="margin-top:24px">
+        <p class="feedback-question">Quanto è stata utile la strategia?</p>
+        <div class="feedback-btns">
+          <button class="feedback-btn" data-rating="1" onclick="recordStrategyOutcome(1)">1</button>
+          <button class="feedback-btn" data-rating="2" onclick="recordStrategyOutcome(2)">2</button>
+          <button class="feedback-btn" data-rating="3" onclick="recordStrategyOutcome(3)">3</button>
+          <button class="feedback-btn" data-rating="4" onclick="recordStrategyOutcome(4)">4</button>
+          <button class="feedback-btn" data-rating="5" onclick="recordStrategyOutcome(5)">5</button>
+        </div>
+      </div>
+    </div>
+    `,
+
+    sosMessage: `
+    <div class="screen-content">
+      <div class="dump-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('responseScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="dump-header">
+          <div class="dump-emoji">📱</div>
+          <h2 class="dump-title">Messaggio SOS</h2>
+          <p class="dump-subtitle">Scrivi a qualcuno di fiducia</p>
+        </div>
+        <textarea class="dump-textarea" id="sosTextarea" style="min-height:120px">Momento difficile. Non serve che tu faccia nulla, mi basta sapere che ci sei. ❤️</textarea>
+        <div class="dump-tip">💡 La connessione umana è il reset più potente. Non devi affrontare tutto da solo.</div>
+      </div>
+      <div class="dump-actions">
+        <button class="btn secondary" onclick="copySosMessage()">📋 Copia</button>
+        <button class="btn primary" onclick="shareSosMessage()">📤 Condividi</button>
+      </div>
+      <div class="feedback-section" id="strategyRatingSection" style="margin-top:24px">
+        <p class="feedback-question">Quanto è stata utile la strategia?</p>
+        <div class="feedback-btns">
+          <button class="feedback-btn" data-rating="1" onclick="recordStrategyOutcome(1)">1</button>
+          <button class="feedback-btn" data-rating="2" onclick="recordStrategyOutcome(2)">2</button>
+          <button class="feedback-btn" data-rating="3" onclick="recordStrategyOutcome(3)">3</button>
+          <button class="feedback-btn" data-rating="4" onclick="recordStrategyOutcome(4)">4</button>
+          <button class="feedback-btn" data-rating="5" onclick="recordStrategyOutcome(5)">5</button>
+        </div>
+      </div>
+    </div>
+    `,
+
+    sensory: `
+    <div class="screen-content">
+      <div class="dump-screen">
+        <div class="flow-header">
+          <button class="back-btn" onclick="showScreen('responseScreen')">←</button>
+          <div style="flex:1"></div>
+        </div>
+        <div class="dump-header">
+          <div class="dump-emoji" id="sensoryEmoji">🏛️</div>
+          <h2 class="dump-title" id="sensoryTitle">Setup Sensoriale</h2>
+          <p class="dump-subtitle" id="sensorySubtitle">Prepara il tuo ambiente</p>
+        </div>
+        <div id="sensoryChecklist" class="sensory-checklist"></div>
+      </div>
+      <div class="dump-actions">
+        <button class="btn secondary" onclick="showScreen('responseScreen')">Chiudi</button>
+        <button class="btn primary" onclick="completeSensory()">Pronto ✓</button>
+      </div>
+      <div class="feedback-section" id="strategyRatingSection" style="margin-top:24px">
+        <p class="feedback-question">Quanto è stata utile la strategia?</p>
+        <div class="feedback-btns">
+          <button class="feedback-btn" data-rating="1" onclick="recordStrategyOutcome(1)">1</button>
+          <button class="feedback-btn" data-rating="2" onclick="recordStrategyOutcome(2)">2</button>
+          <button class="feedback-btn" data-rating="3" onclick="recordStrategyOutcome(3)">3</button>
+          <button class="feedback-btn" data-rating="4" onclick="recordStrategyOutcome(4)">4</button>
+          <button class="feedback-btn" data-rating="5" onclick="recordStrategyOutcome(5)">5</button>
+        </div>
+      </div>
+    </div>
     `
 };
 

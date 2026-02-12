@@ -26,6 +26,16 @@ const urlsToCache = [
   './src/components/tasks.js',
   './src/components/history.js',
   './src/components/tools.js',
+  './src/views/home.js',
+  './src/views/flow.js',
+  './src/views/diary.js',
+  './src/views/tasks.js',
+  './src/views/tools.js',
+  './src/views/settings.js',
+  './src/views/legal.js',
+  './src/views/wizard.js',
+  './src/data/wizard.js',
+  './src/styles/wizard.css',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
@@ -49,6 +59,14 @@ self.addEventListener('activate', event => {
         })
       );
     }).then(() => self.clients.claim())
+      .then(() => {
+        // Notify all open tabs that a new version is active
+        self.clients.matchAll({ type: 'window' }).then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'SW_UPDATED', version: APP_VERSION });
+          });
+        });
+      })
   );
 });
 
@@ -190,6 +208,9 @@ self.addEventListener('message', event => {
     const tasks = payload.tasks || [];
     const settings = payload.settings || {};
     event.waitUntil(saveTasks(tasks, settings));
+  }
+  if (event.data?.type === 'GET_VERSION') {
+    event.source?.postMessage({ type: 'SW_VERSION', version: APP_VERSION });
   }
 });
 

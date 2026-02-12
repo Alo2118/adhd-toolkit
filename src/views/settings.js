@@ -1,87 +1,87 @@
 export const settingsScreen = `
-<div class="diary-screen">
+<div class="diary-screen settings-screen-v2">
     <div class="flow-header">
       <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
       <div style="flex:1"></div>
     </div>
-    <div class="insights-header">
-      <h1 class="insights-title">⚙️ Gestione Dati</h1>
-      <p class="insights-subtitle">Backup e sicurezza</p>
+    <div class="insights-hero">
+      <div class="insights-hero-icon">⚙️</div>
+      <div>
+        <h1 class="insights-hero-title">Impostazioni</h1>
+        <p class="insights-hero-sub">Gestione dati e preferenze</p>
+      </div>
     </div>
-    <div style="margin-top:20px">
-      <div class="understanding-card" style="margin-bottom:16px">
-        <div class="understanding-title">👤 NOME UTENTE</div>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
-          Personalizza il saluto in home.
-        </p>
+    <div class="settings-cards-v2">
+      <div class="report-card-v2">
+        <label class="report-option-label">👤 Nome utente</label>
+        <p class="settings-card-desc">Personalizza il saluto in home.</p>
         <input type="text" id="userNameInput" class="form-input" placeholder="Es. Nicola">
-        <button class="timer-btn primary" onclick="saveUserName()" style="width:100%;margin-top:12px">
+        <button class="settings-btn-v2 primary" onclick="saveUserName()">
           Salva nome
         </button>
       </div>
-      <div class="understanding-card" style="margin-bottom:16px">
-        <div class="understanding-title">🎨 TEMA</div>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
-          Scegli il tema che preferisci. Puoi seguire il sistema o forzare chiaro/scuro.
-        </p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="timer-btn secondary" onclick="setTheme('system')" id="themeSystemBtn">Sistema</button>
-          <button class="timer-btn secondary" onclick="setTheme('light')" id="themeLightBtn">Chiaro</button>
-          <button class="timer-btn secondary" onclick="setTheme('dark')" id="themeDarkBtn">Scuro</button>
+      <div class="report-card-v2">
+        <label class="report-option-label">🎨 Tema</label>
+        <p class="settings-card-desc">Scegli il tema che preferisci.</p>
+        <div class="settings-theme-chips">
+          <button class="report-period-chip" onclick="setTheme('system')" id="themeSystemBtn">Sistema</button>
+          <button class="report-period-chip" onclick="setTheme('light')" id="themeLightBtn">Chiaro</button>
+          <button class="report-period-chip" onclick="setTheme('dark')" id="themeDarkBtn">Scuro</button>
         </div>
       </div>
-      <div class="understanding-card" style="margin-bottom:16px">
-        <div class="understanding-title">🔔 NOTIFICHE</div>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
-          Ricevi promemoria gentili per i compiti fermi o le scadenze vicine.
-        </p>
-        <button class="timer-btn primary" id="notificationsEnableBtn" onclick="requestNotificationPermission()" style="width:100%;margin-bottom:10px">
-          🔔 Attiva Notifiche
-        </button>
-        <button class="timer-btn secondary" id="notificationsDisableBtn" onclick="disableNotifications()" style="width:100%">
-          Disattiva Notifiche
-        </button>
+      <div class="report-card-v2">
+        <label class="report-option-label">🔔 Notifiche</label>
+        <p class="settings-card-desc">Promemoria per compiti fermi e scadenze vicine.</p>
+        <div class="settings-notify-actions">
+          <button class="settings-btn-v2 primary" id="notificationsEnableBtn" onclick="requestNotificationPermission()">
+            Attiva Notifiche
+          </button>
+          <button class="settings-btn-v2 secondary" id="notificationsDisableBtn" onclick="disableNotifications()">
+            Disattiva Notifiche
+          </button>
+        </div>
         <p id="notificationsStatus" style="font-size:0.8rem;color:var(--text-muted);margin-top:12px"></p>
-        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:12px">
-          • Compiti fermi da <strong id="taskStuckDaysValue">3</strong> giorni<br>
-          • Scadenze entro <strong id="deadlineWarningDaysValue">2</strong> giorni
+        <p class="settings-notify-info">
+          Compiti fermi da <strong id="taskStuckDaysValue">3</strong> giorni &middot;
+          Scadenze entro <strong id="deadlineWarningDaysValue">2</strong> giorni
         </p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
-          <label style="flex:1;min-width:140px">
-            <span style="display:block;font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Giorni fermo</span>
-            <input type="number" min="1" max="30" id="taskStuckDaysInput" class="form-input" style="width:100%" onchange="updateNotificationDays()">
+        <div class="settings-notify-inputs">
+          <label class="settings-input-group">
+            <span class="settings-input-label">Giorni fermo</span>
+            <input type="number" min="1" max="30" id="taskStuckDaysInput" class="form-input" onchange="updateNotificationDays()">
           </label>
-          <label style="flex:1;min-width:140px">
-            <span style="display:block;font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Avviso scadenza</span>
-            <input type="number" min="1" max="30" id="deadlineWarningDaysInput" class="form-input" style="width:100%" onchange="updateNotificationDays()">
+          <label class="settings-input-group">
+            <span class="settings-input-label">Avviso scadenza</span>
+            <input type="number" min="1" max="30" id="deadlineWarningDaysInput" class="form-input" onchange="updateNotificationDays()">
           </label>
         </div>
       </div>
-      <div class="understanding-card" style="margin-bottom:16px">
-        <div class="understanding-title">💾 BACKUP</div>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
-          Esporta i tuoi dati per creare una copia di sicurezza.
-        </p>
-        <button class="timer-btn primary" onclick="exportData()" style="width:100%">
-          📥 Scarica Backup
+      <div class="report-card-v2">
+        <label class="report-option-label">💾 Backup</label>
+        <p class="settings-card-desc">Esporta i tuoi dati per una copia di sicurezza.</p>
+        <button class="settings-btn-v2 primary" onclick="exportData()">
+          Scarica Backup
         </button>
       </div>
-      <div class="understanding-card" style="margin-bottom:16px">
-        <div class="understanding-title">📤 RIPRISTINO</div>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
-          Importa un backup precedente per ripristinare i tuoi dati.
-        </p>
-        <button class="timer-btn secondary" onclick="importData()" style="width:100%;background:var(--accent-calm);color:white">
-          📤 Carica Backup
+      <div class="report-card-v2">
+        <label class="report-option-label">📤 Ripristino</label>
+        <p class="settings-card-desc">Importa un backup precedente.</p>
+        <button class="settings-btn-v2 accent" onclick="importData()">
+          Carica Backup
         </button>
       </div>
-      <div class="understanding-card" style="background:rgba(224,122,122,0.1);border:1px solid var(--accent-coral)">
-        <div class="understanding-title" style="color:var(--accent-coral)">🗑️ ZONA PERICOLOSA</div>
-        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:16px">
-          Elimina tutti i dati salvati nell'app. Irreversibile.
-        </p>
-        <button class="timer-btn secondary" onclick="clearAllData()" style="width:100%;background:var(--accent-coral);color:white">
-          ⚠️ Elimina Tutti i Dati
+      <div class="report-card-v2">
+        <label class="report-option-label">ℹ️ Versione App</label>
+        <p class="settings-card-desc">Versione attuale: <strong id="appVersionValue">—</strong></p>
+        <button class="settings-btn-v2 secondary" onclick="checkForUpdates()">
+          Controlla Aggiornamenti
+        </button>
+      </div>
+      <div class="report-card-v2 settings-danger-card">
+        <label class="report-option-label settings-danger-label">🗑️ Zona pericolosa</label>
+        <p class="settings-card-desc">Elimina tutti i dati. Irreversibile.</p>
+        <button class="settings-btn-v2 danger" onclick="clearAllData()">
+          Elimina Tutti i Dati
         </button>
       </div>
     </div>

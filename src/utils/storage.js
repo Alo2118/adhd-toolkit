@@ -76,4 +76,5 @@ export function importData(file, callback) {
 export function clearAllData() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('adhd-toolkit-install-prompted');
+    localStorage.removeItem('adhd-toolkit-onboarding-done');
 }

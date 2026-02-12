@@ -49,7 +49,6 @@ export function renderActiveTasks() {
     // Update count
     const countSpan = document.getElementById('activeTasksCount');
     if (countSpan) countSpan.textContent = `${tasks.filter(t => t.status === 'active').length} attività attive`;
-    checkAndScheduleNotifications(state.activeTasks);
 }
 
 export function saveTask(taskData) {

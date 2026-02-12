@@ -576,6 +576,7 @@
     width: 100%;
     text-align: left;
     font-family: inherit;
+    color: var(--text-primary);
     cursor: pointer;
 }
 
@@ -596,6 +597,7 @@
     font-weight: 700;
     font-size: 0.95rem;
     margin-bottom: 4px;
+    color: var(--text-primary);
 }
 
 .strategy-desc {
@@ -1273,6 +1275,77 @@
 .toast.show {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
+}
+
+/* Update Banner */
+.update-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.update-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, var(--accent-calm), var(--accent-soft));
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.update-banner-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.update-banner-text {
+    flex: 1;
+}
+
+.update-banner-btn {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.update-banner-btn:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+.update-banner-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.update-banner-close:hover {
+    color: #fff;
 }
 
 /* Report */
@@ -2557,4 +2630,144 @@
 
 .report-btn-secondary .report-btn-desc {
     color: var(--text-muted);
+}
+
+/* ==============================
+   PHASE 1 — V2 Screen Components
+   ============================== */
+
+/* Settings v2 */
+.settings-screen-v2 {
+    padding-bottom: 60px;
+}
+
+.settings-cards-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.settings-card-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+    line-height: 1.4;
+}
+
+.settings-theme-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.settings-notify-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings-notify-info {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+}
+
+.settings-notify-inputs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.settings-input-group {
+    flex: 1;
+    min-width: 140px;
+}
+
+.settings-input-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.settings-danger-card {
+    background: rgba(224, 122, 122, 0.06);
+    border-color: var(--accent-coral) !important;
+}
+
+.settings-danger-label {
+    color: var(--accent-coral) !important;
+}
+
+/* Settings buttons v2 */
+.settings-btn-v2 {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+}
+
+.settings-btn-v2:active {
+    transform: scale(0.97);
+}
+
+.settings-btn-v2.primary {
+    background: linear-gradient(135deg, var(--accent-calm), var(--accent-soft));
+    color: var(--bg-deep);
+    box-shadow: 0 4px 16px rgba(123, 211, 255, 0.2);
+}
+
+.settings-btn-v2.secondary {
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+}
+
+.settings-btn-v2.accent {
+    background: var(--accent-calm);
+    color: white;
+    box-shadow: 0 4px 16px rgba(123, 211, 255, 0.2);
+}
+
+.settings-btn-v2.danger {
+    background: var(--accent-coral);
+    color: white;
+    box-shadow: 0 4px 16px rgba(224, 122, 122, 0.2);
+}
+
+/* Shared v2 screen actions */
+.screen-actions-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Filter sections v2 */
+.filter-section-v2 {
+    margin-bottom: 4px;
+}
+
+.filter-section-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.filter-chips-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }

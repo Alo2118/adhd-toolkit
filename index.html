@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="src/styles/components.css">
   <link rel="stylesheet" href="src/styles/screens.css">
   <link rel="stylesheet" href="src/styles/wizard.css">
+  <link rel="stylesheet" href="src/styles/onboarding.css">
+  <link rel="stylesheet" href="src/styles/tools.css">
 
   <!-- Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -56,12 +58,65 @@
   <div class="toast" id="toast"></div>
 
   <script type="module" src="src/main.js"></script>
+  <!-- Update Banner (hidden by default) -->
+  <div id="update-banner" class="update-banner" style="display:none">
+    <div class="update-banner-content">
+      <span class="update-banner-icon">🚀</span>
+      <span class="update-banner-text">Nuova versione disponibile!</span>
+      <button class="update-banner-btn" onclick="location.reload()">Aggiorna</button>
+      <button class="update-banner-close" onclick="dismissUpdateBanner()">&times;</button>
+    </div>
+  </div>
+
   <script>
-    // PWA Registration
+    // PWA Registration & Update Detection
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('SW registrato:', reg))
-        .catch(err => console.log('SW errore:', err));
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('SW registrato:', reg);
+
+        // Check for updates on app open (register already triggers a check)
+
+        // Detect new SW waiting or installing
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New version installed, waiting to activate
+              showUpdateBanner();
+            }
+          });
+        });
+      }).catch(err => console.log('SW errore:', err));
+
+      // Listen for messages from SW (post-activation notification)
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data?.type === 'SW_UPDATED') {
+          showUpdateBanner();
+        }
+        if (event.data?.type === 'SW_VERSION') {
+          const el = document.getElementById('appVersionValue');
+          if (el) el.textContent = event.data.version;
+        }
+      });
+
+      // If controller changes (new SW took over), reload for fresh content
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        location.reload();
+      });
+    }
+
+    function showUpdateBanner() {
+      const banner = document.getElementById('update-banner');
+      if (banner) banner.style.display = 'flex';
+    }
+
+    function dismissUpdateBanner() {
+      const banner = document.getElementById('update-banner');
+      if (banner) banner.style.display = 'none';
     }
   </script>
 </body>

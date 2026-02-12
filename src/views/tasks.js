@@ -1,19 +1,22 @@
 export const tasksViews = {
     list: `
-    <div class="diary-screen">
+    <div class="diary-screen tasks-screen-v2">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-        <div class="diary-header">
-          <h1 class="diary-title">✓ I miei compiti</h1>
-          <p class="diary-subtitle" id="activeTasksCount">Attività attive</p>
+        <div class="insights-hero">
+          <div class="insights-hero-icon">✓</div>
+          <div>
+            <h1 class="insights-hero-title">I miei compiti</h1>
+            <p class="insights-hero-sub" id="activeTasksCount">Attività attive</p>
+          </div>
         </div>
-        <div style="padding:0 20px 16px">
-          <button class="primary-btn" onclick="showAddTaskModal()" style="width:100%;margin-bottom:16px">+ Nuovo compito</button>
-          <div style="margin-bottom:12px">
-            <label style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;display:block;margin-bottom:8px">Filtro</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="screen-actions-v2">
+          <button class="settings-btn-v2 primary" onclick="showAddTaskModal()">+ Nuovo compito</button>
+          <div class="filter-section-v2">
+            <label class="filter-section-label">Filtro</label>
+            <div class="filter-chips-row">
               <button class="filter-chip selected" data-status="all" onclick="setTaskStatusFilter('all')">Tutti</button>
               <button class="filter-chip" data-status="active" onclick="setTaskStatusFilter('active')">Attivi</button>
               <button class="filter-chip" data-status="paused" onclick="setTaskStatusFilter('paused')">In pausa</button>

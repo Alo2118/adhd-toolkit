@@ -11,7 +11,7 @@ import { addGardenPoints, updateGardenBadge } from './components/garden.js';
 import { renderActiveTasks, saveTask, updateTask, toggleTaskComplete, deleteTask, toggleRecurringSection, updateRecurringDaysVisibility, updateNextOccurrencePreview, getRecurringSettingsFromUI, setTaskStatusFilter } from './components/tasks.js';
 import { requestNotificationPermission, updateNotificationStatusUI, updateNotificationDays, disableNotifications, checkAndScheduleNotifications } from './utils/notifications.js';
 import { renderHistory, renderDiaryEntries, generatePDFReport, renderInsights, renderReportMeta, renderReportPreview, setHistoryPeriod, setHistoryFeelingFilter, selectReportPeriod, toggleCheckbox } from './components/history.js';
-import { initTimerScreen, startTimer, stopTimer, completeTimerReward, startBreathing, initGrounding, updateGroundingStep, stopBreathing, resetTimer, saveDump, completeMicroStep, completeChecklist, saveGuidedAnswer, executeStrategyFromDetail, completeStrategyFromDetail } from './components/tools.js';
+import { initTimerScreen, startTimer, stopTimer, completeTimerReward, startBreathing, initGrounding, updateGroundingStep, stopBreathing, resetTimer, saveDump, completeMicroStep, completeChecklist, saveGuidedAnswer, executeStrategyFromDetail, completeStrategyFromDetail, initCountdown, startCountdown, stopCountdown, initBodyMove, startBodyMove, stopBodyMove, saveFactCheck, initAnchor333, updateAnchor333Step, copySosMessage, shareSosMessage, initSensory, updateSensoryProgress, completeSensory } from './components/tools.js';
 
 // Views
 import { legalScreen } from './views/legal.js';
@@ -22,6 +22,7 @@ import { toolsViews, guidedViews } from './views/tools.js';
 import { diaryViews } from './views/diary.js';
 import { tasksViews } from './views/tasks.js';
 import { settingsScreen } from './views/settings.js';
+import { onboardingSteps } from './views/onboarding.js';
 
 // --- Router / View Logic ---
 
@@ -61,7 +62,18 @@ const routes = {
 
     // Tasks & Settings
     activeTasksScreen: tasksViews.list,
-    settingsScreen: settingsScreen
+    settingsScreen: settingsScreen,
+
+    // New Strategy Tools
+    countdownScreen: toolsViews.countdown,
+    bodyMoveScreen: toolsViews.bodyMove,
+    factCheckScreen: toolsViews.factCheck,
+    anchor333Screen: toolsViews.anchor333,
+    sosScreen: toolsViews.sosMessage,
+    sensoryScreen: toolsViews.sensory,
+
+    // Onboarding (dynamic, handled separately)
+    onboardingScreen: null
 };
 
 // Modals are separate
@@ -116,10 +128,15 @@ function handlePostRender(screenId) {
     else if (screenId === 'reportScreen') { renderReportMeta(); renderReportPreview(); }
     else if (screenId === 'groundScreen') initGrounding(); // Auto-start
     else if (screenId === 'timerScreen') initTimerScreen(2);
+    else if (screenId === 'countdownScreen') initCountdown();
+    else if (screenId === 'bodyMoveScreen') initBodyMove();
+    else if (screenId === 'anchor333Screen') initAnchor333();
+    else if (screenId === 'sensoryScreen') initSensory();
     else if (screenId === 'settingsScreen') {
         syncThemeButtons();
         updateNotificationStatusUI();
         syncUserNameInput();
+        requestAppVersion();
     }
     // Wizard post-render
     else if (screenId === 'wizardWelcomeScreen') initWizardWelcome();
@@ -795,13 +812,16 @@ function generateStrategy() {
         const allStrategies = [
             ...(contextStrategies.lavoro || []),
             ...(contextStrategies.studio || []),
-            ...(contextStrategies.sociale || [])
+            ...(contextStrategies.sociale || []),
+            ...(contextStrategies.dopamina || []),
+            ...(contextStrategies.attivazione || []),
+            ...(contextStrategies.emergenza || [])
         ];
         const rankedStrategies = getRankedStrategiesForFeeling(state.currentFeeling, allStrategies);
         strategiesContainer.innerHTML = rankedStrategies.slice(0, 3).map(strat => `
             <button class="strategy-card" data-strategy="${encodeURIComponent(strat.name)}"
                 onclick="openStrategyDetail(this.dataset.strategy)">
-                <div class="strategy-title">${strat.name}</div>
+                <div class="strategy-name">${strat.name}</div>
                 <div class="strategy-desc">${strat.desc}</div>
             </button>
         `).join('');
@@ -947,8 +967,13 @@ function updateAcceptButton() {
 
 function acceptTerms() {
     localStorage.setItem('adhd-toolkit-consent', 'true');
-    showScreen('homeScreen');
-    showToast('Benvenuto! 🤗');
+    const onboardingDone = localStorage.getItem('adhd-toolkit-onboarding-done');
+    if (!onboardingDone) {
+        startOnboarding();
+    } else {
+        showScreen('homeScreen');
+        showToast('Benvenuto! 🤗');
+    }
 }
 
 function declineTerms() {
@@ -1323,6 +1348,116 @@ window.importData = () => {
 };
 
 
+// --- Onboarding ---
+
+let onboardingStep = 0;
+let onboardingChoices = { name: '', theme: 'dark', notifications: false };
+
+function startOnboarding() {
+    onboardingStep = 0;
+    onboardingChoices = { name: '', theme: state.settings?.theme || 'dark', notifications: false };
+    renderOnboardingStep();
+}
+
+function renderOnboardingStep() {
+    const app = document.getElementById('app');
+    if (!app) return;
+    app.innerHTML = onboardingSteps[onboardingStep] || '';
+    window.scrollTo(0, 0);
+
+    // Post-render sync
+    if (onboardingStep === 2) {
+        const input = document.getElementById('onboardingNameInput');
+        if (input) {
+            input.value = onboardingChoices.name;
+            setTimeout(() => input.focus(), 200);
+        }
+    } else if (onboardingStep === 3) {
+        syncOnboardingTheme();
+    } else if (onboardingStep === 4) {
+        syncOnboardingNotify();
+    }
+}
+
+function onboardingNext() {
+    // Save data from current step before advancing
+    if (onboardingStep === 2) {
+        const input = document.getElementById('onboardingNameInput');
+        if (input) onboardingChoices.name = (input.value || '').trim();
+    }
+    if (onboardingStep < onboardingSteps.length - 1) {
+        onboardingStep++;
+        renderOnboardingStep();
+    }
+}
+
+function onboardingBack() {
+    if (onboardingStep === 2) {
+        const input = document.getElementById('onboardingNameInput');
+        if (input) onboardingChoices.name = (input.value || '').trim();
+    }
+    if (onboardingStep > 0) {
+        onboardingStep--;
+        renderOnboardingStep();
+    }
+}
+
+function onboardingSelectTheme(theme) {
+    onboardingChoices.theme = theme;
+    applyTheme(theme);
+    syncOnboardingTheme();
+}
+
+function syncOnboardingTheme() {
+    const cards = document.querySelectorAll('.onboarding-theme-card');
+    cards.forEach(c => c.classList.remove('selected'));
+    const selectedId = {
+        system: 'onbThemeSystem',
+        light: 'onbThemeLight',
+        dark: 'onbThemeDark'
+    }[onboardingChoices.theme];
+    const el = document.getElementById(selectedId);
+    if (el) el.classList.add('selected');
+}
+
+function onboardingToggleNotify(enabled) {
+    onboardingChoices.notifications = enabled;
+    syncOnboardingNotify();
+}
+
+function syncOnboardingNotify() {
+    const yesBtn = document.getElementById('onbNotifyYes');
+    const noBtn = document.getElementById('onbNotifyNo');
+    if (yesBtn) yesBtn.classList.toggle('selected', onboardingChoices.notifications === true);
+    if (noBtn) noBtn.classList.toggle('selected', onboardingChoices.notifications === false);
+}
+
+function onboardingFinish() {
+    // Apply name
+    const name = onboardingChoices.name;
+    state.userName = name || 'Bentornato';
+
+    // Apply theme
+    if (!state.settings) state.settings = { theme: 'system', notifications: true };
+    state.settings.theme = onboardingChoices.theme;
+    applyTheme(onboardingChoices.theme);
+
+    // Apply notifications
+    if (onboardingChoices.notifications) {
+        state.notificationSettings = state.notificationSettings || { enabled: false, taskStuckDays: 3, deadlineWarningDays: 2 };
+        state.notificationSettings.enabled = true;
+        requestNotificationPermission();
+    }
+
+    // Save everything
+    persist();
+    localStorage.setItem('adhd-toolkit-onboarding-done', 'true');
+
+    // Go to home
+    showScreen('homeScreen');
+    showToast(name ? `Benvenuto, ${name}! 🤗` : 'Benvenuto! 🤗');
+}
+
 // --- Init ---
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -1337,10 +1472,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     const consent = localStorage.getItem('adhd-toolkit-consent');
-    if (consent === 'true') {
-        showScreen('homeScreen');
-    } else {
+    const onboardingDone = localStorage.getItem('adhd-toolkit-onboarding-done');
+    if (consent !== 'true') {
         showScreen('legalScreen');
+    } else if (!onboardingDone) {
+        startOnboarding();
+    } else {
+        showScreen('homeScreen');
     }
 
     if (state.notificationSettings?.enabled) {
@@ -1425,9 +1563,30 @@ window.updateAcceptButton = updateAcceptButton;
 window.acceptTerms = acceptTerms;
 window.declineTerms = declineTerms;
 window.setTheme = setTheme;
+window.requestNotificationPermission = requestNotificationPermission;
 window.disableNotifications = disableNotifications;
 window.updateNotificationDays = updateNotificationDays;
+window.checkForUpdates = checkForUpdates;
 window.saveUserName = saveUserName;
+
+// New strategy tools
+window.startCountdown = startCountdown;
+window.stopCountdown = stopCountdown;
+window.startBodyMove = startBodyMove;
+window.stopBodyMove = stopBodyMove;
+window.saveFactCheck = saveFactCheck;
+window.updateAnchor333Step = updateAnchor333Step;
+window.copySosMessage = copySosMessage;
+window.shareSosMessage = shareSosMessage;
+window.updateSensoryProgress = updateSensoryProgress;
+window.completeSensory = completeSensory;
+
+// Onboarding
+window.onboardingNext = onboardingNext;
+window.onboardingBack = onboardingBack;
+window.onboardingSelectTheme = onboardingSelectTheme;
+window.onboardingToggleNotify = onboardingToggleNotify;
+window.onboardingFinish = onboardingFinish;
 
 // Wizard
 window.wizardNext = wizardNext;
@@ -1603,6 +1762,37 @@ function saveUserName() {
     persist();
     updateHomeGreeting();
     showToast(name ? 'Nome salvato' : 'Nome rimosso');
+}
+
+function requestAppVersion() {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' });
+    }
+}
+
+function checkForUpdates() {
+    if (!('serviceWorker' in navigator)) {
+        showToast('Service Worker non disponibile');
+        return;
+    }
+    navigator.serviceWorker.getRegistration().then(reg => {
+        if (!reg) {
+            showToast('Nessun Service Worker registrato');
+            return;
+        }
+        showToast('Controllo aggiornamenti…');
+        reg.update().then(() => {
+            if (reg.waiting) {
+                showToast('🚀 Aggiornamento pronto! Ricarica la pagina.');
+                const banner = document.getElementById('update-banner');
+                if (banner) banner.style.display = 'flex';
+            } else {
+                showToast('✓ App già aggiornata');
+            }
+        }).catch(() => {
+            showToast('❌ Errore nel controllo aggiornamenti');
+        });
+    });
 }
 
 function updateHomeStats() {

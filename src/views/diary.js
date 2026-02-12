@@ -1,17 +1,20 @@
 export const diaryViews = {
     list: `
-    <div class="diary-screen">
+    <div class="diary-screen diary-screen-v2">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-        <div class="diary-header">
-          <h1 class="diary-title">📝 Diario emotivo</h1>
-          <p class="diary-subtitle">Cattura i tuoi momenti</p>
+        <div class="insights-hero">
+          <div class="insights-hero-icon">📝</div>
+          <div>
+            <h1 class="insights-hero-title">Diario emotivo</h1>
+            <p class="insights-hero-sub">Cattura i tuoi momenti</p>
+          </div>
         </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;padding:0 20px 10px">
-          <button class="diary-new-btn" onclick="showScreen('diaryNewScreen')">✏️ Nuova nota</button>
-          <button class="diary-new-btn" onclick="showScreen('historyScreen')" style="background:var(--bg-elevated)">📋 Storico</button>
+        <div class="screen-actions-v2" style="display:flex;gap:12px">
+          <button class="settings-btn-v2 primary" onclick="showScreen('diaryNewScreen')" style="flex:1">✏️ Nuova nota</button>
+          <button class="settings-btn-v2 secondary" onclick="showScreen('historyScreen')" style="flex:1">📋 Storico</button>
         </div>
         <div class="diary-entries-title">Note recenti</div>
         <div id="diaryEntries"></div>
@@ -144,28 +147,31 @@ export const diaryViews = {
     `,
 
     history: `
-    <div class="diary-screen">
+    <div class="diary-screen history-screen-v2">
         <div class="flow-header">
           <button class="back-btn" onclick="showScreen('homeScreen')">←</button>
           <div style="flex:1"></div>
         </div>
-        <div class="diary-header">
-          <h1 class="diary-title">📋 Storico</h1>
-          <p class="diary-subtitle" id="historyCount">I tuoi momenti</p>
+        <div class="insights-hero">
+          <div class="insights-hero-icon">📋</div>
+          <div>
+            <h1 class="insights-hero-title">Storico</h1>
+            <p class="insights-hero-sub" id="historyCount">I tuoi momenti</p>
+          </div>
         </div>
-        <div style="padding:0 20px 16px">
-          <div style="margin-bottom:12px">
-            <label style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;display:block;margin-bottom:8px">Periodo</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <div class="screen-actions-v2">
+          <div class="filter-section-v2">
+            <label class="filter-section-label">Periodo</label>
+            <div class="filter-chips-row">
               <button class="filter-chip selected" data-period="all" onclick="setHistoryPeriod('all')">Tutto</button>
               <button class="filter-chip" data-period="week" onclick="setHistoryPeriod('week')">Settimana</button>
               <button class="filter-chip" data-period="month" onclick="setHistoryPeriod('month')">Mese</button>
               <button class="filter-chip" data-period="today" onclick="setHistoryPeriod('today')">Oggi</button>
             </div>
           </div>
-          <div>
-            <label style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;display:block;margin-bottom:8px">Emozione</label>
-            <div id="historyFeelingFilters" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+          <div class="filter-section-v2">
+            <label class="filter-section-label">Emozione</label>
+            <div id="historyFeelingFilters" class="filter-chips-row"></div>
           </div>
         </div>
         <div id="historyContent"></div>

@@ -1,0 +1,353 @@
+/* ========================================
+   Strategy Tools — New Interactive Screens
+   Follows app design system:
+   - Cards: bg-card + border-subtle + radius-lg
+   - Buttons: radius-full + gradient fills + font-weight 700
+   - Inputs: bg-card + border-subtle + radius-md + font-family inherit
+   - Accent colors: --accent-calm (default), --accent-green (positive),
+       --accent-warm (energy), --accent-coral (alert), --accent-soft (soft)
+   ======================================== */
+
+/* ---- Shared animation ---- */
+@keyframes tool-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Ground Input (shared: Grounding 5-4-3-2-1 + Anchor 3-3-3) ---- */
+
+.ground-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 4px;
+  margin-bottom: 16px;
+}
+
+.ground-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.92rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ground-input:focus {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(125, 211, 168, 0.15);
+}
+
+.ground-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Primary action button inside step cards */
+.next-btn {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 20px auto 0;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-calm));
+  color: var(--bg-deep);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.next-btn:active {
+  transform: scale(0.96);
+  box-shadow: none;
+}
+
+/* ---- Anchor step card (shared: Grounding + Anchor 3-3-3) ---- */
+
+.anchor-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px 20px 24px;
+  text-align: center;
+  animation: tool-fade-in 0.35s ease-out;
+}
+
+.anchor-step-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-calm);
+  background: rgba(123, 211, 255, 0.1);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+.anchor-step-emoji {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.anchor-step-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+/* ======================================
+   Countdown 5-4-3-2-1
+   ====================================== */
+
+.countdown-screen-inner {
+  gap: 20px;
+}
+
+.countdown-circle {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 3px solid var(--accent-calm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px auto;
+  box-shadow: var(--shadow-glow);
+}
+
+.countdown-number {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--accent-calm);
+  line-height: 1;
+}
+
+@keyframes countdown-pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  50%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.countdown-message {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  min-height: 28px;
+  transition: all 0.3s ease;
+}
+
+.countdown-message.countdown-go {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent-green);
+  animation: countdown-pop 0.5s ease-out;
+  text-shadow: 0 0 20px rgba(125, 211, 168, 0.3);
+}
+
+/* ======================================
+   Body Move
+   ====================================== */
+
+.bodymove-screen-inner {
+  gap: 16px;
+}
+
+.bodymove-hero-emoji {
+  font-size: 3.5rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  animation: tool-fade-in 0.4s ease-out;
+}
+
+.bodymove-instruction {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 340px;
+  text-align: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  border: 1px solid var(--border-subtle);
+  margin: 4px 0;
+}
+
+.bodymove-timer-circle {
+  width: 130px;
+  height: 130px;
+  border-color: var(--accent-warm);
+  box-shadow: 0 0 20px rgba(242, 179, 138, 0.18);
+}
+
+.bodymove-timer-num {
+  font-size: 2.5rem;
+  color: var(--accent-warm);
+}
+
+/* ======================================
+   Fact Check — Fatti vs Paure
+   ====================================== */
+
+.factcheck-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 4px;
+}
+
+.factcheck-col {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  border: 1px solid var(--border-subtle);
+}
+
+.factcheck-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.factcheck-facts-label {
+  color: var(--accent-green);
+}
+
+.factcheck-fears-label {
+  color: var(--accent-coral);
+}
+
+.factcheck-input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.factcheck-input:last-child {
+  margin-bottom: 0;
+}
+
+.factcheck-input:focus {
+  border-color: var(--accent-calm);
+  box-shadow: 0 0 0 3px rgba(123, 211, 255, 0.12);
+}
+
+.factcheck-input::placeholder {
+  color: var(--text-muted);
+}
+
+.factcheck-result {
+  margin-top: 16px;
+  padding: 0 4px;
+}
+
+.factcheck-summary {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  text-align: center;
+  border: 2px solid var(--accent-green);
+  animation: tool-fade-in 0.35s ease-out;
+}
+
+.factcheck-summary p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.factcheck-verdict {
+  color: var(--accent-green) !important;
+  font-size: 1.05rem !important;
+  margin-top: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* ======================================
+   SOS Message
+   ====================================== */
+
+/* SOS uses dump-screen/dump-textarea/dump-actions/dump-tip
+   from components.css — no extra styles needed.
+   Override textarea min-height via inline style in template. */
+
+/* ======================================
+   Sensory Checklist
+   ====================================== */
+
+.sensory-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.sensory-check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+
+.sensory-check-item:has(input:checked) {
+  border-color: var(--accent-green);
+  background: rgba(125, 211, 168, 0.08);
+}
+
+.sensory-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent-green);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.sensory-check-emoji {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.sensory-check-label {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* Fallback for browsers without :has() support */
+@supports not (selector(:has(input:checked))) {
+  .sensory-check-item {
+    position: relative;
+  }
+}

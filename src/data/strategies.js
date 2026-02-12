@@ -16,6 +16,36 @@ export const contextStrategies = {
         { name: 'Time-box sociale', desc: '"Resto 1 ora". Sapere che finisce aiuta. Puoi sempre restare di più.' },
         { name: 'Safe word', desc: 'Con amici fidati, una parola per dire "sono in overload" senza spiegare.' },
         { name: 'Recovery time', desc: 'Dopo eventi sociali, blocca tempo per ricaricare. Non è antisociale, è necessità.' }
+    ],
+    dopamina: [
+        { name: 'Boss Fight Mode', desc: 'Trasforma il compito in un boss da battere. "Ho 10 min per sconfiggere questa email". La sfida attiva la dopamina.' },
+        { name: 'Conta alla rovescia 5-4-3-2-1', desc: 'Conta ad alta voce 5-4-3-2-1 e PARTI. Non pensare, lanciati. L\'azione precede la motivazione.' },
+        { name: 'Reward stacking', desc: 'Abbina il compito noioso a qualcosa che ami. Studio + snack preferito. Email + musica epica.' },
+        { name: 'Sprint competitivo', desc: 'Sfida te stesso: "Riesco a fare 5 cose in 10 minuti?". Il timer che corre è dopamina pura.' },
+        { name: 'Streak tracker', desc: 'Quanti giorni di fila riesci? Ogni giorno segnato è una vittoria. Spezzare la catena fa male, continuarla è soddisfazione.' },
+        { name: 'Level up', desc: 'Dai un livello a ogni compito: easy, medium, hard. Parti da easy per sbloccare i successivi. Progressione = dopamina.' },
+        { name: 'Playlist attivazione', desc: 'Una canzone specifica = "ora lavoro". Il cervello associa il suono all\'azione. Pavlov funziona.' },
+        { name: 'Victory lap', desc: 'Dopo ogni compito completato, celebra fisicamente. Pugno in aria, ballo, "YES!". Il cervello registra: fare = bello.' }
+    ],
+    attivazione: [
+        { name: 'Regola dei 2 minuti', desc: 'Se ci mette meno di 2 minuti, fallo ORA. Non metterlo in lista. L\'azione immediata è il miglior antidoto al blocco.' },
+        { name: 'Versione ridicola', desc: 'Fai la versione più brutta e veloce possibile. Email di 2 righe. Pulizia di 1 stanza. Il cervello ADHD si attiva col "facile".' },
+        { name: 'Corpo prima', desc: 'Fai 20 jumping jacks o corri sul posto 30 secondi. L\'attivazione fisica accende il cervello. Muovi il corpo, la mente segue.' },
+        { name: 'Cambio radicale', desc: 'Non funziona? Cambia TUTTO: posto, musica, strumento, posizione. Il cervello ADHD si risveglia con la novità.' },
+        { name: 'Narrazione live', desc: 'Descrivi ad alta voce cosa stai facendo: "Ora apro il file, ora scrivo il titolo...". L\'output verbale tiene il cervello agganciato.' },
+        { name: 'Sfida impossibile', desc: '"Scommetto che non riesco a finire in 5 min." Il cervello ADHD adora dimostrare che sbagli. Usa la provocazione.' },
+        { name: 'Tempio sensoriale', desc: 'Crea il setup perfetto: luce giusta, profumo, temperatura, bevanda calda. L\'ambiente sensoriale invita il cervello a restare.' },
+        { name: 'Power pose', desc: '2 minuti in piedi, braccia aperte, respiro profondo. Il corpo cambia la chimica del cervello. Poi parti.' }
+    ],
+    emergenza: [
+        { name: 'Doccia fredda mentale', desc: 'Metti la faccia sotto acqua fredda 30 secondi. Il dive reflex resetta il sistema nervoso. Reboot immediato.' },
+        { name: 'Scarica fisica', desc: 'Corri su e giù per le scale, fai 10 squat, stringi un cuscino fortissimo. L\'energia emotiva ha bisogno di un\'uscita fisica.' },
+        { name: 'Box breathing', desc: '4 secondi inspira, 4 trattieni, 4 espira, 4 trattieni. Ripeti 4 volte. Il sistema nervoso si calma in 2 minuti.' },
+        { name: 'Mappa del caos', desc: 'Prendi un foglio enorme. Scrivi TUTTO quello che hai in testa, a ragno. Collegali. Vedere il caos organizzato lo rende gestibile.' },
+        { name: 'Ancora 3-3-3', desc: 'Nomina 3 cose che vedi, 3 suoni che senti, muovi 3 parti del corpo. Torna al presente in 15 secondi.' },
+        { name: 'Messaggio SOS', desc: 'Scrivi a una persona fidata: "Momento difficile, mi basta sapere che ci sei". La connessione umana è il reset più potente.' },
+        { name: 'Cambio stato rapido', desc: 'Odore forte (menta, caffè), sapore intenso (limone, piccante), o suono improvviso. Lo shock sensoriale interrompe la spirale.' },
+        { name: 'Muro dei fatti', desc: 'Scrivi 3 fatti oggettivi vs 3 paure. "Fatto: ho consegnato 9/10 progetti. Paura: non sono capace." I fatti vincono.' }
     ]
 };
 
@@ -128,5 +158,32 @@ export const strategyExplanations = {
     'Timeline di vittorie': 'Rileggere note positive ricorda i successi. Memoria ADHD dimentica vittorie.',
     'Pattern fix': 'Quale sistema previene questo errore? Focus su soluzione, non colpa.',
     'Contatore successi': 'Quante cose bene oggi? Maggioranza è successo, errore è eccezione.',
-    'Amico ADHD': 'Cosa diresti a amico con ADHD? Quella compassione è per te.'
+    'Amico ADHD': 'Cosa diresti a amico con ADHD? Quella compassione è per te.',
+    // Strategie dopaminiche
+    'Boss Fight Mode': 'Il cervello ADHD si attiva con sfide. Trasformare un compito in "nemico da battere" attiva adrenalina e dopamina. La narrativa epica rende interessante ciò che è noioso.',
+    'Conta alla rovescia 5-4-3-2-1': 'Mel Robbins rule: contare alla rovescia bypassa la corteccia prefrontale che procrastina. A "1" il corpo si muove prima che la mente possa obiettare. Azione > riflessione.',
+    'Reward stacking': 'Abbinare dopamina esterna (snack, musica, ambiente) al compito povero di stimoli. Il cervello ADHD ha bisogno di rinforzo immediato, non di promesse future.',
+    'Sprint competitivo': 'L\'auto-competizione produce dopamina. "Battere il proprio record" attiva gli stessi circuiti di un gioco. Il timer che corre crea urgenza costruttiva.',
+    'Streak tracker': 'Le serie ininterrotte sfruttano l\'avversione alla perdita. Spezzare una streak di 10 giorni fa più male che iniziare da zero. Il cervello ADHD protegge ciò che ha costruito.',
+    'Level up': 'La progressione graduale dà dopamina a ogni livello completato. Partire da easy riduce la barriera d\'ingresso e crea momentum. Ogni step sbloccato è ricompensa.',
+    'Playlist attivazione': 'Il condizionamento sonoro funziona davvero. Una canzone associata al lavoro diventa interruttore pavloviano. Il cervello entra in "modalità focus" automaticamente.',
+    'Victory lap': 'Celebrare fisicamente crea un\'associazione positiva con il completamento. Il cervello registra: "completare = piacere". Rinforza il circuito dopaminico del "fare".',
+    // Strategie di attivazione
+    'Regola dei 2 minuti': 'David Allen GTD: se ci mette meno di 2 minuti, l\'energia di catalogarlo supera quella di farlo. L\'azione immediata riduce il carico mentale delle liste.',
+    'Versione ridicola': 'Il perfezionismo ADHD blocca l\'inizio. Dare il permesso di fare "male" elimina la paura. Spesso la versione brutta diventa buona una volta iniziata.',
+    'Corpo prima': 'L\'esercizio fisico breve aumenta noradrenalina e dopamina per 60-90 minuti. 30 secondi di jumping jacks equivalgono a un micro-dose di attivazione cerebrale.',
+    'Cambio radicale': 'La novità produce dopamina. Quando un contesto è "scarico", cambiare tutto (posto, strumenti, posizione) riaccende il cervello ADHD come un nuovo stimolo.',
+    'Narrazione live': 'Parlare ad alta voce usa la working memory verbale come ancora. Il cervello ADHD si distrae meno quando produce output costante. Funziona come body doubling con se stessi.',
+    'Sfida impossibile': 'La provocazione attiva il sistema di ricompensa competitivo. "Non ce la fai" è il trigger più potente per un cervello ADHD che adora dimostrare il contrario.',
+    'Tempio sensoriale': 'L\'environment design sfrutta gli input sensoriali per creare uno stato mentale. Il cervello ADHD reagisce fortemente all\'ambiente: controllandolo, controlli l\'attenzione.',
+    'Power pose': 'Amy Cuddy research: 2 minuti di postura espansa aumentano testosterone e riducono cortisolo. Il corpo influenza la chimica e la chimica influenza la motivazione.',
+    // Strategie di emergenza
+    'Doccia fredda mentale': 'Il riflesso di immersione (dive reflex) attiva il nervo vago e rallenta il battito. 30 secondi di acqua fredda sul viso resettano il sistema nervoso autonomo.',
+    'Scarica fisica': 'L\'emozione intensa è energia fisica intrappolata. Darle un\'uscita motoria (correre, saltare, stringere) scarica il sistema nervoso senza lasciare residuo tossico.',
+    'Box breathing': 'Il ritmo 4-4-4-4 attiva il sistema parasimpatico. Navy SEALs e piloti la usano sotto stress estremo. 4 cicli bastano per abbassare il cortisolo.',
+    'Mappa del caos': 'Esternalizzare il caos mentale su carta lo rende oggetto, non soggetto. Vedere tutti i pensieri insieme rivela che il caos ha una struttura. La struttura calma.',
+    'Ancora 3-3-3': 'Tecnica di grounding ultra-rapida. Impegna tre sensi in 15 secondi, forzando il cervello a tornare al presente. Interrompe qualsiasi spirale ansiosa o RSD.',
+    'Messaggio SOS': 'La co-regolazione è più potente dell\'auto-regolazione. Un messaggio a persona fidata attiva ossitocina e riduce il cortisolo. Non serve risolvere, basta connettere.',
+    'Cambio stato rapido': 'Uno stimolo sensoriale intenso (menta, limone, freddo) interrompe il pattern neurale corrente. Come premere Ctrl+Alt+Del sul cervello: forza il reboot.',
+    'Muro dei fatti': 'Il cervello ADHD con RSD confonde emozione e realtà. Scrivere fatti oggettivi vs paure soggettive mostra il gap. L\'evidenza calma il limbico.'
 };
