@@ -202,20 +202,43 @@ export function saveGuidedAnswer() {
     }
 }
 
-// Strategie che hanno senso con un timer (attesa, esecuzione cronometrata)
-const TIMED_STRATEGIES = new Set([
-    'Pomodoro modificato', 'Chunk down', 'Time-box sociale', 'Sprint competitivo',
-    'Sfida impossibile', 'Power pose', 'Box breathing', 'Body doubling virtuale',
-    'Pomodoro da 10', 'Sprint 10 min', 'Timer di decisione', 'Phone time-box',
-    'Power nap 20min', 'Focus su uno', 'Corpo prima', 'Regola dei 2 minuti',
-    'Doccia fredda mentale', 'Break sensoriale', 'Buffer 5 minuti', 'Pausa buffer',
-    'Deadline artificiali', 'Boss Fight Mode', 'Recovery time', 'Time-box',
-    'Timer 2 minuti', 'Respira con me'
-]);
+// Strategie con timer: nome → durata in minuti
+const TIMED_STRATEGIES = {
+    'Pomodoro modificato': 25,
+    'Chunk down': 15,
+    'Time-box sociale': 10,
+    'Sprint competitivo': 15,
+    'Sfida impossibile': 5,
+    'Power pose': 2,
+    'Box breathing': 4,
+    'Body doubling virtuale': 25,
+    'Pomodoro da 10': 10,
+    'Sprint 10 min': 10,
+    'Timer di decisione': 2,
+    'Phone time-box': 5,
+    'Power nap 20min': 20,
+    'Focus su uno': 25,
+    'Corpo prima': 5,
+    'Regola dei 2 minuti': 2,
+    'Doccia fredda mentale': 3,
+    'Break sensoriale': 5,
+    'Buffer 5 minuti': 5,
+    'Pausa buffer': 5,
+    'Deadline artificiali': 15,
+    'Boss Fight Mode': 10,
+    'Recovery time': 10,
+    'Time-box': 15,
+    'Timer 2 minuti': 2,
+    'Respira con me': 4
+};
 
 function isTimedStrategy(name) {
-    if (!name) return true; // Fallback: se non conosciamo la strategia, mostra timer
-    return TIMED_STRATEGIES.has(name);
+    if (!name) return true;
+    return name in TIMED_STRATEGIES;
+}
+
+function getStrategyMinutes(name) {
+    return TIMED_STRATEGIES[name] || 2;
 }
 
 export function executeStrategyFromDetail() {
@@ -249,13 +272,16 @@ export function executeStrategyFromDetail() {
         return;
     }
 
-    let seconds = 120;
+    const minutes = getStrategyMinutes(strategyName);
+    let seconds = minutes * 60;
     const label = strategyName ? `In corso: ${strategyName}` : 'In corso';
-    showToast(`${label} (2 minuti)`);
+    showToast(`${label} (${minutes} min)`);
 
+    const m0 = Math.floor(seconds / 60);
+    const s0 = (seconds % 60).toString().padStart(2, '0');
     if (button) {
         button.disabled = true;
-        button.textContent = 'In corso… 2:00';
+        button.textContent = `In corso… ${m0}:${s0}`;
     }
 
     strategyTimerInterval = setInterval(() => {
@@ -269,7 +295,7 @@ export function executeStrategyFromDetail() {
             strategyTimerInterval = null;
             if (button) {
                 button.disabled = false;
-                button.textContent = 'Riparti 2 min →';
+                button.textContent = `Riparti ${minutes} min →`;
             }
             showToast('Tempo finito! Valuta la strategia.');
         }
