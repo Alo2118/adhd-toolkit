@@ -664,6 +664,27 @@
     color: var(--accent-coral);
 }
 
+/* Home shortcut button on tool screens */
+.tool-home-shortcut {
+    text-align: center;
+    padding: 16px 0 8px;
+}
+
+.tool-home-btn {
+    font-size: 0.9rem;
+    padding: 10px 24px;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.tool-home-btn.highlight {
+    background: var(--accent-calm);
+    color: white;
+    border-color: var(--accent-calm);
+    transform: scale(1.05);
+    box-shadow: 0 2px 12px rgba(126, 184, 218, 0.3);
+}
+
 /* Timer Circle */
 .timer-circle {
     width: 200px;
@@ -1614,6 +1635,13 @@
     border-radius: 8px;
     font-size: 0.85rem;
     color: var(--accent-green);
+}
+
+.history-card-rating {
+    color: #f5a623;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-left: 4px;
 }
 
 .history-card-strategy.incomplete {

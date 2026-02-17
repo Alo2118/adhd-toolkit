@@ -61,8 +61,13 @@ export function renderHistory() {
         const feeling = feelings.find(f => f.id === item.feeling) || { emoji: '❓', label: '?' };
         const trigger = allTriggers.find(t => t.id === item.trigger) || { label: '?' };
         const strategy = getDisplayStrategy(item);
+        const rating = getStrategyRating(item);
+        const ratingDisplay = rating ? ` <span class="history-card-rating">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</span>` : '';
         const dateLabel = item.date ? formatDate(item.date) : '';
         const taskLine = item.taskName ? `<div class="history-card-task">Compito: ${item.taskName}</div>` : '';
+        const strategyLine = strategy !== '—'
+            ? `<div class="history-card-strategy">Strategia: ${strategy}${ratingDisplay}</div>`
+            : '';
         return `
             <div class="history-card">
                 <div class="history-card-header">
@@ -74,7 +79,7 @@ export function renderHistory() {
                 </div>
                 ${taskLine}
                 <div class="history-card-trigger">Trigger: ${trigger.label}</div>
-                <div class="history-card-strategy">${strategy}</div>
+                ${strategyLine}
                 <div class="history-card-actions">
                     <button class="edit-btn" onclick="openEditHistoryModal(${item.id})">✏️</button>
                     <button class="delete-btn" onclick="deleteHistoryEntry(${item.id})">🗑️</button>
@@ -525,6 +530,7 @@ export function generatePDFReport(updateLastPrinted = false) {
                 const feeling = feelings.find(f => f.id === item.feeling)?.label || item.feeling;
                 const trigger = allTriggers.find(t => t.id === item.trigger)?.label || item.trigger;
                 const strategy = getDisplayStrategy(item);
+                const rating = getStrategyRating(item);
                 const taskName = item.taskName || '';
                 const dateText = item.date ? formatDate(item.date) : '';
                 if (index % 2 === 0) {
@@ -534,7 +540,8 @@ export function generatePDFReport(updateLastPrinted = false) {
 
                 const leftText = `${dateText} - ${feeling}`;
                 const triggerText = taskName ? `${trigger} - ${taskName}` : trigger;
-                const strategyText = strategy || '-';
+                const ratingText = rating ? ` (${rating}/5)` : '';
+                const strategyText = (strategy && strategy !== '—') ? `${strategy}${ratingText}` : '-';
 
                 doc.setTextColor(...colors.dark);
                 fitTextSingleLine(leftText, colDateWidth, 8, 6);
@@ -1151,17 +1158,16 @@ function getStrategyRating(item) {
 
 function getDisplayStrategy(item) {
     if (!item) return '—';
-    const used = item.strategyUsed;
-    if (!used) return '—';
-    if (item.strategy && used === item.strategy) return '—';
-    return used;
+    // Mostra solo la strategia effettivamente usata (tool/strategia aperta)
+    // item.strategy è il titolo della risposta emotiva, NON la strategia
+    return item.strategyUsed || '—';
 }
 
 function collectStrategyRatings(history) {
     const totals = {};
     const counts = {};
     (history || []).forEach(item => {
-        const strategy = item.strategyUsed || item.strategy;
+        const strategy = item.strategyUsed;
         if (!strategy) return;
         const rating = getStrategyRating(item);
         if (!rating) return;

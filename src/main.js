@@ -146,6 +146,15 @@ function handlePostRender(screenId) {
     else if (screenId === 'wizardContextScreen') renderWizardContext();
     else if (screenId === 'wizardSummaryScreen') renderWizardSummary();
     else if (screenId === 'triggerScreen') renderTriggers();
+
+    // Inject "Torna alla Home" button on every tool/strategy screen
+    const ratingSection = document.getElementById('strategyRatingSection');
+    if (ratingSection && !document.querySelector('.tool-home-shortcut')) {
+        const homeDiv = document.createElement('div');
+        homeDiv.className = 'tool-home-shortcut';
+        homeDiv.innerHTML = '<button class="btn secondary tool-home-btn" onclick="goHomeFromTool()">🏠 Torna alla Home</button>';
+        ratingSection.insertAdjacentElement('afterend', homeDiv);
+    }
 }
 
 function showToast(message) {
@@ -899,7 +908,9 @@ function recordStrategyOutcome(rating) {
 
     const safeRating = normalizeStrategyRating(rating);
     if (entry && safeRating) {
-        const strategyName = entry.strategyUsed || entry.strategy || state.runtime?.selectedStrategyName;
+        // Priorità: strategia già registrata > strategia selezionata nel runtime
+        // NON usare entry.strategy che è il titolo della risposta emotiva, non la strategia
+        const strategyName = entry.strategyUsed || state.runtime?.selectedStrategyName || null;
         entry.strategyRating = safeRating;
         entry.strategyFeedbackAt = new Date().toISOString();
         if (strategyName) {
@@ -915,7 +926,19 @@ function recordStrategyOutcome(rating) {
         updateStrategyRatingUI(safeRating, true);
         showToast(`Grazie del feedback! (${safeRating}/5)`);
         if (safeRating >= 4) addGardenPoints(2);
+        // Highlight home button after rating
+        const homeBtn = document.querySelector('.tool-home-btn');
+        if (homeBtn) homeBtn.classList.add('highlight');
     }
+}
+
+function goHomeFromTool() {
+    // Safely stop any active tool timers/animations
+    try { stopTimer(); } catch(e) {}
+    try { stopBreathing(); } catch(e) {}
+    try { stopCountdown(); } catch(e) {}
+    try { stopBodyMove(); } catch(e) {}
+    showScreen('homeScreen');
 }
 
 function addToHistory(feelingId, triggerId, strategyTitle) {
@@ -952,6 +975,15 @@ function addToHistory(feelingId, triggerId, strategyTitle) {
     state.runtime.lastHistoryId = entry.id;
     state.runtime.lastStrategyTitle = strategyTitle;
     state.runtime.selectedTaskForTrigger = null;
+}
+
+function setStrategyOnLastEntry(strategyName) {
+    if (!strategyName || !state.runtime?.lastHistoryId) return;
+    const entry = (state.history || []).find(h => h.id === state.runtime.lastHistoryId);
+    if (entry && !entry.strategyUsed) {
+        entry.strategyUsed = strategyName;
+        persist();
+    }
 }
 
 // --- Legal & Features (SAME) ---
@@ -1596,6 +1628,7 @@ window.copySosMessage = copySosMessage;
 window.shareSosMessage = shareSosMessage;
 window.updateSensoryProgress = updateSensoryProgress;
 window.completeSensory = completeSensory;
+window.goHomeFromTool = goHomeFromTool;
 
 // Onboarding
 window.onboardingNext = onboardingNext;
@@ -1900,6 +1933,12 @@ function openStrategyDetail(encodedName) {
     state.runtime.lastStrategyTitle = name;
     state.runtime.strategyRatingLocked = false;
     state.runtime.selectedStrategyRating = null;
+
+    // Salva la strategia nell'ultima entry di history
+    if (name) {
+        setStrategyOnLastEntry(name);
+    }
+
     updateStrategyRatingUI(null, false);
 }
 
@@ -1920,6 +1959,11 @@ function startToolStrategy(toolId, strategyName) {
     state.runtime.lastStrategyTitle = strategyName || null;
     state.runtime.strategyRatingLocked = false;
     state.runtime.selectedStrategyRating = null;
+
+    // Salva la strategia nell'ultima entry di history
+    if (strategyName) {
+        setStrategyOnLastEntry(strategyName);
+    }
 
     const screenId = screenMap[toolId];
     if (!screenId) return;
