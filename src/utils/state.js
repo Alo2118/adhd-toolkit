@@ -17,7 +17,7 @@ export const defaultState = {
         points: 0,
         level: 1,
         streak: 0,
-        lastVisit: new Date().toISOString(),
+        lastVisit: null,
         isPaused: false,
         pauseUntil: null
     },
@@ -55,7 +55,21 @@ export const defaultState = {
     }
 };
 
-export const state = { ...defaultState };
+// Deep copy per evitare che state e defaultState condividano riferimenti
+function deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(deepClone);
+    const clone = {};
+    for (const key of Object.keys(obj)) {
+        clone[key] = deepClone(obj[key]);
+    }
+    return clone;
+}
+
+export const state = deepClone(defaultState);
+
+// Flag: true solo dopo che initState ha caricato i dati da localStorage
+let hydrated = false;
 
 function mergeDefaults(target, defaults) {
     Object.keys(defaults).forEach(key => {
@@ -88,6 +102,7 @@ export function initState() {
         Object.keys(saved).forEach(key => {
             state[key] = saved[key];
         });
+        hydrated = true;
     }
 
     // Ensure schema compatibility and required defaults
@@ -99,11 +114,24 @@ export function initState() {
     if (!Array.isArray(state.activeTasks)) state.activeTasks = [];
     if (typeof state.tasks !== 'object' || state.tasks === null) state.tasks = {};
 
-    // Update streak logic
-    checkStreak();
+    // Update streak logic (solo se abbiamo dati reali)
+    if (hydrated) {
+        checkStreak();
+    }
 }
 
 export function persist() {
+    // Non sovrascrivere dati reali con default se lo state non è stato idratato
+    if (!hydrated) {
+        // Se non c'è mai stato un salvataggio (primo avvio), permettiamo il persist
+        const existing = loadState();
+        if (existing && existing.garden && existing.garden.points > 0) {
+            console.warn('persist() bloccato: state non idratato ma dati esistenti in localStorage');
+            return;
+        }
+        hydrated = true; // Primo avvio, nessun dato da proteggere
+    }
+
     // Don't save runtime state
     const { runtime, ...stateToSave } = state;
     stateToSave.lastSaved = new Date().toISOString();
@@ -111,11 +139,30 @@ export function persist() {
 }
 
 function checkStreak() {
-    const lastVisit = new Date(state.garden.lastVisit).toDateString();
+    // Rispetta la pausa del giardino
+    if (state.garden.isPaused) {
+        const pauseUntil = state.garden.pauseUntil ? new Date(state.garden.pauseUntil).getTime() : null;
+        if (!pauseUntil || Date.now() < pauseUntil) {
+            // Giardino in pausa: aggiorna lastVisit ma non toccare lo streak
+            state.garden.lastVisit = new Date().toISOString();
+            persist();
+            return;
+        }
+        // Pausa scaduta, riprendi normalmente
+        state.garden.isPaused = false;
+        state.garden.pauseUntil = null;
+    }
+
+    const lastVisit = state.garden.lastVisit
+        ? new Date(state.garden.lastVisit).toDateString()
+        : null;
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
 
-    if (lastVisit === yesterday) {
+    if (!lastVisit) {
+        // Primo avvio in assoluto
+        state.garden.streak = 1;
+    } else if (lastVisit === yesterday) {
         state.garden.streak++;
     } else if (lastVisit !== today) {
         state.garden.streak = 1;

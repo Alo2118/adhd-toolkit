@@ -1329,9 +1329,12 @@ window.importData = () => {
                 showToast('Backup non valido');
                 return;
             }
+            // Ricarica lo state dai nuovi dati in localStorage
             initState();
-            showToast('Backup importato');
+            showToast('✓ Backup importato con successo');
             showScreen('homeScreen');
+            // Aggiorna tema dal backup
+            applyTheme(state.settings?.theme || 'system');
             checkAndScheduleNotifications(state.activeTasks);
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({
@@ -1568,6 +1571,19 @@ window.disableNotifications = disableNotifications;
 window.updateNotificationDays = updateNotificationDays;
 window.checkForUpdates = checkForUpdates;
 window.saveUserName = saveUserName;
+
+window.clearAllData = () => {
+    if (!confirm('⚠️ Sei sicuro? Tutti i dati (giardino, diario, compiti, storico) saranno eliminati in modo irreversibile.')) {
+        return;
+    }
+    if (!confirm('Ultima conferma: eliminare TUTTI i dati?')) {
+        return;
+    }
+    clearAllData();
+    // Ricarica la pagina per resettare lo state in-memory
+    // e far ripartire da zero (schermata legale)
+    location.reload();
+};
 
 // New strategy tools
 window.startCountdown = startCountdown;
