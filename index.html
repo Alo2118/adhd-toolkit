@@ -63,7 +63,7 @@
     <div class="update-banner-content">
       <span class="update-banner-icon">🚀</span>
       <span class="update-banner-text">Nuova versione disponibile!</span>
-      <button class="update-banner-btn" onclick="location.reload()">Aggiorna</button>
+      <button class="update-banner-btn" onclick="applyUpdate()">Aggiorna</button>
       <button class="update-banner-close" onclick="dismissUpdateBanner()">&times;</button>
     </div>
   </div>
@@ -117,6 +117,16 @@
     function dismissUpdateBanner() {
       const banner = document.getElementById('update-banner');
       if (banner) banner.style.display = 'none';
+    }
+
+    function applyUpdate() {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg && reg.waiting) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        } else {
+          location.reload();
+        }
+      });
     }
   </script>
 </body>

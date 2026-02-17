@@ -1780,13 +1780,23 @@ function checkForUpdates() {
             showToast('Nessun Service Worker registrato');
             return;
         }
+        // Se c'è già un SW in attesa, mostra subito il banner
+        if (reg.waiting) {
+            showToast('🚀 Aggiornamento pronto!');
+            const banner = document.getElementById('update-banner');
+            if (banner) banner.style.display = 'flex';
+            return;
+        }
         showToast('Controllo aggiornamenti…');
         reg.update().then(() => {
+            // Dopo update(), il nuovo SW potrebbe essere in installing
+            // Il banner verrà mostrato dall'evento updatefound in index.html
+            // quando lo stato passerà a 'installed'
             if (reg.waiting) {
-                showToast('🚀 Aggiornamento pronto! Ricarica la pagina.');
+                showToast('🚀 Aggiornamento pronto!');
                 const banner = document.getElementById('update-banner');
                 if (banner) banner.style.display = 'flex';
-            } else {
+            } else if (!reg.installing) {
                 showToast('✓ App già aggiornata');
             }
         }).catch(() => {

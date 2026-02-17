@@ -44,7 +44,8 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
+    // Non chiamiamo skipWaiting() qui: il nuovo SW resta in attesa
+    // finché l'utente non clicca "Aggiorna" nel banner.
   );
 });
 
@@ -203,6 +204,9 @@ async function scheduleNotificationChecks(tasks) {
 }
 
 self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
   if (event.data?.type === 'TASKS_SYNC') {
     const payload = event.data.payload || {};
     const tasks = payload.tasks || [];
