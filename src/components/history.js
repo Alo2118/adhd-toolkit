@@ -1,11 +1,14 @@
 import { state, persist } from '../utils/state.js';
 import { feelings, diaryMoods } from '../data/feelings.js';
 import { triggerCategories } from '../data/triggers.js';
+import { responses } from '../data/responses.js';
 import { showScreen, showToast } from '../main.js';
 import { formatDate } from '../utils/helpers.js';
 
 // Flatten triggers for lookup
 const allTriggers = triggerCategories.flatMap(c => c.triggers);
+// Set of response titles (NOT strategy names) to filter out corrupted data
+const responseTitles = new Set(Object.values(responses).map(r => r.title || r.tldr).filter(Boolean));
 let reportPeriod = { type: 'days', value: 7 };
 let historyPeriod = 'all';
 let historyFeelingFilter = 'all';
@@ -1160,7 +1163,10 @@ function getDisplayStrategy(item) {
     if (!item) return '—';
     // Mostra solo la strategia effettivamente usata (tool/strategia aperta)
     // item.strategy è il titolo della risposta emotiva, NON la strategia
-    return item.strategyUsed || '—';
+    if (!item.strategyUsed) return '—';
+    // Filtra dati corrotti: se strategyUsed è un titolo di risposta emotiva, ignoralo
+    if (responseTitles.has(item.strategyUsed)) return '—';
+    return item.strategyUsed;
 }
 
 function collectStrategyRatings(history) {
