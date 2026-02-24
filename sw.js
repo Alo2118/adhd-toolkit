@@ -1,5 +1,5 @@
 // Versione app - aggiornata per refactoring
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.6.1';
 const CACHE_NAME = `come-stai-v${APP_VERSION.replace(/\./g, '-')}`;
 
 const urlsToCache = [
@@ -35,6 +35,7 @@ const urlsToCache = [
   './src/views/tools.js',
   './src/views/settings.js',
   './src/views/legal.js',
+  './src/views/onboarding.js',
   './src/views/wizard.js',
   './src/data/wizard.js',
   './src/styles/wizard.css',
